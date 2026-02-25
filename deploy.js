@@ -52,8 +52,8 @@ function uploadDev() {
         console.log('------------------------------------------------------------\n');
         console.log('upload started');
         cmd.run(
-        `
-            aws s3 cp dist/keepr/browser s3://static-keepr-prod --recursive --acl public-read-write --region ap-northeast-2 --profile alice
+            `
+            aws s3 cp dist/portfolio/browser s3://static-portfolio-prod --recursive --acl public-read-write --region ap-northeast-2 --profile mj
         `,
             function (error, success, stderr) {
                 if (error) {
@@ -75,7 +75,7 @@ function clear() {
         console.log('upload started');
         cmd.run(
             `
-            aws cloudfront create-invalidation --distribution-id E1XTTF8O9Z9ZNL --paths "/" "/*" --profile alice
+            aws cloudfront create-invalidation --distribution-id E1XTTF8O9Z9ZNL --paths "/" "/*" --profile mj
         `,
             function (error, success, stderr) {
                 if (error) {
