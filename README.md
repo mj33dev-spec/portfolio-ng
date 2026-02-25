@@ -19,3 +19,5 @@ arn:aws:s3:::static-portfolio-prod
 http://static-portfolio-prod.s3-website.ap-northeast-2.amazonaws.com
 E1XTTF8O9Z9ZNL
 d2afhpkoukmoyr.cloudfront.net
+
+test
