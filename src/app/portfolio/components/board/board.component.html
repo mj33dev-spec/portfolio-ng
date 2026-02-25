@@ -1,0 +1,32 @@
+<section class="board-section">
+  <div class="board-container">
+    <h2 class="title">blog</h2>
+
+    <div class="post-list">
+      @for (post of paginatedPosts(); track post.id) {
+      <div class="post-card" [style.border-color]="post.color">
+        <h4 class="post-title">{{ post.title }}</h4>
+        <p class="post-content">{{ post.content }}</p>
+      </div>
+      } @empty {
+      <p class="empty-state">아직 게시물이 없습니다.</p>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+    <div class="pagination">
+      <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1" class="nav-btn">
+        이전
+      </button>
+      @for (page of pageNumbers(); track page) {
+      <button (click)="goToPage(page)" class="page-btn" [class.active]="currentPage() === page">
+        {{ page }}
+      </button>
+      }
+      <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()" class="nav-btn">
+        다음
+      </button>
+    </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,6 @@
+@use "./variable" as *;
+
+.required-label {
+    margin-left: 2px;
+    color: $color-danger;
+}

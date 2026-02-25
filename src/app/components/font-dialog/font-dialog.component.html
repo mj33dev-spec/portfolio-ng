@@ -1,0 +1,81 @@
+<app-window
+  [title]="'글꼴'"
+  [initialWidth]="480"
+  [initialHeight]="440"
+  [showMinimize]="false"
+  [showMaximize]="false"
+  [color]="'#0078d4'"
+  [isActive]="true"
+  (closeEvent)="onCancel()"
+>
+  <div class="font-dialog-container">
+    <div class="selection-area">
+      <!-- 폰트 종류 -->
+      <div class="field-column">
+        <label>글꼴(F):</label>
+        <div class="input-display">{{ selectedFamily }}</div>
+        <div class="list-box">
+          <div 
+            *ngFor="let f of fontFamilies" 
+            class="list-item" 
+            [class.selected]="selectedFamily === f"
+            (click)="selectedFamily = f"
+            [style.font-family]="f"
+          >
+            {{ f }}
+          </div>
+        </div>
+      </div>
+
+      <!-- 스타일 -->
+      <div class="field-column">
+        <label>글꼴 스타일(Y):</label>
+        <div class="input-display">{{ selectedStyle.label }}</div>
+        <div class="list-box">
+          <div 
+            *ngFor="let s of fontStyles; let i = index" 
+            class="list-item" 
+            [class.selected]="selectedStyleIdx === i"
+            (click)="selectedStyleIdx = i"
+            [style.font-weight]="s.weight"
+            [style.font-style]="s.style"
+          >
+            {{ s.label }}
+          </div>
+        </div>
+      </div>
+
+      <!-- 크기 -->
+      <div class="field-column size-column">
+        <label>크기(S):</label>
+        <div class="input-display">{{ selectedSize }}</div>
+        <div class="list-box">
+          <div 
+            *ngFor="let size of fontSizes" 
+            class="list-item" 
+            [class.selected]="selectedSize === size"
+            (click)="selectedSize = size"
+          >
+            {{ size }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 미리보기 -->
+    <div class="preview-section">
+      <fieldset>
+        <legend>보기</legend>
+        <div class="preview-content" [style.font-family]="selectedFamily" [style.font-weight]="selectedStyle.weight" [style.font-style]="selectedStyle.style" [style.font-size.px]="selectedSize">
+          AaBbYyZz
+        </div>
+      </fieldset>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="actions">
+      <button class="win-btn primary" (click)="onOk()">확인</button>
+      <button class="win-btn" (click)="onCancel()">취소</button>
+    </div>
+    </div>
+</app-window>

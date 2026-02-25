@@ -1,0 +1,178 @@
+<div class="file-explorer">
+  <!-- 주소 표시줄 -->
+  <header class="address-bar">
+    <div class="navigation-buttons">
+      <button class="nav-btn" [disabled]="!canGoBack()" (click)="goBack()" title="뒤로" nz-tooltip nzTooltipTitle="뒤로" nzTooltipPlacement="bottom">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" fill="none" />
+        </svg>
+      </button>
+
+      <button class="nav-btn" [disabled]="!canGoForward()" (click)="goForward()" title="앞으로" nz-tooltip nzTooltipTitle="앞으로" nzTooltipPlacement="bottom">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" fill="none" />
+        </svg>
+      </button>
+
+    </div>
+    <div class="address-path">
+      <span *ngFor="let part of currentPath.split('/'); let last = last; let first = first; let i = index" class="path-part">
+        @if (last) {
+        <!-- <span class="path-current">{{ part || "내 PC" }}</span> -->
+        <span class="path-current">{{ title }}</span>
+        } @else {
+        @if (part) {
+        <span (click)="goToFolder(part, i)" class="btn-path">{{ getPathSegmentDisplayName(part, i) }}</span>
+        }
+        @if (!last && !first) {
+        <span class="path-separator">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" fill="none" />
+          </svg>
+        </span>
+        }
+        }
+      </span>
+    </div>
+  </header>
+
+  <!-- 선택된 항목 드래그 프리뷰 (항상 DOM에 존재, 화면 밖에 배치) -->
+
+  <!-- 메인 컨텐츠 영역 -->
+  <div class="explorer-content">
+    <!-- 왼쪽 사이드바 (폴더 트리) -->
+    <nav class="sidebar">
+      <div class="sidebar-section">
+        <!-- <div class="sidebar-title">☆ 바로 가기</div> -->
+        <div class="folder-tree">
+          <ng-container *ngFor="let folder of folders" [ngTemplateOutlet]="folderNode" [ngTemplateOutletContext]="{ folder: folder, depth: 0 }"></ng-container>
+        </div>
+
+        <ng-template #folderNode let-folder="folder" let-depth="depth" let-parentId="parentId">
+          <div
+            class="folder-item"
+            [class.child]="depth > 0"
+            [class.selected]="selectedFolder?.file_path === folder.file_path"
+            [class.expanded]="folder.expanded === 'open'"
+            [class.is-desktop]="folder.is_desktop"
+            [class.drag-over]="dragOverFolder?.uuid === folder.uuid && isDraggingSelectedItems"
+            [class.drag-over-valid]="dragOverFolder?.uuid === folder.uuid && dragOverFolderCanDrop && isDraggingSelectedItems"
+            [class.drag-over-invalid]="dragOverFolder?.uuid === folder.uuid && !dragOverFolderCanDrop && isDraggingSelectedItems"
+            draggable="true"
+            (dragstart)="onDragStart($event, folder, parentId)"
+            (click)="selectFolder(folder); $event.stopPropagation()"
+            (dragover)="onSidebarFolderDragOver($event, folder)"
+            (dragleave)="onSidebarFolderDragLeave($event)"
+            (drop)="onSidebarFolderDrop($event, folder)"
+          >
+            <div class="folder-row" [style.padding-left.px]="(depth+1) * 20">
+              <span 
+                *ngIf="hasChildren(folder)"
+                class="folder-toggle-icon" 
+                (click)="toggleFolder(folder); $event.stopPropagation()"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" [ngStyle]="{
+                    transform:
+                      folder.expanded === 'open'
+                        ? 'rotate(90deg)'
+                        : 'rotate(0deg)'
+                  }">
+                  <path d="M4 2L8 6L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <div class="folder-icon">
+                <icon-folder [color]="'#F6AD55'" />
+              </div>
+              <span class="folder-name">{{ folder.file_name }}</span>
+            </div>
+
+            <div class="folder-children" *ngIf="folder.expanded === 'open' && hasChildren(folder)">
+              <ng-container *ngFor="let child of getFolderChildren(folder)" [ngTemplateOutlet]="folderNode" [ngTemplateOutletContext]="{ folder: child, depth: depth + 1, parentId: folder.folder_id }"></ng-container>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </nav>
+
+    <!-- 우측 파일 목록 패널 -->
+    <main
+      class="file-panel"
+      [class.drag-over]="isDragOver && !isDraggingSelectedItems"
+      (contextmenu)="onBackgroundRightClick($event)"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (drag)="onSelectedItemsDrag($event)"
+      (dragend)="onSelectedItemsDragEnd($event)"
+      (click)="onFilePanelClick($event)"
+      (mousedown)="onMouseDown($event)"
+      (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp($event)"
+    >
+      <div class="file-list-header">
+        <div class="header-cell name">이름</div>
+        <div class="header-cell date">수정한 날짜</div>
+        <div class="header-cell type">유형</div>
+        <div class="header-cell size">크기</div>
+      </div>
+      <div class="file-list">
+        <div *ngFor="let file of selectedFolder?.children || []" class="file-item" [attr.data-file-uuid]="file.uuid" [attr.data-file-path]="file.file_path" [class.selected]="isFileSelected(file.uuid)"
+          [class.drag-over]="dragOverFolder?.uuid === file.uuid"
+          [class.drag-over-valid]="dragOverFolder?.uuid === file.uuid && dragOverFolderCanDrop"
+          [class.drag-over-invalid]="dragOverFolder?.uuid === file.uuid && !dragOverFolderCanDrop"
+          (click)="onFileItemClick($event, file)" (dblclick)="selectFolder(file)" (contextmenu)="onRightClick($event, file)" draggable="true" (dragstart)="onDragStart($event, file, selectedFolder?.folder_id)" (drag)="onSelectedItemsDrag($event)" (dragend)="onSelectedItemsDragEnd($event)"
+          (dragover)="onFileItemDragOver($event, file)" (dragleave)="onFileItemDragLeave($event)" (drop)="onFileItemDrop($event, file)"
+          >
+          <div class="file-cell name">
+
+            <div class="thumbnail-file">  
+              @switch(file.type) { 
+                @case('folder') {
+                  <icon-folder [color]="'#F6AD55'" />
+                } 
+                @case('file') {
+                  <thumbnail-file [file]="file" (mouseenter)="onFileMouseEnter(file)" (mouseleave)="onFileMouseLeave(file)" />
+                } 
+              }
+            </div>
+            
+            <ng-container *ngIf="renamingFile !== file; else renameInput">
+              <span (dblclick)="startRename(file); $event.stopPropagation()">{{
+                file.file_name
+                }}</span>
+            </ng-container>
+            <ng-template #renameInput>
+              <input type="text" [(ngModel)]="renameText" (keydown)="onRenameKeydown($event)" (blur)="cancelRename()" (click)="$event.stopPropagation()" (dblclick)="$event.stopPropagation()" autofocus
+                class="rename-input" />
+            </ng-template>
+          </div>
+          <div class="file-cell date">
+            {{ file.file_updated_at | date : "yyyy-MM-dd a h:mm" }}
+          </div>
+          <div class="file-cell type">
+            {{
+            file.type === "folder"
+            ? "folder"
+            : file.extension_info.extension_name || "file"
+            }}
+          </div>
+          <div class="file-cell size">
+            {{ file.file_size > 0 ? (file.file_size | number) + " KB" : "-" }}
+          </div>
+        </div>
+        <div *ngIf="(selectedFolder?.children || []).length === 0" class="empty-folder">
+          이 폴더는 비어 있습니다.
+        </div>
+
+        <!-- 드래그 선택 박스 -->
+        <!-- *ngIf="isSelecting" -->
+        <div class="selection-box" [style.left.px]="selectionBox.x" [style.top.px]="selectionBox.y" [style.width.px]="selectionBox.width" [style.height.px]="selectionBox.height"></div>
+      </div>
+
+
+
+    </main>
+  </div>
+
+
+</div>

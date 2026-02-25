@@ -1,0 +1,41 @@
+<div class="msgbox-overlay">
+  <app-window
+    [title]="title"
+    [initialWidth]="350"
+    [showMinimize]="false"
+    [showMaximize]="false"
+  [color]="'#0078d4'"
+  [isActive]="true"
+    [showClose]="true"
+    [resizable]="false"
+    [showIcon]="false"
+        [color]="'#0078d4'"
+        [zIndex]="99999"
+        [isActive]="true"
+    [autoHeight]="true"
+    [isActive]="true"
+
+    style="position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"
+    (closeEvent)="onClose()"
+  >
+    <div class="msgbox-content-wrapper">
+      <div class="msgbox-body">
+        <div *ngIf="icon" class="msgbox-icon">
+          <img [src]="'/assets/icons/primary/svg/ic-' + icon + '.svg'" alt="">
+        </div>
+        <div class="msgbox-message">
+          {{ message }}
+        </div>
+      </div>
+      <div class="buttons">
+        <button 
+          *ngFor="let btn of buttons"
+          (click)="onButtonClick(btn.value)"
+          [class.primary]="btn.type === 'primary'"
+        >
+          {{ btn.label }}{{ btn.shortcut ? '(' + btn.shortcut + ')' : '' }}
+        </button>
+      </div>
+    </div>
+  </app-window>
+</div>

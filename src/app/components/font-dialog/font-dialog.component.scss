@@ -1,0 +1,127 @@
+.font-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    background-color: transparent;
+}
+
+.font-dialog-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #f0f0f0;
+    height: 100%;
+
+    .selection-area {
+        display: flex;
+        gap: 12px;
+        height: 180px;
+
+        .field-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            &.size-column {
+                flex: 0 0 80px;
+            }
+
+            label {
+                font-size: 11px;
+                color: #000;
+            }
+
+            .input-display {
+                background: #fff;
+                border: 1px solid #7a7a7a;
+                padding: 2px 4px;
+                font-size: 13px;
+                height: 24px;
+            }
+
+            .list-box {
+                background: #fff;
+                border: 1px solid #7a7a7a;
+                flex: 1;
+                overflow-y: scroll;
+
+                .list-item {
+                    padding: 2px 4px;
+                    font-size: 13px;
+                    cursor: default;
+                    white-space: nowrap;
+
+                    &:hover {
+                        background-color: #e5f3ff;
+                    }
+
+                    &.selected {
+                        background-color: #0078d4;
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+
+    .preview-section {
+        fieldset {
+            border: 1px solid #a0a0a0;
+            padding: 12px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            legend {
+                font-size: 11px;
+                padding: 0 4px;
+            }
+
+            .preview-content {
+                text-align: center;
+                width: 100%;
+                overflow: hidden;
+            }
+        }
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: auto;
+
+        .win-btn {
+            min-width: 75px;
+            height: 23px;
+            font-size: 12px;
+            background: #e1e1e1;
+            border: 1px solid #adadad;
+            outline: none;
+
+            &:hover {
+                background: #e5f1fb;
+                border-color: #0078d7;
+            }
+
+            &:active {
+                background: #cce4f7;
+                border-color: #005499;
+            }
+
+            &.primary {
+                border-color: #0078d4;
+            }
+        }
+    }
+}

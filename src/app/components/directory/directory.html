@@ -1,0 +1,31 @@
+<div class="directory-container">
+  <ng-template #treeNode let-nodes>
+    <div class="tree-node" *ngFor="let node of nodes">
+      <div class="node-content" (click)="toggleNode(node)">
+        <div class="node-arrow" *ngIf="node.children?.length">
+          <span class="arrow" [class.expanded]="node.expanded">▶</span>
+        </div>
+        <div class="node-title" [class]="node.type">
+          <span class="method-badge" *ngIf="node.type">{{
+            node.type.toUpperCase()
+          }}</span>
+
+          <div class="node-icon" style="width: 20px; height: 20px">
+            <icon-folder color="#63B3ED" />
+          </div>
+
+          {{ node.title }}
+        </div>
+      </div>
+      <div class="node-children" *ngIf="node.children?.length && node.expanded">
+        <ng-container
+          *ngTemplateOutlet="treeNode; context: { $implicit: node.children }"
+        >
+        </ng-container>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: nodes }">
+  </ng-container>
+</div>

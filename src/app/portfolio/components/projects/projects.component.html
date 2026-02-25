@@ -1,0 +1,41 @@
+<section class="projects-section">
+  <div class="header">
+    <h2>Projects</h2>
+    <p>스크롤하여 제 작업을 확인해보세요. 카드를 클릭하면 상세 정보를 볼 수 있습니다.</p>
+  </div>
+
+  <div class="projects-container">
+    @for (project of projects(); track project.title; let i = $index) {
+    <div class="project-card" [class.active]="currentProjectIndex() === i"
+      (click)="selectProject(project)">
+      <div class="card-content">
+        <div class="image-wrapper">
+          <img [src]="project.imageUrl" alt="{{ project.title }}">
+        </div>
+        <div class="info-wrapper">
+          <h3>{{ project.title }}</h3>
+          <p>{{ project.description }}</p>
+          <div class="tags">
+            @for (tag of project.tags; track tag) {
+            <span class="tag">{{ tag }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="pagination">
+    @for (project of projects(); track $index) {
+    <button (click)="currentProjectIndex.set($index)" class="dot"
+      [class.active]="currentProjectIndex() === $index">
+    </button>
+    }
+  </div>
+</section>
+
+@if (selectedProject(); as project) {
+<app-project-detail-modal [project]="project" (closeModal)="closeModal()">
+</app-project-detail-modal>
+}

@@ -1,0 +1,27 @@
+$color-main: #231df9;
+$color-disabled: #999;
+$color-dark: #333;
+$color-warning: #ffc107;
+$color-danger: #ff4d4f;
+$color-success: #00c853;
+
+$color-grey: #999;
+
+// 선택하지 못하도록 하는 mixin
+@mixin noSelect() {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+// 크롬 자동완성 배경색 제거
+@mixin chromeAutofill {
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    box-shadow: 0 0 0 30px white inset !important;
+  }
+}

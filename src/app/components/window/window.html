@@ -1,0 +1,115 @@
+<div
+  class="window-container"
+  [class.maximized]="isMaximized"
+  [class.active]="isActive"
+  [class.inactive]="!isActive"
+  [class.minimizing]="isMinimizing"
+  [class.animating]="isAnimating"
+  [class.auto-height]="autoHeight"
+  [style.left.px]="windowPosition.x"
+  [style.top.px]="windowPosition.y"
+  [style.width.px]="windowSize.width"
+  [style.height.px]="autoHeight ? null : windowSize.height"
+  [style.z-index]="zIndex"
+  (mousedown)="onWindowClick()"
+>
+  <!-- 타이틀 바 -->
+  <div class="title-bar" (mousedown)="startDrag($event)" (dblclick)="onTitleBarDblClick()">
+    <div class="title-bar-left">
+      <div *ngIf="showIcon" class="window-icon">
+        @if (windowIcon) {
+          <img [src]="windowIcon" class="title-icon" alt="">
+        } @else {
+          <icon-folder [color]="color" size="small"></icon-folder>
+        }
+      </div>
+      <span class="window-title">{{ title }}</span>
+    </div>
+    <div class="title-bar-right">
+      <button
+        *ngIf="showMinimize"
+        class="title-bar-button minimize"
+        (click)="minimize()"
+        title="최소화"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M0 6H12" stroke="currentColor" stroke-width="1.5" />
+        </svg>
+      </button>
+      <button
+        *ngIf="showMaximize"
+        class="title-bar-button maximize"
+        (click)="maximize()"
+        title="최대화"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <rect
+            x="1"
+            y="1"
+            width="10"
+            height="10"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+          />
+        </svg>
+      </button>
+      <button
+        *ngIf="showClose"
+        class="title-bar-button close"
+        (click)="close()"
+        title="닫기"
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path
+            d="M1 1L11 11M11 1L1 11"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 컨텐츠 영역 -->
+  <div class="window-content" [style.pointer-events]="isDraggingOrResizing ? 'none' : 'auto'">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- 리사이즈 핸들 -->
+  <ng-container *ngIf="resizable">
+    <div
+      class="resize-handle resize-handle-n"
+      (mousedown)="startResize($event, 'n')"
+    ></div>
+    <div
+      class="resize-handle resize-handle-s"
+      (mousedown)="startResize($event, 's')"
+    ></div>
+    <div
+      class="resize-handle resize-handle-e"
+      (mousedown)="startResize($event, 'e')"
+    ></div>
+    <div
+      class="resize-handle resize-handle-w"
+      (mousedown)="startResize($event, 'w')"
+    ></div>
+    <div
+      class="resize-handle resize-handle-ne"
+      (mousedown)="startResize($event, 'ne')"
+    ></div>
+    <div
+      class="resize-handle resize-handle-nw"
+      (mousedown)="startResize($event, 'nw')"
+    ></div>
+    <div
+      class="resize-handle resize-handle-se"
+      (mousedown)="startResize($event, 'se')"
+    ></div>
+    <div
+      class="resize-handle resize-handle-sw"
+      (mousedown)="startResize($event, 'sw')"
+    ></div>
+  </ng-container>
+</div>

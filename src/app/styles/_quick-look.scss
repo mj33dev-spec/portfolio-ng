@@ -1,0 +1,268 @@
+.quick-look-panel {
+    position: fixed;
+    z-index: 1000;
+    /* 최상위 레이어 보장 */
+    // background: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    /* 미리보기 중 마우스 방해 금지 */
+    animation: quickLookAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center center;
+    transition: all 0.2s ease-in-out;
+    backdrop-filter: blur(10px);
+
+    @keyframes quickLookAppear {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .quick-look-header {
+        height: 38px;
+        padding: 0 16px;
+        // background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.2);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+
+            .file-name {
+                font-weight: 500;
+                font-size: 13px;
+                color: #1a1a1a;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .header-right {
+            .file-type {
+                font-size: 10px;
+                font-weight: 700;
+                color: #888;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                background: #f0f0f0;
+                padding: 2px 6px;
+                border-radius: 4px;
+            }
+        }
+    }
+
+    .quick-look-body {
+        position: relative;
+        flex: 1;
+        overflow: auto;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+
+        .quick-look-content-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+
+            &.content-loading {
+                opacity: 0.3; // 로딩 중에는 살짝 투명하게
+                filter: blur(2px); // 블러 처리로 로딩 느낌 강조
+            }
+        }
+
+        .loading-spinner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.5);
+            z-index: 10;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .preview-text {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            margin: 0;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-all;
+            background: #fdfdfd;
+            align-self: flex-start;
+        }
+
+        .preview-excel {
+            width: auto;
+            min-width: 100%;
+            padding: 0;
+            background: #fff;
+            align-self: flex-start;
+            align-self: flex-start;
+
+            table {
+                border-collapse: collapse;
+                width: max-content; // 전체 너비 확보 후 JS에서 축소
+                font-size: 12px;
+                background: #fff;
+
+                td,
+                th {
+                    border: 1px solid #eee;
+                    padding: 6px 10px;
+                    min-width: 60px;
+                }
+
+                th {
+                    background: #f7f7f7;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        .preview-word {
+            width: 816px !important; // A4 표준 너비 강제
+            min-width: 816px !important;
+            background: #fff;
+            display: block;
+            transform-origin: top left;
+
+            .docx-wrapper {
+                padding: 0 !important;
+                background: transparent !important;
+
+                section.docx {
+                    margin: 0 !important; // 중앙 정렬 마진 제거
+                    box-shadow: none !important;
+                }
+            }
+        }
+
+        .preview-hwp-iframe,
+        .preview-pdf {
+            width: 100%;
+            height: 100%;
+        }
+
+        .unsupported-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            text-align: center;
+            padding: 40px;
+
+            img {
+                margin-bottom: 16px;
+                filter: grayscale(0.5);
+                opacity: 0.8;
+            }
+
+            p {
+                margin: 0;
+                font-size: 13px;
+            }
+        }
+
+        .preview-folder {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+
+            .folder-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 16px;
+                align-items: start;
+
+                .folder-item {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 8px;
+
+                    .item-icon {
+                        width: 48px;
+                        height: 48px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        thumbnail-file {
+                            width: 100%;
+                            height: 100%;
+                            display: block;
+                        }
+                    }
+
+                    .item-name {
+                        font-size: 11px;
+                        text-align: center;
+                        color: #333;
+                        width: 100%;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+            }
+
+            .empty-folder {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                color: #999;
+
+                p {
+                    font-size: 13px;
+                    margin: 0;
+                }
+            }
+        }
+    }
+}

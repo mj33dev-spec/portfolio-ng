@@ -1,0 +1,10 @@
+@import './fonts.css';
+
+* {
+    border: 1px solid red !important;
+    background-color: blue !important;
+}
+
+body {
+    background-color: red;
+}

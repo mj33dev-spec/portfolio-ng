@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <title>HWP Viewer</title>
+    <style>
+      body {
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        font-family: sans-serif;
+        overflow-x: hidden;
+
+        .loading {
+          color: white;
+          font-size: 14px;
+          margin-top: 20vh;
+        }
+        .hpa {
+          margin: 0 !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          box-shadow: none !important;
+        }
+
+        .error {
+          color: #ff6b6b;
+          background: rgba(0, 0, 0, 0.5);
+          padding: 10px 20px;
+          border-radius: 4px;
+          margin-top: 20vh;
+        }
+
+        #wrapper {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .hwp-content {
+            position: relative;
+            width: 210mm;
+            min-height: 297mm;
+            box-sizing: border-box;
+            color: black;
+            transform-origin: top center;
+
+            img {
+              max-width: 100%;
+              height: auto;
+            }
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status" class="loading">HWP 문서를 로드하는 중...</div>
+    <div id="wrapper">
+      <div id="container" class="hwp-content" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+      import initHwp from './hwpjs.wasi-browser.js';
+
+      const statusEl = document.getElementById('status');
+      const containerEl = document.getElementById('container');
+      const wrapperEl = document.getElementById('wrapper');
+
+      function updateScale() {
+        if (containerEl.style.display === 'none') return;
+        
+        const windowWidth = window.innerWidth - 48; // Padding 24px * 2
+        const contentWidth = containerEl.offsetWidth;
+        
+        if (windowWidth < contentWidth) {
+          const scale = windowWidth / contentWidth;
+          containerEl.style.transform = `scale(${scale})`;
+          // Scale 후 아래쪽 여백 보정
+          wrapperEl.style.height = (containerEl.offsetHeight * scale) + 'px';
+        } else {
+          containerEl.style.transform = 'scale(1)';
+          wrapperEl.style.height = 'auto';
+        }
+      }
+
+      window.addEventListener('resize', updateScale);
+
+      window.addEventListener('message', async (event) => {
+        if (event.data && event.data.type === 'RENDER_HWP') {
+          try {
+            // 부모의 스피너가 보이므로 내부 상태 메시지는 숨김
+            statusEl.style.display = 'none';
+            
+            const hwp = await initHwp();
+            const html = hwp.toHtml(new Uint8Array(event.data.buffer));
+            
+            if (!html || html === 'undefined') {
+              throw new Error('변환 결과가 유효하지 않습니다.');
+            }
+
+            containerEl.innerHTML = html;
+            // 렌더링은 하되 스케일링 전까지는 보이지 않게 함
+            containerEl.style.visibility = 'hidden';
+            containerEl.style.display = 'block';
+            
+            // 렌더링 후 스케일링 적용
+            setTimeout(() => {
+              updateScale();
+              // 스케일링 완료 후 노출 및 부모에게 알림
+              containerEl.style.visibility = 'visible';
+              window.parent.postMessage({ type: 'HWP_SCALED' }, '*');
+            }, 50);
+          } catch (err) {
+            console.error('[Viewer] Rendering failed:', err);
+            statusEl.style.display = 'block';
+            statusEl.className = 'error';
+            statusEl.textContent = 'HWP 파일을 열 수 없습니다: ' + err.message;
+            // 에러 시에도 부모의 스피너를 끄기 위해 신호 전송
+            window.parent.postMessage({ type: 'HWP_SCALED' }, '*');
+          }
+        }
+      });
+
+      // 준비 완료 신호 전송
+      window.parent.postMessage({ type: 'VIEWER_READY' }, '*');
+    </script>
+  </body>
+</html>

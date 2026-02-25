@@ -1,0 +1,35 @@
+@use "./_variable" as *;
+@use "./_buttons" as *;
+
+.ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  @include noSelect;
+  > .ant-modal-header {
+    padding: 16px 16px;
+  }
+  > .ant-modal-body {
+    padding: 16px 16px;
+  }
+  > .ant-modal-footer {
+    > .ant-btn {
+      @include btnTheme("outlinedDisabled", "small");
+      &.ant-btn-primary {
+        @include btnTheme("primary", "small");
+      }
+      &.ant-btn-danger {
+        @include btnTheme("danger", "small");
+      }
+      &.ant-btn-success {
+        @include btnTheme("success", "small");
+      }
+    }
+  }
+}
+
+nz-segmented.custom-w-full {
+  width: 100%;
+  .ant-segmented-item {
+    flex: 1;
+  }
+}

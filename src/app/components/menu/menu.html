@@ -1,0 +1,30 @@
+<div class="menu-container">
+  <div class="menu-header">
+    <ul class="menu-list">
+      <li [class.active]="activeMenu === 'my'">
+        내 폴더
+      </li>
+      <li [class.active]="activeMenu === 'activity'">
+        활동
+      </li>
+      <li [class.active]="activeMenu === 'settings'">
+        설정
+      </li>
+    </ul>
+  </div>
+
+  <div class="right-section">
+    <div class="search-bar">
+      <input type="text" placeholder="검색어를 입력하세요" />
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-image">
+        <img src="assets/images/logo.png" alt="프로필" />
+      </div>
+      <div class="profile-info">
+        <p class="profile-name">사용자 이름</p>
+      </div>
+    </div>
+  </div>
+</div>

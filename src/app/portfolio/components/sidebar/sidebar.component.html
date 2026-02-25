@@ -1,0 +1,25 @@
+<aside class="sidebar-container" [class.open]="isOpen()">
+  <div class="sidebar-content">
+    <h2 class="logo">MJ's World</h2>
+    <nav>
+      <ul class="nav-list">
+        @for (section of sections(); track section.id) {
+        <li>
+          <a (click)="onSectionClick(section.id)"
+            class="nav-link"
+            [class.active]="activeSectionId() === section.id">
+            {{ section.name }}
+          </a>
+        </li>
+        }
+      </ul>
+    </nav>
+    <div class="footer">
+      <p>© 2026 MJ's World</p>
+    </div>
+  </div>
+</aside>
+
+@if (isOpen()) {
+<div (click)="closeSidebar.emit()" class="overlay"></div>
+}

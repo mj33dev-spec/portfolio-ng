@@ -1,0 +1,124 @@
+.toast-container {
+    padding: 8px 16px;
+    display: flex;
+    // align-items: flex-start;
+    align-items: center;
+    gap: 8px;
+    width: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px) saturate(180%);
+    pointer-events: auto;
+
+    // 초기 상태
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    &.fading-out {
+        animation: toastFadeOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .toast-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+            width: 28px;
+            height: 28px;
+        }
+    }
+
+    .toast-message {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        flex: 1;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .toast-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        width: 28px;
+        height: 28px;
+        min-height: min-content;
+        background: none;
+        cursor: pointer;
+        color: #ddd;
+        transition: all 0.2s;
+
+        &:hover {
+            background-color: #0000000d;
+            color: #fff;
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    // Themes
+    &.success {
+        .toast-icon {
+            color: #10b981;
+        }
+    }
+
+    &.info {
+        .toast-icon {
+            // color: #3b82f6;
+            color: #fff;
+        }
+    }
+
+    &.warn {
+        .toast-icon {
+            color: #f59e0b;
+        }
+    }
+
+    &.error {
+        .toast-icon {
+            color: #ef4444;
+        }
+    }
+}
+
+@keyframes toastSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes toastFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+}

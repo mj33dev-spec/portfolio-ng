@@ -1,0 +1,58 @@
+:host {
+    display: block;
+}
+
+.dropdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 15px 4px 28px;
+    font-size: 13px;
+    color: #000;
+    cursor: default;
+    position: relative;
+
+    &:hover {
+        background-color: #91c9f7;
+    }
+
+    .check-area {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 12px;
+        height: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .shortcut {
+        margin-left: auto;
+        padding-left: 20px;
+        color: #717171;
+        font-size: 11px;
+    }
+
+    // 서브메뉴 포지셔닝
+    &.has-submenu {
+        position: relative;
+
+        app-dropdown {
+            display: none;
+            position: absolute;
+            top: -4px;
+            left: 100%;
+            margin-left: -2px;
+            z-index: 1001;
+        }
+    }
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 4px 0;
+    margin-left: 25px;
+}

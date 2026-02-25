@@ -1,0 +1,1007 @@
+<div class="layout">
+  <!-- 배경 이미지 -->
+  <div class="desktop-background">
+    <div class="inner-background" [style.background-image]="'url(' + bgImagePath + ')'"></div>
+  </div>
+
+  <!-- 데스크톱 시계 -->
+  <div class="desktop-clock">
+    <div class="date">{{ currentTime | date:'M월 d일 EEEE' : '' : 'ko-KR' }}</div>
+    <div class="time">{{ currentTime | date:'h:mm' }}</div>
+  </div>
+
+  <!-- 데스크톱 컨텐츠 - 바탕화면 폴더 + 여러 윈도우 창들 -->
+  <div
+    class="desktop-content"
+    [class.drag-over]="isFileDragOver"
+    [style.transform]="mode === 'preview' ? 'scale(' + previewScale + ')' : ''"
+    [style.transform-origin]="'top left'"
+    [style.width.%]="mode === 'preview' ? (100 / previewScale) : 100"
+    [style.height.%]="mode === 'preview' ? (100 / previewScale) : 100"
+    (mousedown)="onDesktopMouseDown($event)"
+    (contextmenu)="onDesktopRightClick($event)"
+    (drag)="onSelectedItemsDrag($event)"
+    (dragend)="onSelectedItemsDragEnd($event)"
+    (dragover)="onDesktopDragOver($event)"
+    (dragleave)="onDesktopDragLeave($event)"
+    (drop)="onDesktopDrop($event)"
+  >
+    <!-- 드래그 선택 박스 -->
+    @if (isDragging) {
+      <div
+        class="selection-box"
+        [style.left.px]="selectionBox.x"
+        [style.top.px]="selectionBox.y"
+        [style.width.px]="selectionBox.width"
+        [style.height.px]="selectionBox.height"
+      ></div>
+    }
+
+    <!-- 선택된 항목 드래그 프리뷰 (항상 DOM에 존재, 화면 밖에 배치) -->
+    <div
+      id="dragPreview"
+      class="drag-preview"
+      [class.visible]="dragPreview.visible"
+      [class.fading]="dragPreview.fading"
+      [style.left.px]="dragPreview.x"
+      [style.top.px]="dragPreview.y"
+    >
+      @if (dragPreview.items.length > 0) {
+        <div class="drag-preview-content">
+          <div class="drag-preview-icons">
+            @for (item of dragPreview.items.slice(0, 5); track trackByFilePath($index, item)) {
+              <div class="drag-preview-icon">
+                @if (item.type === 'folder') {
+                  <icon-folder [color]="'#F6AD55'" />
+                } @else {            
+                  <thumbnail-file [file]="item" />
+                }
+              </div>
+            }
+            @if (dragPreview.items.length > 5) {
+              <div class="drag-preview-more">
+                +{{ dragPreview.items.length - 5 }}
+              </div>
+            }
+            <div class="drag-preview-count">
+              {{ dragPreview.items.length }}개 항목
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- 바탕화면 폴더 아이콘들 -->
+    <ul class="desktop-icons">
+      @for (file of desktopFolders; track trackByFilePath($index, file)) {
+        <li
+          class="desktop-icon"
+          [class.selected]="isFolderSelected(file)"
+          [class.drag-over]="dragOverFolder?.file_path === file.file_path"
+          [class.drag-over-valid]="dragOverFolder?.file_path === file.file_path && dragOverFolderCanDrop"
+          [class.drag-over-invalid]="dragOverFolder?.file_path === file.file_path && !dragOverFolderCanDrop"
+          [class.draggable]="selectedFolders.size > 0 && isFolderSelected(file)"
+          [attr.data-folder-uuid]="file.uuid"
+          [attr.data-folder-path]="file.file_path"
+          [draggable]="true"
+          [style.left.px]="file.x"
+          [style.top.px]="file.y"
+          (dragstart)="onSelectedItemsDragStart($event, file)"
+          (dblclick)="
+            renamingFile?.uuid === file.uuid
+              ? $event.stopPropagation()
+              : openFolderWindow(file)
+          "
+          (mousedown)="onIconMouseDown($event, file)"
+          (mouseenter)="onIconMouseEnter(file)"
+          (mouseleave)="onIconMouseLeave(file)"
+          [title]="file.file_name"
+        >
+          <div
+            class="icon-wrapper"
+            [class.drop-target]="file.type === 'folder'"
+            (dragover)="
+              file.type === 'folder' && onFolderIconDragOver($event, file)
+            "
+            (dragleave)="file.type === 'folder' && onFolderIconDragLeave($event)"
+            (drop)="file.type === 'folder' && onFolderIconDrop($event, file)"
+          >
+            @switch(file.type) { 
+              @case('folder') {
+                <icon-folder [color]="'#F6AD55'" />
+              } 
+              @case('file') {
+                <thumbnail-file [file]="file" />
+              } 
+            }
+          </div>
+
+          <!-- 이름 바꾸기 입력 필드 -->
+          <div class="icon-label">
+            @if (renamingFile?.uuid === file.uuid) {
+              <textarea
+                class="rename-input"
+                [(ngModel)]="renameText"
+                (blur)="cancelRename()"
+                (keydown)="onRenameKeydown($event)"
+                (mousedown)="$event.stopPropagation()"
+                (click)="$event.stopPropagation()"
+                (dblclick)="$event.stopPropagation()"
+                (dragstart)="$event.stopPropagation(); $event.preventDefault()"
+                #renameInput
+                [autofocus]="true"
+              >
+              </textarea>
+            }
+            @if (renamingFile?.uuid !== file.uuid) {
+              <span
+                (dblclick)="startRename(file); $event.stopPropagation()"
+                >{{ file.file_name }}</span
+              >
+            }
+          </div>
+        </li>
+      }
+    </ul>
+
+    <!-- 윈도우 창들 -->
+    @for (window of windows; track trackByWindowId($index, window)) {
+      <app-window
+        [title]="(window.isDirty ? '* ' : '') + window.title"
+        [color]="window.color"
+        [initialX]="window.x"
+        [initialY]="window.y"
+        [initialWidth]="window.width"
+        [initialHeight]="window.height"
+        [isActive]="window.isActive || false"
+        [isMinimizing]="window.isMinimizing || false"
+        [isMaximized]="window.isMaximized || false"
+        [style.display]="window.isMinimized ? 'none' : 'flex'"
+        [zIndex]="window.zIndex"
+        (closeEvent)="tryCloseWindow(window.id)"
+        (minimizeEvent)="minimizeWindow(window.id)"
+        (maximizeEvent)="maximizeWindow(window.id, $event)"
+        (focusEvent)="focusWindow(window.id)"
+        [windowIcon]="window.icon"
+      >
+        <!-- 파일 탐색기 컨텐츠 -->
+        @if (window.type === 'explorer' && window.folder) {
+          <app-file-explorer
+            [workspaceUUID]="workspaceUUID"
+            [title]="window.title"
+            [rootFolder]="window.folder"
+            [desktopFolders]="desktopFolders"
+            [isActive]="window.isActive || false"
+            (folderChange)="onFolderChange(window.id, $event)"
+            (fileOpen)="openFolderWindow($event)"
+            (newFolderCreated)="onExplorerNewFolder($event)"
+            (fileDelete)="onExplorerFileDelete($event)"
+            (fileMove)="onExplorerFileMove($event)"
+            (fileUpload)="onExplorerFileUpload($event)"
+            (folderExpand)="refreshFolder($event)"
+            (propertiesOpen)="openProperties($event)"
+          ></app-file-explorer>
+        }
+
+        <!-- 이미지 뷰어 컨텐츠 -->
+        @if (window.type === 'image' && window.file) {
+          <div class="image-viewer">
+            <img [src]="window.file.file_path" [alt]="window.file.file_name" />
+          </div>
+        }
+
+        <!-- PSD 뷰어 컨텐츠 (이미지 렌더링) -->
+        @if (window.type === 'psd' && window.file) {
+          <div class="image-viewer">
+            @if (window.previewUrl) {
+              <img [src]="window.previewUrl" [alt]="window.file.file_name" />
+            } @else {
+              <div class="loading-preview">
+                <thumbnail-file [file]="window.file" class="loading-icon" />
+                <p>미리보기를 생성 중입니다...</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- AI 뷰어 컨텐츠 (PDF 호환 렌더링) -->
+        @if (window.type === 'ai' && window.file) {
+          <div class="pdf-viewer">
+
+            <pdf-viewer
+              [src]="window.file.file_path"
+              [render-text]="false"
+              [original-size]="false"
+              [autoresize]="true"
+              [fit-to-page]="true"
+              [show-all]="true"
+              style="width: 100%; height: 100%"
+            ></pdf-viewer>
+          </div>
+        }
+
+        <!-- 포트폴리오 앱 -->
+        @if (window.type === 'portfolio') {
+          <div class="portfolio-container" style="width:100%; height:100%; overflow:hidden;">
+            <app-portfolio-root></app-portfolio-root>
+          </div>
+        }
+
+        <!-- 텍스트 에디터 컨텐츠 -->
+        @if ((window.type === 'text' || window.type === 'code') && window.file) {
+          <app-text-editor
+            [window]="window"
+            (save)="saveTextFile($event)"
+            (saveAs)="saveAsTextFile($event)"
+            (close)="tryCloseWindow($event)"
+          ></app-text-editor>
+        }
+
+
+        <!-- 엑셀 뷰어 컨텐츠 -->
+        @if (window.type === 'excel' && window.file) {
+          <div class="excel-viewer">
+            @if (window.sheets && window.sheets.length > 0) {
+              <div class="sheet-content" [innerHTML]="window.content | safe: 'html'"></div>
+              
+              <!-- 시트 탭 -->
+              <div class="sheet-tabs">
+                @for (sheet of window.sheets; track sheet.name; let i = $index) {
+                  <button 
+                    class="sheet-tab" 
+                    [class.active]="window.activeSheetIndex === i"
+                    (click)="selectExcelSheet(window, i)"
+                  >
+                    {{ sheet.name }}
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="loading-preview">
+                <p>엑셀 파일 열람 중...</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- PDF 뷰어 컨텐츠 -->
+        @if (window.type === 'pdf' && window.file) {
+          <div class="pdf-viewer">
+            <pdf-viewer
+              [src]="window.file.file_path"
+              [render-text]="true"
+              [original-size]="false"
+              [autoresize]="true"
+              [fit-to-page]="false"
+              [show-all]="true"
+              style="width: 100%; height: 100%"
+            ></pdf-viewer>
+          </div>
+        }
+
+        <!-- 오디오 플레이어 컨텐츠 -->
+        @if (window.type === 'audio' && window.file) {
+          <div class="audio-player">
+            <audio-player
+              [file]="window.file"
+            ></audio-player>
+          </div>
+        }
+
+        <!-- HTML 뷰어 컨텐츠 -->
+        @if (window.type === 'html' && window.file) {
+          <div class="html-viewer">
+            <iframe [srcdoc]="window.file.extension_info.text | safe: 'html'" class="html-iframe"></iframe>
+            <div
+              class="iframe-focus-overlay"
+              [style.pointer-events]="window.isActive ? 'none' : 'auto'"
+              (mousedown)="focusWindow(window.id)"
+            ></div>
+          </div>
+        }
+
+        <!-- HWP 뷰어 컨텐츠 -->
+        @if (window.type === 'hwp' && window.file) {
+          <div class="hwp-viewer">
+            <div [innerHTML]="window.content | safe: 'html'" class="hwp-content-wrapper"></div>
+            @if (!window.isActive) {
+              <div class="iframe-focus-overlay" (mousedown)="focusWindow(window.id)"></div>
+            }
+          </div>
+        }
+
+        <!-- 워드 뷰어 컨텐츠 -->
+        @if (window.type === 'word' && window.file) {
+          <div class="word-viewer">
+            <div [id]="'word-container-' + window.id" class="word-content"></div>
+            @if (!window.isActive) {
+              <div class="iframe-focus-overlay" (mousedown)="focusWindow(window.id)"></div>
+            }
+          </div>
+        }
+
+        <!-- 오피스 파일 정보/다운로드 컨텐츠 -->
+        @if (window.type === 'office' && window.file) {
+          <div class="unsupported-file">
+            <div class="office-icon-large">
+              <img [src]="window.file.extension_info.img_path" [alt]="window.file.file_name" width="64" height="64" />
+            </div>
+            <h3>오피스 파일 미리보기</h3>
+            <p>이 파일 형식은 다운로드 후 로컬 PC에서 확인하실 수 있습니다.</p>
+            <p class="file-info-text">{{ window.file.file_name }}</p>
+          </div>
+        }
+
+        <!-- 지원하지 않는 파일 형식 -->
+        @if (window.type === 'unsupported' && window.file) {
+          <div class="unsupported-file">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle
+                cx="32"
+                cy="32"
+                r="24"
+                stroke="#999"
+                stroke-width="2"
+                fill="none"
+              />
+              <line
+                x1="32"
+                y1="20"
+                x2="32"
+                y2="36"
+                stroke="#999"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <circle cx="32" cy="44" r="2" fill="#999" />
+            </svg>
+            <h3>파일을 열 수 없습니다</h3>
+            <p>
+              이 파일 형식({{ window.file.extension_info.extension_name || 'unknown' }})은 아직
+              지원되지 않습니다.
+            </p>
+          </div>
+        }
+
+        <!-- 일반 컨텐츠 (위의 어떤 타입에도 해당되지 않을 때) -->
+        @if (
+          window.type !== 'explorer' &&
+          window.type !== 'image' &&
+          window.type !== 'psd' &&
+          window.type !== 'ai' &&
+          window.type !== 'text' &&
+          window.type !== 'code' &&
+          window.type !== 'pdf' &&
+          window.type !== 'audio' &&
+          window.type !== 'html' &&
+          window.type !== 'office' &&
+          window.type !== 'excel' &&
+          window.type !== 'hwp' &&
+          window.type !== 'word' &&
+          window.type !== 'unsupported' &&
+          window.type !== 'portfolio'
+        ) {
+          <div class="window-content-area">
+            <h2>{{ window.title }}</h2>
+            <p>타이틀 바를 드래그하여 이동할 수 있습니다.</p>
+            <p>창 모서리에서 크기를 조절할 수 있습니다.</p>
+            <p>여러 개의 창을 동시에 띄울 수 있습니다.</p>
+          </div>
+        }
+
+      </app-window>
+    }
+
+    <!-- 컨텍스트 메뉴 -->
+    @if (contextMenu.visible) {
+      <div
+        class="context-menu"
+        [style.left.px]="contextMenu.x"
+        [style.top.px]="contextMenu.y"
+        (click)="$event.stopPropagation()"
+        (mousedown)="$event.stopPropagation()"
+      >
+        @for (item of contextMenuItems; track item.label) {
+          @if (item.separator) {
+            <div class="context-menu-divider"></div>
+          } @else {
+            <div 
+              class="context-menu-item" 
+              [class.has-submenu]="item.submenu"
+              (mouseenter)="hoveredContextItem = item"
+              (mouseleave)="hoveredContextItem = null"
+              (click)="item.action && item.action(); $event.stopPropagation()"
+            >
+              <!-- Icon -->
+              @if (item.icon) {
+                 <div class="menu-icon" [innerHTML]="item.icon | safe: 'html'"></div>
+              }
+              
+              <span>{{ item.label }}</span>
+              
+              <!-- Submenu Arrow -->
+              @if (item.submenu) {
+                   <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="submenu-arrow">
+                     <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" fill="none" />
+                   </svg>
+                   
+                   <!-- Submenu -->
+                   @if (hoveredContextItem === item) {
+                     <div class="context-submenu">
+                       @for (subItem of item.submenu; track subItem.label) {
+                         @if (subItem.separator) {
+                            <div class="context-menu-divider"></div>
+                         } @else {
+                            <div class="context-menu-item" (click)="subItem.action && subItem.action(); $event.stopPropagation()">
+                              @if (subItem.icon) {
+                                 <div class="menu-icon" [innerHTML]="subItem.icon | safe: 'html'"></div>
+                              }
+                              <span>{{ subItem.label }}</span>
+                            </div>
+                         }
+                       }
+                     </div>
+                   }
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+
+    <!-- 속성 창 -->
+    @if (propertiesOpen && propertiesTarget) {
+      <app-window
+        class="properties-window"
+        [title]="propertiesTarget.file_name + ' 속성'"
+        [color]="getPropertiesWindowColor(propertiesTarget)"
+        [initialX]="propertiesWindowPosition.x"
+        [initialY]="propertiesWindowPosition.y"
+        [initialWidth]="propertiesWindowSize.width"
+        [initialHeight]="propertiesWindowSize.height"
+        [minWidth]="420"
+        [minHeight]="320"
+        [showMinimize]="false"
+        [showMaximize]="false"
+        [isActive]="propertiesWindowIsActive"
+        [zIndex]="propertiesWindowZIndex"
+        (focusEvent)="focusPropertiesWindow()"
+        (closeEvent)="closeProperties()"
+      >
+        <div class="properties-content">
+          <div class="properties-summary">
+            <div class="properties-icon">
+              @if (propertiesTarget.type === 'folder') {
+                <icon-folder
+                  [color]="
+                    propertiesTarget.extension_info.getColorCode() || '#FBBF24'
+                  "
+                />
+              } @else {
+                <img
+                  [src]="propertiesTarget.extension_info.img_path"
+                  [alt]="propertiesTarget.file_name"
+                  width="48"
+                  height="48"
+                />
+              }
+            </div>
+            <div class="properties-title">
+              <div class="properties-name">
+                {{ propertiesTarget.file_name }}
+              </div>
+              <div class="properties-subtitle">
+                {{ getFileTypeLabel(propertiesTarget) }}
+              </div>
+            </div>
+          </div>
+
+          <div class="properties-body">
+            <div class="properties-row">
+              <div class="properties-label">파일명</div>
+              <div class="properties-value">
+                {{ propertiesTarget.file_name }}
+              </div>
+            </div>
+            <div class="properties-row">
+              <div class="properties-label">확장명</div>
+              <div class="properties-value">
+                {{ getFileExtensionDisplay(propertiesTarget) }}
+              </div>
+            </div>
+            <div class="properties-row">
+              <div class="properties-label">파일유형</div>
+              <div class="properties-value">
+                {{ getFileTypeLabel(propertiesTarget) }}
+              </div>
+            </div>
+            <div class="properties-row">
+              <div class="properties-label">생성된 날짜</div>
+              <div class="properties-value">
+                {{ formatDate(propertiesTarget.file_created_at) }}
+              </div>
+            </div>
+            <div class="properties-row">
+              <div class="properties-label">수정된 날짜</div>
+              <div class="properties-value">
+                {{ formatDate(propertiesTarget.file_updated_at) }}
+              </div>
+            </div>
+            <div class="properties-row">
+              <div class="properties-label">파일위치</div>
+              <div class="properties-value">
+                {{ propertiesTarget.file_path }}
+              </div>
+            </div>
+            <div class="properties-row">
+              <div class="properties-label">파일크기</div>
+              <div class="properties-value">
+                {{ formatFileSize(propertiesTarget) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-window>
+    }
+  </div>
+
+  <!-- 활성 폴더 Dock (항상 표시) -->
+  <footer 
+    *ngIf="mode === 'normal'"
+    class="dock-bar"
+  >
+    <ul class="dock-container">
+      <!-- 사이드바 네비게이션 아이템 -->
+      @for (item of dockItems; track item.label) {
+        <li
+          class="dock-item"
+          (click)="handleDockClick(item)"
+          [title]="item.label"
+        >
+          <div class="dock-icon">
+            <img
+              class="dock-icon-image"
+              [src]="item.icon"
+              [alt]="item.label"
+              width="48"
+              height="48"
+              draggable="false"
+            />
+          </div>
+          <div class="dock-label">{{ item.label }}</div>
+        </li>
+      }
+
+      @if (uploadWindowOpen) {
+        <li
+          class="dock-item"
+          [class.active]="uploadWindowIsActive"
+          (click)="focusUploadWindow()"
+          title="파일 업로드"
+        >
+          <div class="dock-icon">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 64 64"
+              fill="none"
+              style="color: #0078d4"
+            >
+              <path
+                d="M32 12V52M20 24L32 12L44 24"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div class="dock-label">파일 업로드</div>
+          @if (uploadWindowIsActive) {
+            <div class="dock-indicator"></div>
+          }
+        </li>
+      }
+
+      @if (propertiesOpen && propertiesTarget) {
+        <li
+          class="dock-item"
+          [class.active]="propertiesWindowIsActive"
+          (click)="focusPropertiesWindow()"
+          [title]="propertiesTarget.file_name + ' 속성'"
+        >
+          <div class="dock-icon">
+            <img
+              class="dock-icon-image"
+              src="/assets/icons/files/svg/설정.svg"
+              alt="속성"
+              width="48"
+              height="48"
+              draggable="false"
+            />
+          </div>
+          <div class="dock-label">속성</div>
+          @if (propertiesWindowIsActive) {
+            <div class="dock-indicator"></div>
+          }
+        </li>
+      }
+
+
+      @if(windows.length > 0) {
+        <li class="vr"></li>
+      }
+      @for (window of windows; track window.id) {
+        <li
+          class="dock-item"
+          [class.active]="window.isActive"
+          [class.minimized]="window.isMinimized"
+          [class.new]="window.isNew"
+          (click)="focusWindow(window.id)"
+          [title]="window.title"
+        >
+          <div class="dock-icon">
+            <!-- 이미지 아이콘이 있으면 우선 표시 -->
+            @if (window.icon) {
+              <img
+                class="dock-icon-image"
+                [src]="window.icon"
+                [alt]="window.title"
+                width="48"
+                height="48"
+                draggable="false"
+              />
+            }
+
+            <!-- 이미지 아이콘이 없을 때만 기존 SVG 아이콘 표시 -->
+            @if (!window.icon) {
+              <ng-container>
+                <!-- 폴더 아이콘 -->
+                @if (window.type === 'explorer') {
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 64 64"
+                    fill="none"
+                  >
+                    <path
+                      d="M8 16C8 14.8954 8.89543 14 10 14H26.3431C26.9214 14 27.4762 14.2107 27.8787 14.5858L33.1213 19.8284C33.5238 20.2035 34.0786 20.4142 34.6569 20.4142H54C55.1046 20.4142 56 21.3088 56 22.4142V48C56 49.1046 55.1046 50 54 50H10C8.89543 50 8 49.1046 8 48V16Z"
+                      [attr.fill]="window.color"
+                    />
+                  </svg>
+                }
+                <!-- 이미지 아이콘 -->
+                @if (window.type === 'image') {
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 64 64"
+                    fill="none"
+                  >
+                    <rect x="8" y="12" width="48" height="40" rx="4" fill="#8B5CF6" />
+                    <circle cx="20" cy="24" r="4" fill="#fff" />
+                    <path
+                      d="M8 40L20 28L32 40L44 32L56 44V48C56 50.2091 54.2091 52 52 52H12C9.79086 52 8 50.2091 8 48V40Z"
+                      fill="#fff"
+                    />
+                  </svg>
+                }
+                <!-- 오디오 아이콘 -->
+                @if (window.type === 'audio') {
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 64 64"
+                    fill="none"
+                  >
+                    <rect x="8" y="12" width="48" height="40" rx="4" fill="#8B5CF6" />
+                    <path d="M32 24V40" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="28" cy="40" r="5" fill="#fff" />
+                    <path d="M32 24L44 20V28L32 32" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                }
+                <!-- PDF 아이콘 -->
+                @if (window.type === 'pdf') {
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 64 64"
+                    fill="none"
+                  >
+                    <rect x="12" y="8" width="40" height="48" rx="4" fill="#D91E18" />
+                    <text
+                      x="32"
+                      y="38"
+                      text-anchor="middle"
+                      fill="#fff"
+                      font-size="16"
+                      font-weight="bold"
+                    >
+                      PDF
+                    </text>
+                  </svg>
+                }
+                <!-- 기본 아이콘 -->
+                @if (
+                  !window.type ||
+                  window.type === 'default' ||
+                  window.type === 'unsupported'
+                ) {
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 64 64"
+                    fill="none"
+                  >
+                    <rect x="12" y="12" width="40" height="40" rx="8" fill="#999" />
+                  </svg>
+                }
+              </ng-container>
+            }
+          </div>
+          <div class="dock-label">{{ window.title }}</div>
+          @if (window.isActive) {
+            <div class="dock-indicator"></div>
+          }
+        </li>
+      }
+    </ul>
+  </footer>
+
+
+  <!-- 파일 업로드 창 -->
+  @if (uploadWindowOpen) {
+    <app-window
+      class="upload-window"
+      title="파일 업로드"
+      color="#0078d4"
+      [initialX]="uploadWindowPosition.x"
+      [initialY]="uploadWindowPosition.y"
+      [initialWidth]="uploadWindowSize.width"
+      [initialHeight]="uploadWindowSize.height"
+      [minWidth]="480"
+      [minHeight]="280"
+      [showMinimize]="false"
+      [showMaximize]="false"
+      [isActive]="uploadWindowIsActive"
+      [zIndex]="uploadWindowZIndex"
+      (focusEvent)="focusUploadWindow()"
+      (closeEvent)="closeUploadWindow()"
+    >
+      <div class="upload-content">
+        <div class="upload-list">
+          @for (uploadFile of uploadFileList; track $index) {
+            <div
+              class="upload-item"
+              [class.completed]="uploadFile.status === 'completed'"
+              [class.error]="uploadFile.status === 'error'"
+              [class.processing]="uploadFile.status === 'processing'"
+            >
+              <div class="upload-item-header">
+                <div class="upload-item-icon">
+                  @if (uploadFile.status === 'uploading') {
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <circle
+                        cx="8"
+                        cy="8"
+                        r="6"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        fill="none"
+                        class="spinner"
+                      />
+                    </svg>
+                  }
+                  @if (uploadFile.status === 'processing') {
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <circle
+                        cx="8"
+                        cy="8"
+                        r="6"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        fill="none"
+                        class="spinner"
+                      />
+                    </svg>
+                  }
+                  @if (uploadFile.status === 'completed') {
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <path
+                        d="M13 4L6 11L3 8"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  }
+                  @if (uploadFile.status === 'error') {
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <path
+                        d="M8 3V8M8 13H8.01M15 8C15 11.866 11.866 15 8 15C4.13401 15 1 11.866 1 8C1 4.13401 4.13401 1 8 1C11.866 1 15 4.13401 15 8Z"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  }
+                </div>
+                <div class="upload-item-info">
+                  <div class="upload-item-name">{{ uploadFile.file.name }}</div>
+                  <div class="upload-item-size">
+                    {{ formatUploadFileSize(uploadFile.file.size) }}
+                  </div>
+                </div>
+              </div>
+              <div class="upload-item-progress">
+                <!-- 클라이언트→서버 전송 진행률 -->
+                @if (uploadFile.status === 'uploading') {
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill"
+                      [style.width.%]="uploadFile.progress"
+                    ></div>
+                  </div>
+                }
+                <!-- S3 업로드 진행률 -->
+                @if (uploadFile.status === 'processing') {
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill processing"
+                      [style.width.%]="uploadFile.s3Progress"
+                    ></div>
+                  </div>
+                }
+                <div class="progress-text">
+                  @if (uploadFile.status === 'uploading') {
+                    <span>
+                      전송: {{ formatUploadFileSize(uploadFile.loaded) }} / {{ formatUploadFileSize(uploadFile.total) }} ({{ uploadFile.progress }}%)
+                    </span>
+                  }
+                  @if (uploadFile.status === 'processing') {
+                    <span class="processing-text">
+                      S3 업로드: {{ formatUploadFileSize(uploadFile.s3Loaded) }} / {{ formatUploadFileSize(uploadFile.total) }} ({{ uploadFile.s3Progress }}%)
+                    </span>
+                  }
+                  @if (uploadFile.status === 'completed') {
+                    <span class="success-text">
+                      {{ formatUploadFileSize(uploadFile.total) }} - 완료
+                    </span>
+                  }
+                  @if (uploadFile.status === 'error') {
+                    <span class="error-text">
+                      {{ uploadFile.error || '오류' }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </app-window>
+  }
+  <!-- Quick Look 미리보기 패널 (최상위 Layer) -->
+  @if (quickLook.visible && quickLook.file) {
+    <div class="quick-look-panel" 
+         [style.left.px]="quickLook.x" 
+         [style.top.px]="quickLook.y"
+         [style.width.px]="quickLookWidth"
+         [style.height.px]="quickLookHeight">
+      <div class="quick-look-header">
+        <div class="header-left">
+          <span class="file-name">{{ quickLook.file.file_name }}</span>
+        </div>
+        <div class="header-right">
+          <span class="file-type">{{ quickLook.file.extension_info.extension_name }}</span>
+        </div>
+      </div>
+      
+      <div class="quick-look-body">
+        <div class="quick-look-content-wrapper" [class.content-loading]="quickLook.loading">
+          @switch (quickLook.type) {
+            @case ('image') {
+              <img [src]="quickLook.content" class="preview-image" />
+            }
+            @case ('psd') {
+              <img [src]="quickLook.content" class="preview-image" />
+            }
+            @case ('ai') {
+              <div class="preview-pdf">
+                <pdf-viewer
+                  [src]="quickLook.content"
+                  [render-text]="false"
+                  [original-size]="false"
+                  [autoresize]="true"
+                  [fit-to-page]="true"
+                  [show-all]="true"
+                  style="width: 100%; height: 100%"
+                ></pdf-viewer>
+              </div>
+            }
+            @case ('html') {
+              <iframe [srcdoc]="quickLook.content | safe: 'html'" class="preview-iframe"></iframe>
+            }
+            @case ('text') {
+              <pre class="preview-text">{{ quickLook.content }}</pre>
+            }
+            @case ('code') {
+              <pre class="preview-text">{{ quickLook.content }}</pre>
+            }
+            @case ('excel') {
+              <div class="preview-excel" [innerHTML]="quickLook.content | safe: 'html'"></div>
+            }
+            @case ('hwp') {
+              <div class="preview-hwp-iframe">
+                <iframe [src]="'/assets/hwp/viewer.html' | safe: 'resourceUrl'" 
+                        class="preview-iframe"
+                        (load)="loadHwpInQuickLook()"></iframe>
+              </div>
+            }
+            @case ('word') {
+              <div id="quick-look-word-container" class="preview-word"></div>
+            }
+            @case ('folder') {
+              <div class="preview-folder">
+                @if (quickLook.children && quickLook.children.length > 0) {
+                  <div class="folder-grid">
+                    @for (child of quickLook.children; track child.uuid) {
+                      <div class="folder-item">
+                        <div class="item-icon">
+                          @if (child.type === 'folder') {
+                            <icon-folder [color]="'#F6AD55'" />
+                          } @else {
+                            <thumbnail-file [file]="child" />
+                          }
+                        </div>
+                        <div class="item-name">{{ child.file_name }}</div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="empty-folder">
+                    <icon-folder [color]="'#F2F2F2'" style="width: 64px; height: 64px; display: block; margin: 0 auto 16px;" />
+                    <p>폴더가 비어있습니다.</p>
+                  </div>
+                }
+              </div>
+            }
+            @default {
+              <div class="unsupported-preview">
+                <img [src]="quickLook.file.extension_info.img_path" width="64" />
+                <p>미리보기를 지원하지 않는 형식입니다.</p>
+              </div>
+            }
+          }
+        </div>
+
+        @if (quickLook.loading) {
+          <div class="loading-spinner-overlay">
+            <nz-spin nzSimple></nz-spin>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

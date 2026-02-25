@@ -1,0 +1,11 @@
+<div class="audio-player">
+  <div class="audio-icon-area">
+    <img src="assets/backgrounds/audio-player_bg-2.gif" alt="Audio" width="64" height="64">
+  </div>
+  <div class="audio-info">
+    <h3>{{ file?.file_name }}</h3>
+  </div>
+  <div class="audio-controls">
+    <audio controls autoplay [src]="audioSrc" style="width: 100%;"></audio>
+  </div>
+</div>

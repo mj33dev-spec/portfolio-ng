@@ -1,0 +1,103 @@
+:host {
+    display: contents;
+}
+
+.sidebar-container {
+    position: fixed;
+    top: 36px;
+    left: 0;
+    height: calc(100% - 36px);
+    width: 16rem;
+    /* w-64 */
+    background-color: #181818;
+    /* bg-[#181818] */
+    z-index: 30;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    /* shadow-2xl */
+    transform: translateX(-100%);
+
+    @media (min-width: 1024px) {
+        transform: translateX(0);
+    }
+
+    &.open {
+        transform: translateX(0);
+    }
+}
+
+.sidebar-content {
+    padding: 2rem;
+    /* p-8 */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .logo {
+        font-size: 1.875rem;
+        /* text-3xl */
+        line-height: 2.25rem;
+        font-weight: 700;
+        /* font-bold */
+        color: #facc15;
+        /* text-yellow-400 */
+        margin-bottom: 3rem;
+        /* mb-12 */
+    }
+
+    .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li+li {
+            margin-top: 1rem;
+            /* space-y-4 */
+        }
+
+        .nav-link {
+            font-size: 1.125rem;
+            /* text-lg */
+            line-height: 1.75rem;
+            font-weight: 600;
+            /* font-semibold */
+            cursor: pointer;
+            transition: color 0.2s;
+            color: #d1d5db;
+            /* text-gray-300 */
+            text-decoration: none;
+            display: block;
+
+            &:hover {
+                color: #fde047;
+                /* hover:text-yellow-300 */
+            }
+
+            &.active {
+                color: #facc15;
+                /* text-yellow-400 */
+            }
+        }
+    }
+
+    .footer {
+        margin-top: auto;
+        font-size: 0.875rem;
+        /* text-sm */
+        line-height: 1.25rem;
+        color: #6b7280;
+        /* text-gray-500 */
+    }
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* bg-black/50 */
+    z-index: 20;
+
+    @media (min-width: 1024px) {
+        display: none;
+    }
+}

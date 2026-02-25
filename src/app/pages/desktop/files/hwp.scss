@@ -1,0 +1,19 @@
+.hwp-viewer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: #525659;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+
+    .hwp-content {
+        padding: 40px;
+        width: 210mm;
+        min-height: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+}

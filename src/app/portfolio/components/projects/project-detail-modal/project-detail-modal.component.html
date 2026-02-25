@@ -1,0 +1,74 @@
+<div (click)="onBackdropClick($event)" class="modal-backdrop">
+
+  <!-- Outer container -->
+  <div class="modal-content">
+
+    <!-- Sticky Close Button -->
+    <button (click)="closeModal.emit()" class="close-button">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+
+    <!-- Inner scrollable container -->
+    <div class="modal-body">
+      <!-- Image at the top -->
+      <div class="project-image-container">
+        <img [src]="project().platformImages.pc" alt="{{ project().title }} PC mockup">
+      </div>
+
+      <!-- Details below -->
+      <div class="details-grid">
+        <div class="full-width project-header">
+          <h3 class="subtitle">{{ project().description }}</h3>
+          <div class="title-row">
+            <img [src]="project().logo" alt="{{ project().title }} 로고" class="logo">
+            <h2 [style.color]="project().color">{{ project().title }}</h2>
+          </div>
+        </div>
+
+        <div class="detail-item">
+          <h3>서비스</h3>
+          <div class="tags">
+            @for (tag of project().tags; track $index) {
+            <p class="tag"
+              [style.background-color]="project().color">
+              {{ tag }}
+            </p>
+            }
+          </div>
+        </div>
+
+        <div class="detail-item">
+          <h3>작업 범위 및 참여도</h3>
+          <p class="content-text">{{ project().scopeAndContribution }}</p>
+        </div>
+
+        <div class="detail-item">
+          <h3>작업 환경</h3>
+          <p class="content-text">{{ project().developmentEnvironment }}</p>
+        </div>
+
+        <div class="detail-item">
+          <h3>개발 언어</h3>
+          <p class="content-text">{{ project().developmentLanguage }}</p>
+        </div>
+
+        <div class="detail-item">
+          <h3>개발 기간</h3>
+          <p class="content-text">{{ project().workPeriod }}</p>
+        </div>
+
+        <div class="detail-item">
+          <h3>URL</h3>
+          <p class="content-text">{{ project().url }}</p>
+        </div>
+
+        <div class="full-width retrospective">
+          <h3>회고 및 소감문</h3>
+          <p>{{ project().retrospective }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

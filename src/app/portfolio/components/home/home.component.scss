@@ -1,0 +1,138 @@
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: translateY(0px) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.home-section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 1.25rem;
+}
+
+.shapes-container {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  .shape {
+    position: absolute;
+    border-radius: 9999px;
+    opacity: 0.2;
+    animation: float 10s ease-in-out infinite;
+
+    /* Shape colors */
+    &.shape-pink {
+      background-color: #ec4899;
+    }
+
+    &.shape-orange {
+      background-color: #f97316;
+    }
+
+    &.shape-blue {
+      background-color: #3b82f6;
+    }
+
+    &.shape-green {
+      background-color: #4ade80;
+    }
+  }
+}
+
+.content-container {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  animation: fadeInUp 1s ease-out forwards;
+
+  .title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 4rem;
+
+    @media (min-width: 768px) {
+      font-size: 4.5rem;
+    }
+
+    .highlight-gray {
+      color: #d1d5db;
+    }
+
+    .highlight-yellow {
+      color: #facc15;
+    }
+
+    .highlight-white {
+      color: white;
+    }
+  }
+
+  .description {
+    font-size: 1.25rem;
+    color: #d1d5db;
+    max-width: 48rem;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media (min-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  animation: bounce 1s infinite;
+
+  .arrow-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+}

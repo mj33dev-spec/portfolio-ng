@@ -1,0 +1,35 @@
+<div class="inputbox-overlay">
+  <app-window
+    [title]="title"
+    [initialWidth]="420"
+    [showMinimize]="false"
+    [showMaximize]="false"
+    [showClose]="true"
+    [resizable]="false"
+    [showIcon]="false"
+    [autoHeight]="true"
+    [zIndex]="10000"
+    [isActive]="true"
+    (closeEvent)="onClose()"
+  >
+    <div class="inputbox-container">
+      <div class="inputbox-top">
+        <div class="inputbox-message">{{ message }}</div>
+        <div class="inputbox-buttons">
+          <button class="inputbox-btn primary" (click)="onOk()">확인</button>
+          <button *ngIf="type === 'okCancel'" class="inputbox-btn" (click)="onCancel()">취소</button>
+        </div>
+      </div>
+      <div class="inputbox-bottom">
+        <input 
+          type="text" 
+          class="inputbox-field" 
+          [(ngModel)]="inputValue" 
+          (keyup.enter)="onOk()" 
+          (keyup.escape)="onCancel()"
+          autofocus
+        >
+      </div>
+    </div>
+  </app-window>
+</div>

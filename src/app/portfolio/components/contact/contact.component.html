@@ -1,0 +1,39 @@
+<section class="contact-section">
+  <div class="content-container">
+    <h2>연락하기</h2>
+    <p class="description">저는 현재 프리랜서 작업을 할 수 있습니다. 생각하고 있는 프로젝트가 있으신가요? 이야기 나눠봐요.</p>
+
+    <div class="contact-card">
+      <form [formGroup]="contactForm" (ngSubmit)="submitForm()">
+        <div class="form-grid">
+          <input formControlName="name" type="text" placeholder="이름" class="form-input">
+          <input formControlName="company" type="text" placeholder="회사명" class="form-input">
+        </div>
+        <div class="form-group">
+          <textarea formControlName="message" placeholder="메시지" rows="6" class="form-input"></textarea>
+        </div>
+        <button type="submit" [disabled]="contactForm.invalid" class="submit-btn">
+          이메일 준비
+        </button>
+      </form>
+
+      @if (mailtoLink()) {
+        <div class="success-message">
+          <p>이메일이 준비되었습니다! 아래 링크를 클릭하여 메일 클라이언트를 여세요.</p>
+          <a [href]="mailtoLink()" class="mail-link">
+            이메일 보내기
+          </a>
+        </div>
+      }
+    </div>
+
+    <div class="social-links">
+      <p>또는 소셜 미디어에서 저를 찾아보세요:</p>
+      <div class="links">
+        <a href="#">GitHub</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">Twitter</a>
+      </div>
+    </div>
+  </div>
+</section>

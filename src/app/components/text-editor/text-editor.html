@@ -1,0 +1,128 @@
+<div class="text-editor">
+  <!-- 메모장 메뉴바 -->
+  <div class="menubar">
+    <div class="menu-item-group">
+      <!-- 파일 메뉴 -->
+      <div class="menu-item-wrapper">
+        <div 
+          class="menu-item" 
+          [class.active]="window.showFileMenu"
+          (click)="toggleFileMenu($event)"
+        >
+          파일(F)
+        </div>
+        <app-dropdown [isOpen]="window.showFileMenu || false" (close)="window.showFileMenu = false">
+          <app-dropdown-item label="저장(S)" shortcut="Ctrl+S" (click)="saveTextFile()"></app-dropdown-item>
+          <app-dropdown-item label="다른 이름으로 저장(A)..." shortcut="Ctrl+Shift+S" (click)="saveAsTextFile()"></app-dropdown-item>
+          <app-dropdown-item [isDivider]="true"></app-dropdown-item>
+          <app-dropdown-item label="끝내기(X)" (click)="closeWindow()"></app-dropdown-item>
+        </app-dropdown>
+      </div>
+
+      <!-- 편집 메뉴 -->
+      <div class="menu-item-wrapper">
+        <div 
+          class="menu-item" 
+          [class.active]="window.showEditMenu"
+          (click)="toggleEditMenu($event)"
+        >
+          편집(E)
+        </div>
+        <app-dropdown [isOpen]="window.showEditMenu || false" (close)="window.showEditMenu = false">
+          <app-dropdown-item label="실행 취소(U)" shortcut="Ctrl+Z" (click)="executeEditAction('undo')"></app-dropdown-item>
+          <app-dropdown-item [isDivider]="true"></app-dropdown-item>
+          <app-dropdown-item label="잘라내기(T)" shortcut="Ctrl+X" (click)="executeEditAction('cut')"></app-dropdown-item>
+          <app-dropdown-item label="복사(C)" shortcut="Ctrl+C" (click)="executeEditAction('copy')"></app-dropdown-item>
+          <app-dropdown-item label="붙여넣기(P)" shortcut="Ctrl+V" (click)="executeEditAction('paste')"></app-dropdown-item>
+          <app-dropdown-item label="삭제(L)" shortcut="Del" (click)="executeEditAction('delete')"></app-dropdown-item>
+        </app-dropdown>
+      </div>
+
+      <!-- 서식 메뉴 -->
+      <div class="menu-item-wrapper">
+        <div 
+          class="menu-item" 
+          [class.active]="window.showFormatMenu"
+          (click)="toggleFormatMenu($event)"
+        >
+          서식(O)
+        </div>
+        <app-dropdown [isOpen]="window.showFormatMenu || false" (close)="window.showFormatMenu = false">
+          <app-dropdown-item 
+            label="자동 줄 바꿈(W)" 
+            [checked]="window.wordWrap || false"
+            (click)="toggleWordWrap()"
+          ></app-dropdown-item>
+          <app-dropdown-item label="글꼴(F)..." (click)="openFontDialog()"></app-dropdown-item>
+        </app-dropdown>
+      </div>
+
+      <!-- 보기 메뉴 -->
+      <div class="menu-item-wrapper">
+        <div 
+          class="menu-item" 
+          [class.active]="window.showViewMenu"
+          (click)="toggleViewMenu($event)"
+        >
+          보기(V)
+        </div>
+        <app-dropdown [isOpen]="window.showViewMenu || false" (close)="window.showViewMenu = false">
+          <app-dropdown-item label="확대(I)" shortcut="Ctrl+더하기" (click)="zoomIn()"></app-dropdown-item>
+          <app-dropdown-item label="축소(O)" shortcut="Ctrl+빼기" (click)="zoomOut()"></app-dropdown-item>
+          <app-dropdown-item label="확대/축소 기본값 복원" shortcut="Ctrl+0" (click)="resetZoom()"></app-dropdown-item>
+          <app-dropdown-item [isDivider]="true"></app-dropdown-item>
+          <app-dropdown-item 
+            label="상태 표시줄(S)" 
+            [checked]="window.showStatusBar || false"
+            (click)="toggleStatusBar()"
+          ></app-dropdown-item>
+        </app-dropdown>
+      </div>
+
+      <!-- 도움말 메뉴 -->
+      <div class="menu-item-wrapper">
+        <div 
+          class="menu-item" 
+          [class.active]="window.showHelpMenu"
+          (click)="toggleHelpMenu($event)"
+        >
+          도움말(H)
+        </div>
+        <app-dropdown [isOpen]="window.showHelpMenu || false" (close)="window.showHelpMenu = false">
+          <app-dropdown-item label="도움말 보기(H)"></app-dropdown-item>
+          <app-dropdown-item [isDivider]="true"></app-dropdown-item>
+          <app-dropdown-item label="메모장 정보(A)" (click)="openAboutDialog()"></app-dropdown-item>
+        </app-dropdown>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 텍스트 영역 -->
+  <textarea
+    [id]="'textarea-' + window.id"
+    class="text-editor-content"
+    [(ngModel)]="window.file!.extension_info.text"
+    (ngModelChange)="onTextChange()"
+    (click)="updateCursorPos($event)"
+    (keyup)="updateCursorPos($event)"
+    (focus)="updateCursorPos($event)"
+    [class.word-wrap]="window.wordWrap"
+    [ngStyle]="getFontStyles()"
+    placeholder=""
+  ></textarea>
+
+  <!-- 상태 표시줄 -->
+  @if (window.showStatusBar) {
+    <div class="status-bar">
+      <div class="status-item main-gap"></div>
+      <div class="status-item">
+        Ln {{ window.cursorPos?.ln || 1 }}, Col {{ window.cursorPos?.col || 1 }}
+      </div>
+      <div class="status-item">
+        {{ (window.zoomLevel || 1.0) * 100 | number:'1.0-0' }}%
+      </div>
+      <div class="status-item">Windows (CRLF)</div>
+      <div class="status-item">UTF-8</div>
+    </div>
+  }
+</div>

@@ -1,0 +1,20 @@
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
+
+import { routes } from './app.routes';
+import { registerLocaleData } from '@angular/common';
+import localeKo from '@angular/common/locales/ko';
+
+registerLocaleData(localeKo);
+
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideAnimations(),
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
+};

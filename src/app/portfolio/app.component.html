@@ -1,0 +1,25 @@
+<main class="app-main">
+  <app-sidebar 
+    [isOpen]="isSidebarOpen()"
+    [sections]="sections"
+    [activeSectionId]="activeSection()"
+    (sectionNavigate)="scrollToSection($event)"
+    (closeSidebar)="toggleSidebar()">
+  </app-sidebar>
+
+  <button (click)="toggleSidebar()" class="sidebar-toggle">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+  </button>
+
+  <div #mainContainer class="scroll-container">
+    <app-home id="home"></app-home>
+    <app-projects 
+      id="projects" 
+      (scrollThrough)="handleScrollThrough($event)"
+      [isPageScrolling]="isScrolling()">
+    </app-projects>
+    <app-about id="about"></app-about>
+    <app-board id="board"></app-board>
+    <app-contact id="contact"></app-contact>
+  </div>
+</main>
