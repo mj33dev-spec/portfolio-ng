@@ -1,27 +1,18 @@
 <div class="about-overlay">
-    <app-window
-        [title]="'메모장 정보'"
-        [initialWidth]="460"
-        [autoHeight]="true"
-        [showMinimize]="false"
-        [showMaximize]="false"
-        [resizable]="false"
-        [color]="'#0078d4'"
-        [zIndex]="99999"
-        [isActive]="true"
-        (closeEvent)="onOk()"
-    >
+    <app-window [title]="'메모장 정보'" [initialWidth]="460" [autoHeight]="true" [showMinimize]="false"
+        [showMaximize]="false" [resizable]="false" [color]="'#0078d4'" [zIndex]="99999" [isActive]="true"
+        (closeEvent)="onOk()">
         <div class="about-container">
-                
+
             <div class="content-area">
                 <div class="info-row main-info">
                     <div class="notepad-icon-placeholder">
-                        <img src="/assets/common/login-logo.png" alt="Keepr">
+                        <img src="/assets/common/login-logo.png" alt="Portfolio">
                     </div>
                     <div class="info-text">
                         <p class="brand">메모장</p>
                         <p class="version">버전 v1.0.0</p>
-                        <p class="copyright">© 2026 Keepr. All rights reserved.</p>
+                        <p class="copyright">© 2026 Portfolio. All rights reserved.</p>
                     </div>
                 </div>
             </div>
