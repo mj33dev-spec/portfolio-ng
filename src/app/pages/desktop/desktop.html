@@ -548,204 +548,233 @@
   <!-- 활성 폴더 Dock (항상 표시) -->
   <footer 
     *ngIf="mode === 'normal'"
-    class="dock-bar"
+    class="dock-bar win-style"
   >
-    <ul class="dock-container">
-      <!-- 사이드바 네비게이션 아이템 -->
-      @for (item of dockItems; track item.label) {
-        <li
-          class="dock-item"
-          (click)="handleDockClick(item)"
-          [title]="item.label"
-        >
-          <div class="dock-icon">
-            <img
-              class="dock-icon-image"
-              [src]="item.icon"
-              [alt]="item.label"
-              width="48"
-              height="48"
-              draggable="false"
-            />
-          </div>
-          <div class="dock-label">{{ item.label }}</div>
-        </li>
-      }
+    <div class="dock-inner">
+      <div class="dock-left">
+        <!-- <button id="icon">
+          <img src="/assets/icons/logo.svg" alt="">
+        </button> -->
+      </div>
 
-      @if (uploadWindowOpen) {
-        <li
-          class="dock-item"
-          [class.active]="uploadWindowIsActive"
-          (click)="focusUploadWindow()"
-          title="파일 업로드"
-        >
-          <div class="dock-icon">
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 64 64"
-              fill="none"
-              style="color: #0078d4"
-            >
-              <path
-                d="M32 12V52M20 24L32 12L44 24"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </div>
-          <div class="dock-label">파일 업로드</div>
-          @if (uploadWindowIsActive) {
-            <div class="dock-indicator"></div>
-          }
-        </li>
-      }
-
-      @if (propertiesOpen && propertiesTarget) {
-        <li
-          class="dock-item"
-          [class.active]="propertiesWindowIsActive"
-          (click)="focusPropertiesWindow()"
-          [title]="propertiesTarget.file_name + ' 속성'"
-        >
-          <div class="dock-icon">
-            <img
-              class="dock-icon-image"
-              src="/assets/icons/files/svg/설정.svg"
-              alt="속성"
-              width="48"
-              height="48"
-              draggable="false"
-            />
-          </div>
-          <div class="dock-label">속성</div>
-          @if (propertiesWindowIsActive) {
-            <div class="dock-indicator"></div>
-          }
-        </li>
-      }
-
-
-      @if(windows.length > 0) {
-        <li class="vr"></li>
-      }
-      @for (window of windows; track window.id) {
-        <li
-          class="dock-item"
-          [class.active]="window.isActive"
-          [class.minimized]="window.isMinimized"
-          [class.new]="window.isNew"
-          (click)="focusWindow(window.id)"
-          [title]="window.title"
-        >
-          <div class="dock-icon">
-            <!-- 이미지 아이콘이 있으면 우선 표시 -->
-            @if (window.icon) {
+      <ul class="dock-container">
+        <!-- 사이드바 네비게이션 아이템 -->
+        @for (item of dockItems; track item.label) {
+          <li
+            class="dock-item"
+            (click)="handleDockClick(item)"
+            [title]="item.label"
+          >
+            <div class="dock-icon">
               <img
                 class="dock-icon-image"
-                [src]="window.icon"
-                [alt]="window.title"
+                [src]="item.icon"
+                [alt]="item.label"
                 width="48"
                 height="48"
                 draggable="false"
               />
-            }
+            </div>
+            <div class="dock-label">{{ item.label }}</div>
+          </li>
+        }
 
-            <!-- 이미지 아이콘이 없을 때만 기존 SVG 아이콘 표시 -->
-            @if (!window.icon) {
-              <ng-container>
-                <!-- 폴더 아이콘 -->
-                @if (window.type === 'explorer') {
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                  >
-                    <path
-                      d="M8 16C8 14.8954 8.89543 14 10 14H26.3431C26.9214 14 27.4762 14.2107 27.8787 14.5858L33.1213 19.8284C33.5238 20.2035 34.0786 20.4142 34.6569 20.4142H54C55.1046 20.4142 56 21.3088 56 22.4142V48C56 49.1046 55.1046 50 54 50H10C8.89543 50 8 49.1046 8 48V16Z"
-                      [attr.fill]="window.color"
-                    />
-                  </svg>
-                }
-                <!-- 이미지 아이콘 -->
-                @if (window.type === 'image') {
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                  >
-                    <rect x="8" y="12" width="48" height="40" rx="4" fill="#8B5CF6" />
-                    <circle cx="20" cy="24" r="4" fill="#fff" />
-                    <path
-                      d="M8 40L20 28L32 40L44 32L56 44V48C56 50.2091 54.2091 52 52 52H12C9.79086 52 8 50.2091 8 48V40Z"
-                      fill="#fff"
-                    />
-                  </svg>
-                }
-                <!-- 오디오 아이콘 -->
-                @if (window.type === 'audio') {
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                  >
-                    <rect x="8" y="12" width="48" height="40" rx="4" fill="#8B5CF6" />
-                    <path d="M32 24V40" stroke="#fff" stroke-width="3" stroke-linecap="round" />
-                    <circle cx="28" cy="40" r="5" fill="#fff" />
-                    <path d="M32 24L44 20V28L32 32" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                }
-                <!-- PDF 아이콘 -->
-                @if (window.type === 'pdf') {
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                  >
-                    <rect x="12" y="8" width="40" height="48" rx="4" fill="#D91E18" />
-                    <text
-                      x="32"
-                      y="38"
-                      text-anchor="middle"
-                      fill="#fff"
-                      font-size="16"
-                      font-weight="bold"
-                    >
-                      PDF
-                    </text>
-                  </svg>
-                }
-                <!-- 기본 아이콘 -->
-                @if (
-                  !window.type ||
-                  window.type === 'default' ||
-                  window.type === 'unsupported'
-                ) {
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                  >
-                    <rect x="12" y="12" width="40" height="40" rx="8" fill="#999" />
-                  </svg>
-                }
-              </ng-container>
+        @if (uploadWindowOpen) {
+          <li
+            class="dock-item"
+            [class.active]="uploadWindowIsActive"
+            (click)="focusUploadWindow()"
+            title="파일 업로드"
+          >
+            <div class="dock-icon">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 64 64"
+                fill="none"
+                style="color: #0078d4"
+              >
+                <path
+                  d="M32 12V52M20 24L32 12L44 24"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="dock-label">파일 업로드</div>
+            @if (uploadWindowIsActive) {
+              <div class="dock-indicator"></div>
             }
+          </li>
+        }
+
+        @if (propertiesOpen && propertiesTarget) {
+          <li
+            class="dock-item"
+            [class.active]="propertiesWindowIsActive"
+            (click)="focusPropertiesWindow()"
+            [title]="propertiesTarget.file_name + ' 속성'"
+          >
+            <div class="dock-icon">
+              <img
+                class="dock-icon-image"
+                src="/assets/icons/files/svg/설정.svg"
+                alt="속성"
+                width="48"
+                height="48"
+                draggable="false"
+              />
+            </div>
+            <div class="dock-label">속성</div>
+            @if (propertiesWindowIsActive) {
+              <div class="dock-indicator"></div>
+            }
+          </li>
+        }
+
+
+        @if(windows.length > 0) {
+          <li class="vr"></li>
+        }
+        @for (window of windows; track window.id) {
+          <li
+            class="dock-item"
+            [class.active]="window.isActive"
+            [class.minimized]="window.isMinimized"
+            [class.new]="window.isNew"
+            (click)="focusWindow(window.id)"
+            [title]="window.title"
+          >
+            <div class="dock-icon">
+              <!-- 이미지 아이콘이 있으면 우선 표시 -->
+              @if (window.icon) {
+                <img
+                  class="dock-icon-image"
+                  [src]="window.icon"
+                  [alt]="window.title"
+                  width="48"
+                  height="48"
+                  draggable="false"
+                />
+              }
+
+              <!-- 이미지 아이콘이 없을 때만 기존 SVG 아이콘 표시 -->
+              @if (!window.icon) {
+                <ng-container>
+                  <!-- 폴더 아이콘 -->
+                  @if (window.type === 'explorer') {
+                    <svg
+                      width="48"
+                      height="48"
+                      viewBox="0 0 64 64"
+                      fill="none"
+                    >
+                      <path
+                        d="M8 16C8 14.8954 8.89543 14 10 14H26.3431C26.9214 14 27.4762 14.2107 27.8787 14.5858L33.1213 19.8284C33.5238 20.2035 34.0786 20.4142 34.6569 20.4142H54C55.1046 20.4142 56 21.3088 56 22.4142V48C56 49.1046 55.1046 50 54 50H10C8.89543 50 8 49.1046 8 48V16Z"
+                        [attr.fill]="window.color"
+                      />
+                    </svg>
+                  }
+                  <!-- 이미지 아이콘 -->
+                  @if (window.type === 'image') {
+                    <svg
+                      width="48"
+                      height="48"
+                      viewBox="0 0 64 64"
+                      fill="none"
+                    >
+                      <rect x="8" y="12" width="48" height="40" rx="4" fill="#8B5CF6" />
+                      <circle cx="20" cy="24" r="4" fill="#fff" />
+                      <path
+                        d="M8 40L20 28L32 40L44 32L56 44V48C56 50.2091 54.2091 52 52 52H12C9.79086 52 8 50.2091 8 48V40Z"
+                        fill="#fff"
+                      />
+                    </svg>
+                  }
+                  <!-- 오디오 아이콘 -->
+                  @if (window.type === 'audio') {
+                    <svg
+                      width="48"
+                      height="48"
+                      viewBox="0 0 64 64"
+                      fill="none"
+                    >
+                      <rect x="8" y="12" width="48" height="40" rx="4" fill="#8B5CF6" />
+                      <path d="M32 24V40" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+                      <circle cx="28" cy="40" r="5" fill="#fff" />
+                      <path d="M32 24L44 20V28L32 32" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  }
+                  <!-- PDF 아이콘 -->
+                  @if (window.type === 'pdf') {
+                    <svg
+                      width="48"
+                      height="48"
+                      viewBox="0 0 64 64"
+                      fill="none"
+                    >
+                      <rect x="12" y="8" width="40" height="48" rx="4" fill="#D91E18" />
+                      <text
+                        x="32"
+                        y="38"
+                        text-anchor="middle"
+                        fill="#fff"
+                        font-size="16"
+                        font-weight="bold"
+                      >
+                        PDF
+                      </text>
+                    </svg>
+                  }
+                  <!-- 기본 아이콘 -->
+                  @if (
+                    !window.type ||
+                    window.type === 'default' ||
+                    window.type === 'unsupported'
+                  ) {
+                    <svg
+                      width="48"
+                      height="48"
+                      viewBox="0 0 64 64"
+                      fill="none"
+                    >
+                      <rect x="12" y="12" width="40" height="40" rx="8" fill="#999" />
+                    </svg>
+                  }
+                </ng-container>
+              }
+            </div>
+            <div class="dock-label">{{ window.title }}</div>
+            @if (window.isActive) {
+              <div class="dock-indicator"></div>
+            }
+          </li>
+        }
+      </ul>
+
+      <div class="dock-right">
+        <div class="system-tray">
+          <div class="tray-icon" title="숨겨진 아이콘">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
           </div>
-          <div class="dock-label">{{ window.title }}</div>
-          @if (window.isActive) {
-            <div class="dock-indicator"></div>
-          }
-        </li>
-      }
-    </ul>
+          <div class="tray-icon" title="인터넷 연결됨">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+          </div>
+          <div class="tray-icon" title="스피커">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          </div>
+          <div class="tray-icon" title="배터리">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"></rect><line x1="23" y1="13" x2="23" y2="11"></line></svg>
+          </div>
+        </div>
+        <div class="tray-clock">
+          <div class="time">{{ currentTime | date:'h:mm a' }}</div>
+          <div class="date">{{ currentTime | date:'yyyy-MM-dd' }}</div>
+        </div>
+      </div>
+    </div>
   </footer>
 
 

@@ -164,8 +164,24 @@ export class WindowService {
    * 모든 창 최소화
    */
   minimizeAllWindows() {
-    const updated = this.windows.map(w => ({ ...w, isMinimized: true, isActive: false }));
+    let updated = this.windows.map(w => {
+      if (!w.isMinimized) {
+        return { ...w, isMinimizing: true, isActive: false };
+      }
+      return w;
+    });
     this.windowsSubject.next(updated);
+
+    setTimeout(() => {
+      const current = this.windowsSubject.value;
+      const finalUpdate = current.map(w => {
+        if (w.isMinimizing) {
+          return { ...w, isMinimizing: false, isMinimized: true };
+        }
+        return w;
+      });
+      this.windowsSubject.next(finalUpdate);
+    }, 500);
   }
 
   /**

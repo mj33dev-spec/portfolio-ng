@@ -1,3 +1,4 @@
+@use '../../styles/variable' as *;
 $desktop-padding: 4px;
 $desktop-radius: 8px;
 
@@ -805,36 +806,65 @@ textarea {
     word-break: break-all;
   }
 
-  // macOS 스타일 독 바
+  // 윈도우 스타일 플로팅 작업 표시줄
   .dock-bar {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
-    pointer-events: none;
-
-    .dock-container {
+    pointer-events: auto;
+    width: 90%;
+    max-width: 1200px;
+    
+    .dock-inner {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 20px;
-      list-style: none; // 리스트 스타일 제거
-      margin: 0; // 마진 리셋
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(30px) saturate(180%);
-      -webkit-backdrop-filter: blur(30px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 12px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.2);
-      pointer-events: auto;
-      position: relative;
+      gap: 4px;
+      padding: 6px 12px;
+      @include glassmorphism(0.55, 30px, 0.5);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
 
+    .dock-left {
+      display: flex;
+      justify-content: flex-start;
+      gap: 4px;
+      button#icon {
+        padding: 0;
+        padding: 6px;
+        width: 40px; height: 40px;
+        min-height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        overflow: hidden;
+        background: none;
+        
+        @include glass-button-hover();
+
+        > img {
+          // padding: 4px;
+          width: 100%; height: 100%;
+        }
+      }
+    }
+
+    .dock-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      
       .vr {
         display: block;
         width: 1px;
-        height: 40px;
-        border-radius: 1px;
+        height: 24px;
+        margin: 0 4px;
         background-color: #e1e8ed77;
       }
     }
@@ -845,9 +875,10 @@ textarea {
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      padding: 4px;
-      list-style: none; // 리스트 스타일 제거
+      transition: all 0.2s ease;
+      padding: 6px 8px;
+      border-radius: 8px;
+      @include glass-button-hover();
 
       &.new {
         animation: appearAni 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -858,7 +889,6 @@ textarea {
           opacity: 0;
           transform: translateY(10px) scale(0.8);
         }
-
         to {
           opacity: 1;
           transform: translateY(0) scale(1);
@@ -866,10 +896,6 @@ textarea {
       }
 
       &:hover {
-        .dock-icon {
-          transform: translateY(-8px) scale(1.15);
-        }
-
         .dock-label {
           opacity: 1;
           transform: translateY(-4px);
@@ -877,37 +903,43 @@ textarea {
       }
 
       &.minimized {
-        opacity: 0.5;
+        opacity: 0.6;
       }
 
       &.active {
         .dock-indicator {
           opacity: 1;
+          width: 16px; // 활성화 시 넓어짐
+          background-color: #555;
         }
       }
     }
 
     .dock-icon {
-      width: 48px;
-      height: 48px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
-
+      transition: all 0.2s ease;
+      
       .dock-icon-image {
-        padding: 4px;
         width: 100%;
         height: 100%;
         object-fit: contain;
+      }
+      
+      // 내부 SVG 사이즈 조정
+      svg {
+        width: 28px;
+        height: 28px;
       }
     }
 
     .dock-label {
       position: absolute;
       bottom: 100%;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       padding: 4px 8px;
       background: rgba(0, 0, 0, 0.75);
       color: #fff;
@@ -916,19 +948,82 @@ textarea {
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
       transform: translateY(0);
     }
 
     .dock-indicator {
       position: absolute;
-      bottom: -4px;
-      width: 4px;
-      height: 4px;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 50%;
-      opacity: 0;
-      transition: opacity 0.2s ease;
+      bottom: 2px;
+      width: 6px;
+      height: 3px;
+      background: #aaa;
+      border-radius: 3px;
+      opacity: 1; // 닫힌 상태에서도 짧게 표시되도록 하려면 opacity 1, 아니면 0. 일단 0으로.
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    // 비활성 윈도우 인디케이터 살짝 표시 (옵션)
+    .dock-item:not(.active) .dock-indicator {
+      opacity: 0; // 창이 닫혀있으면 안보임
+    }
+
+    .dock-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      
+      .system-tray {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.65);
+        }
+        
+        .tray-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 20px;
+          color: #222;
+        }
+      }
+      
+      .tray-clock {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 4px 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        color: #222;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.65);
+        }
+        
+        .time {
+          font-size: 12px;
+          font-weight: 500;
+          line-height: 1.2;
+        }
+        
+        .date {
+          font-size: 11px;
+          line-height: 1.2;
+          color: #444;
+        }
+      }
     }
   }
 

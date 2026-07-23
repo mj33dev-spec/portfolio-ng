@@ -88,9 +88,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
    */
   dockItems = [
     {
-      route: '/drive',
-      icon: '/assets/icons/primary/png/exec.png',
-      label: '대시보드',
+      route: '/',
+      // icon: '/assets/icons/primary/png/exec.png',
+      icon: '/assets/icons/logo.svg',
+      label: '바탕화면',
     },
   ];
 
@@ -111,9 +112,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   }
 
   handleDockClick(item: any) {
-    if (item.label === '데스크탑' && this.router.url === '/drive') {
+    if (item.label === '바탕화면' || item.label === '데스크탑') {
       this.minimizeAllWindows();
-      return;
     }
     this.navigateTo(item.route);
   }
