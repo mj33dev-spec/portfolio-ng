@@ -40,9 +40,9 @@
         *ngIf="showMaximize"
         class="title-bar-button maximize"
         (click)="maximize()"
-        title="최대화"
+        [title]="isMaximized ? '이전 크기로 복원' : '최대화'"
       >
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <svg *ngIf="!isMaximized" width="12" height="12" viewBox="0 0 12 12" fill="none">
           <rect
             x="1"
             y="1"
@@ -52,6 +52,10 @@
             stroke-width="1.5"
             fill="none"
           />
+        </svg>
+        <svg *ngIf="isMaximized" width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M3.5 3.5V1.5H10.5V8.5H8.5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+          <rect x="1.5" y="3.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/>
         </svg>
       </button>
       <button
