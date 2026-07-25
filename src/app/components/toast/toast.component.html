@@ -2,23 +2,23 @@
   <div class="toast-icon">
     <!-- Success Icon -->
     @if (type === 'success') {
-      <img src="/assets/icons/primary/svg/ic-success.svg" alt="성공">
+    <img src="/assets/icons/system/ic-success.svg" alt="성공">
     }
     <!-- Info Icon -->
     @if (type === 'info') {
-      <img src="/assets/icons/primary/svg/ic-info.svg" alt="정보">
+    <img src="/assets/icons/system/ic-info.svg" alt="정보">
     }
     <!-- Warn Icon -->
     @if (type === 'warn') {
-      <img src="/assets/icons/primary/svg/ic-warn.svg" alt="경고">
+    <img src="/assets/icons/system/ic-warn.svg" alt="경고">
     }
     <!-- Error Icon -->
     @if (type === 'error') {
-      <img src="/assets/icons/primary/svg/ic-error.svg" alt="에러">
+    <img src="/assets/icons/system/ic-error.svg" alt="에러">
     }
   </div>
   <div class="toast-message">{{ message }}</div>
   <button class="toast-close" (click)="close()">
-    <img src="/assets/icons/primary/svg/ic-close.svg" alt="창닫기">
+    <img src="/assets/icons/system/ic-close.svg" alt="창닫기">
   </button>
 </div>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Abstract_File } from '../directory/directory-model';
 import { ApiService } from '../../core/services/api.service';
 import { first } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { Model_Extension_IMAGE, Model_Extension_MP3 } from '../directory/file-ex
   templateUrl: './thumbnail-file.html',
   styleUrl: './thumbnail-file.scss'
 })
-export class ThumbnailFile implements OnInit, OnDestroy {
+export class ThumbnailFile implements OnInit, OnChanges, OnDestroy {
   @Input() file: Abstract_File | null = null;
   
   fileType: string = '';
@@ -20,20 +20,28 @@ export class ThumbnailFile implements OnInit, OnDestroy {
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {
+    this.updateImageSrc();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['file']) {
+      this.updateImageSrc();
+    }
+  }
+
+  private updateImageSrc() {
     if (
       this.file?.extension_info instanceof Model_Extension_IMAGE
     ) {
       this.fileType = 'image';
-      // this.imageSrc = 'assets/icons/primary/png/image.png';
       this.loadImageFromProxyUrl();
     } else if(this.file?.extension_info instanceof Model_Extension_MP3) {
       this.fileType = 'audio';
-      this.imageSrc = 'assets/icons/primary/png/audio.png';
+      this.imageSrc = 'assets/icons/files/audio.png';
     } else {
       this.fileType = 'file';
-      this.imageSrc = 'assets/icons/primary/png/document.png';
+      this.imageSrc = this.file?.extension_info?.img_path || 'assets/icons/files/others.svg';
     }
-
   }
 
   ngOnDestroy() {

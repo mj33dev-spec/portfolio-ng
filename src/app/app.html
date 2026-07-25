@@ -1,1 +1,14 @@
+<div *ngIf="isLoading()" class="loading-overlay" [class.fade-out]="isFading()">
+    <div class="loading-content">
+        <div class="logo-wrapper">
+            <!-- 프리미엄 로고 효과를 위한 공간 -->
+            <img src="/assets/common/login-logo.png" alt="Portfolio Logo" class="loading-logo">
+        </div>
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+        <p class="loading-text">Portfolio Loading...</p>
+    </div>
+</div>
+
 <router-outlet />

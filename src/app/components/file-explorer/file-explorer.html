@@ -81,7 +81,7 @@
                 </svg>
               </span>
               <div class="folder-icon">
-                <icon-folder [color]="'#F6AD55'" />
+                <img src="assets/icons/files/folder.png" alt="folder" width="20" height="20" style="object-fit: contain;" />
               </div>
               <span class="folder-name">{{ folder.file_name }}</span>
             </div>
@@ -128,7 +128,7 @@
             <div class="thumbnail-file">  
               @switch(file.type) { 
                 @case('folder') {
-                  <icon-folder [color]="'#F6AD55'" />
+                  <img src="assets/icons/files/folder.png" alt="folder" style="width: 40px; height: 40px; object-fit: contain;" />
                 } 
                 @case('file') {
                   <thumbnail-file [file]="file" (mouseenter)="onFileMouseEnter(file)" (mouseleave)="onFileMouseLeave(file)" />

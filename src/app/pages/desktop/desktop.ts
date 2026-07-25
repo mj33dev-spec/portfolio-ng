@@ -2007,7 +2007,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       showStatusBar: true,
       cursorPos: { ln: 1, col: 1 },
       zIndex: this.getNextZIndex(),
-      icon: '/assets/icons/primary/png/text.png',
+      icon: file.extension_info.img_path,
     });
   }
 
@@ -2043,6 +2043,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         width: this.getDefaultWindowWidth(),
         height: this.getDefaultWindowHeight(),
         zIndex: this.getNextZIndex(),
+        icon: file.extension_info.img_path,
       });
       return;
     }
@@ -2056,7 +2057,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         color: '#FBBF24',
         type: 'portfolio',
         file: file,
-        icon: '/assets/icons/files/png/html.png',
+        icon: file.extension_info.img_path,
         x: 100,
         y: 50,
         width: 1200,
@@ -2079,7 +2080,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           color,
           type: 'image',
           file,
-          icon: '/assets/icons/primary/png/image.png',
+          icon,
           x: 200 + Math.random() * 200,
           y: 100 + Math.random() * 200,
           width: this.getDefaultWindowWidth(),
@@ -2190,7 +2191,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
             color: viewType === 'html' ? '#E44D26' : '#34495e',
             type: viewType as any,
             file: initialClonedFile,
-            icon: viewType === 'html' ? '/assets/icons/files/png/빈문서.png' : icon,
+            icon,
             x: 200 + Math.random() * 200,
             y: 100 + Math.random() * 200,
             width: this.getDefaultWindowWidth(),
@@ -2264,6 +2265,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           color: '#D91E18',
           type: 'pdf',
           file,
+          icon,
           x: 200 + Math.random() * 200,
           y: 100 + Math.random() * 200,
           width: this.getDefaultWindowWidth(),
@@ -2279,7 +2281,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           color: '#8B5CF6',
           type: 'audio',
           file,
-          icon: '/assets/icons/primary/png/audio.png',
+          icon,
           x: 200 + Math.random() * 200,
           y: 100 + Math.random() * 200,
           width: 400,
@@ -2295,6 +2297,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           color: '#999',
           type: 'unsupported',
           file,
+          icon,
           x: 200 + Math.random() * 200,
           y: 100 + Math.random() * 200,
           width: this.getDefaultWindowWidth(),

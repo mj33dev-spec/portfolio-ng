@@ -40,35 +40,92 @@ export abstract class Abstract_Extension {
   }
 }
 
-export class Model_Extension_Folder extends Abstract_Extension {
-  view_type = 'explorer';
-  constructor(color?: Type_FolderColor) {
-    super('', 'assets/icons/folder.svg', color);
+// --- 기타/커스텀 확장자 전용 추상 클래스 (SVG 동적 생성) ---
+export abstract class Abstract_Extension_Others extends Abstract_Extension {
+  main_color: string;
+
+  constructor(
+    extension_name: string,
+    main_color: string = '#46A852',
+    folder_color?: Type_FolderColor
+  ) {
+    const svgUrl = Abstract_Extension_Others.generateSvgDataUrl(extension_name, main_color);
+    super(extension_name, svgUrl, folder_color);
+    this.main_color = main_color;
   }
-}
-export class Model_Extension_EXE extends Abstract_Extension {
-  view_type = 'unsupported';
-  constructor() {
-    super('.exe', 'assets/icons/files/png/실행파일.png');
-  }
-}
-export class Model_Extension_PDF extends Abstract_Extension {
-  view_type = 'pdf';
-  constructor() {
-    super('.pdf', 'assets/icons/files/png/빈문서.png');
-  }
-}
-export class Model_Extension_Trash extends Abstract_Extension {
-  view_type = 'explorer';
-  constructor() {
-    super('휴지통', 'assets/icons/files/svg/휴지통.svg');
+
+  /**
+   * 확장명과 메인 색상값을 기반으로 SVG Data URI 생성
+   */
+  static generateSvgDataUrl(extension_name: string, mainColor: string): string {
+    const rawExt = extension_name.trim();
+    const cleanExt = rawExt.startsWith('.') ? rawExt.slice(1).toUpperCase() : rawExt.toUpperCase();
+
+    // 텍스트 글자 수에 따른 font-size 및 위치 자동 계산 (대형화 & 가독성 향상)
+    const fontSize = cleanExt.length >= 4 ? 60 : 80;
+
+    const svgString = `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_others)">
+  <rect width="512" height="512" rx="120" fill="white"/>
+  <rect width="512" height="512" rx="23" fill="${mainColor}"/>
+  <path d="M364.5 183.499L698.616 496.642L496.616 712.225L150.001 390L364.5 183.499Z" fill="black" fill-opacity="0.2"/>
+  <g clip-path="url(#clip1_others)">
+    <path d="M146 106C146 103.791 147.791 102 150 102H283.5L366 184.8V392C366 394.209 364.209 396 362 396H150C147.791 396 146 394.209 146 392L146 106Z" fill="white"/>
+  </g>
+  <g clip-path="url(#clip2_others)">
+    <path opacity="0.3" d="M284 102L366.8 184.8H288C285.791 184.8 284 183.009 284 180.8V102Z" fill="${mainColor}"/>
+  </g>
+  <text x="256" y="310" text-anchor="middle" dominant-baseline="central" fill="${mainColor}" font-size="${fontSize}" font-weight="900" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">${cleanExt}</text>
+</g>
+<defs>
+  <clipPath id="clip0_others">
+    <rect width="512" height="512" rx="120" fill="white"/>
+  </clipPath>
+  <clipPath id="clip1_others">
+    <rect x="146" y="102" width="220" height="294" rx="17" fill="white"/>
+  </clipPath>
+  <clipPath id="clip2_others">
+    <path d="M284 102H366.8V184.8H301C291.611 184.8 284 177.189 284 167.8V102Z" fill="white"/>
+  </clipPath>
+</defs>
+</svg>`;
+
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
   }
 }
 
-export class Model_Extension_TXT extends Abstract_Extension {
+export class Model_Extension_Folder extends Abstract_Extension {
+  view_type = 'explorer';
+  constructor(color?: Type_FolderColor) {
+    super('', 'assets/icons/files/folder.png');
+  }
+}
+
+export class Model_Extension_EXE extends Abstract_Extension {
+  view_type = 'unsupported';
+  constructor() {
+    super('.exe', 'assets/icons/files/exe.png');
+  }
+}
+
+export class Model_Extension_PDF extends Abstract_Extension_Others {
+  view_type = 'pdf';
+  constructor() {
+    super('.pdf', '#E53935');
+  }
+}
+
+export class Model_Extension_Trash extends Abstract_Extension {
+  view_type = 'explorer';
+  constructor() {
+    super('휴지통', 'assets/icons/files/trash.png');
+  }
+}
+
+export class Model_Extension_TXT extends Abstract_Extension_Others {
   view_type = 'text';
   constructor(text: string = '') {
-    super('.txt', '/assets/icons/files/png/텍스트.png');
+    super('.txt', '#666666');
     this.text = text;
   }
 }
@@ -76,82 +133,86 @@ export class Model_Extension_TXT extends Abstract_Extension {
 export class Model_Extension_MP3 extends Abstract_Extension {
   view_type = 'audio';
   constructor() {
-    super('.mp3', 'assets/icons/primary/png/audio.png');
+    super('.mp3', 'assets/icons/files/audio.png');
   }
 }
 
 export class Model_Extension_HTML extends Abstract_Extension {
   view_type = 'html';
   constructor(extension_name: string = '.html', text: string = '') {
-    super(extension_name, 'assets/icons/files/png/빈문서.png');
+    super(extension_name, 'assets/icons/files/explorer.png');
     this.text = text;
   }
 }
 
-export class Model_Extension_Empty extends Abstract_Extension {
+export class Model_Extension_Empty extends Abstract_Extension_Others {
   view_type = 'unsupported';
   constructor() {
-    super('', 'assets/icons/files/png/빈문서.png');
+    super('', '#999999');
   }
 }
-
-
 
 export class Model_Extension_IMAGE extends Abstract_Extension {
   view_type = 'image';
   constructor(color?: Type_FolderColor) {
-    super('.png', 'assets/images/image.png', color);
+    super('.png', 'assets/icons/files/picture.png', color);
   }
 }
 
-// --- 신규 확장자 모델 (사용자 설계 패턴 계승) ---
-export class Model_Extension_PSD extends Abstract_Extension {
+export class Model_Extension_PSD extends Abstract_Extension_Others {
   view_type = 'psd';
   constructor() {
-    super('.psd', 'assets/icons/files/png/미디어파일.png');
+    super('.psd', '#31A8FF');
   }
 }
 
-export class Model_Extension_AI extends Abstract_Extension {
+export class Model_Extension_AI extends Abstract_Extension_Others {
   view_type = 'ai';
   constructor() {
-    super('.ai', 'assets/icons/files/png/미디어파일.png');
+    super('.ai', '#FF9A00');
   }
 }
 
-export class Model_Extension_XLSX extends Abstract_Extension {
+export class Model_Extension_Others extends Abstract_Extension_Others {
+  view_type = 'unsupported';
+  constructor(extension_name: string = '', main_color: string = '#46A852') {
+    super(extension_name, main_color);
+  }
+}
+
+export class Model_Extension_XLSX extends Abstract_Extension_Others {
   view_type = 'excel';
   constructor() {
-    super('.xlsx', 'assets/icons/files/png/엑셀.png');
+    super('.xlsx', '#107C41');
   }
 }
 
-export class Model_Extension_Word extends Abstract_Extension {
+export class Model_Extension_Word extends Abstract_Extension_Others {
   view_type = 'word';
   constructor() {
-    super('.docx', 'assets/icons/files/png/워드.png');
+    super('.docx', '#185ABD');
   }
 }
 
-export class Model_Extension_HWP extends Abstract_Extension {
+export class Model_Extension_HWP extends Abstract_Extension_Others {
   view_type = 'hwp';
   constructor() {
-    super('.hwp', 'assets/icons/files/png/한글.png');
+    super('.hwp', '#3568B2');
   }
 }
 
-export class Model_Extension_CSS extends Abstract_Extension {
+export class Model_Extension_CSS extends Abstract_Extension_Others {
   view_type = 'code';
   constructor(text: string = '') {
-    super('.css', 'assets/icons/files/png/텍스트.png');
+    super('.css', '#264DE4');
     this.text = text;
   }
 }
 
-export class Model_Extension_JS extends Abstract_Extension {
+export class Model_Extension_JS extends Abstract_Extension_Others {
   view_type = 'code';
   constructor(text: string = '') {
-    super('.js', 'assets/icons/files/png/텍스트.png');
+    super('.js', '#F7DF1E');
     this.text = text;
   }
 }
@@ -188,7 +249,9 @@ export function getExtensionModelByFileName(fileName: string): Abstract_Extensio
     lowerName.endsWith('.bmp') ||
     lowerName.endsWith('.webp')
   ) return new Model_Extension_IMAGE();
-  
-  // 기본값 (알 수 없는 파일 - 빈 문서로 처리하거나 별도 처리)
-  return new Model_Extension_Empty(); 
+
+  // 기본값 (알 수 없는 파일 확장자 - 동적 SVG 커스텀 모델 생성)
+  const ext = fileName.substring(lastDotIndex);
+  return new Model_Extension_Others(ext, '#46A852');
 }
+

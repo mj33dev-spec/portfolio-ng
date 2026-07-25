@@ -52,7 +52,7 @@
             @for (item of dragPreview.items.slice(0, 5); track trackByFilePath($index, item)) {
               <div class="drag-preview-icon">
                 @if (item.type === 'folder') {
-                  <icon-folder [color]="'#F6AD55'" />
+                  <img src="assets/icons/files/folder.png" alt="folder" style="width: 100%; height: 100%; object-fit: contain;" />
                 } @else {            
                   <thumbnail-file [file]="item" />
                 }
@@ -108,7 +108,7 @@
           >
             @switch(file.type) { 
               @case('folder') {
-                <icon-folder [color]="'#F6AD55'" />
+                <img src="assets/icons/files/folder.png" alt="folder" style="width: 100%; height: 100%; object-fit: contain;" />
               } 
               @case('file') {
                 <thumbnail-file [file]="file" />
@@ -472,11 +472,7 @@
           <div class="properties-summary">
             <div class="properties-icon">
               @if (propertiesTarget.type === 'folder') {
-                <icon-folder
-                  [color]="
-                    propertiesTarget.extension_info.getColorCode() || '#FBBF24'
-                  "
-                />
+                <img src="assets/icons/files/folder.png" alt="folder" width="48" height="48" />
               } @else {
                 <img
                   [src]="propertiesTarget.extension_info.img_path"
