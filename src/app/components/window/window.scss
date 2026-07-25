@@ -1,33 +1,14 @@
+@use "../../styles/_variable" as *;
+
 .window-container {
   position: fixed;
-  background: rgba(245, 245, 250, 0.65);
-  backdrop-filter: blur(25px) saturate(150%);
-  -webkit-backdrop-filter: blur(25px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 6px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  @include glass-window(16px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   min-width: 500px;
   min-height: 300px;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-
-  // 활성 상태 스타일
-  &.active {
-    background: rgba(255, 255, 255, 0.85); // 더 밝고 불투명함
-    border-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.3);
-  }
-
-  // 비활성 상태 스타일
-  &.inactive {
-    background: rgba(245, 245, 250, 0.45); // 더 투명하고 흐릿함
-    backdrop-filter: blur(15px) saturate(120%);
-    -webkit-backdrop-filter: blur(15px) saturate(120%);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
 
   &.animating {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -53,17 +34,11 @@
 
   // 타이틀 바
   .title-bar {
-    height: 36px;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
+    @include glass-title-bar(40px);
     cursor: move;
     user-select: none;
     -webkit-app-region: drag;
     transition: background 0.2s ease;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 
     .title-bar-left {
       display: flex;
@@ -71,7 +46,7 @@
       gap: 10px;
       color: #1a1a1a;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
 
       .window-icon {
         margin-right: 8px;
@@ -100,7 +75,7 @@
     .title-bar-right {
       display: flex;
       align-items: center;
-      gap: 2px;
+      gap: 4px;
       -webkit-app-region: no-drag;
 
       .title-bar-button {
@@ -108,20 +83,23 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
-        min-height: 32px;
+        width: 30px;
+        height: 30px;
+        min-height: 30px;
         border: none;
+        border-radius: 8px;
         background: transparent;
         color: #1a1a1a;
         cursor: pointer;
-        transition: background-color 0.15s ease;
-
+        transition: all 0.15s ease;
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0.05);
+          background-color: rgba(0, 0, 0, 0.08);
 
           &.close {
+            background-color: #e81123;
+            color: #ffffff;
+
             svg {
               filter: brightness(255) !important;
             }
@@ -129,41 +107,8 @@
         }
 
         &:active {
-          background-color: rgba(255, 255, 255, 0.2);
+          background-color: rgba(0, 0, 0, 0.15);
         }
-
-        &.close:hover {
-          background-color: #e81123;
-        }
-
-        &.close:active {
-          background-color: #c50e1f;
-        }
-      }
-    }
-  }
-
-  // 활성화된 창의 타이틀 바 (배경색 없음, 강조 필요 시 테두리로 처리)
-  &.active .title-bar {
-    background: transparent;
-    // background: linear-gradient(to bottom, #0088e8 0%, #0066b8 100%);
-  }
-
-  // 비활성화된 창의 타이틀 바
-  &.inactive .title-bar {
-    background: transparent;
-    color: #333;
-    opacity: 0.7;
-
-    .title-bar-left {
-      color: #333;
-    }
-
-    .title-bar-button {
-      color: #333;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
       }
     }
   }

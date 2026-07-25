@@ -50,7 +50,7 @@ export class WindowService {
   private windowsSubject = new BehaviorSubject<WindowInstance[]>([]);
   public windows$: Observable<WindowInstance[]> = this.windowsSubject.asObservable();
   
-  private nextZIndex = 1100;
+  private nextZIndex = 100;
 
   constructor() {}
 
@@ -71,33 +71,35 @@ export class WindowService {
       return;
     }
 
-    // z-index 할당
-    window.zIndex = this.getNextZIndex();
-    window.isActive = true;
-    window.isNew = true;
+    // z-index 및 초기 상태 할당
+    const newWindow: WindowInstance = {
+      ...window,
+      zIndex: this.getNextZIndex(),
+      isActive: true,
+      isMinimized: false,
+      isMinimizing: false,
+      isNew: true
+    };
 
-    // 다른 창들 포커스 해제
-    currentWindows.forEach(w => w.isActive = false);
+    // 기존 창들 포커스 해제
+    const deactivated = currentWindows.map(w => ({ ...w, isActive: false }));
 
-    this.windowsSubject.next([...currentWindows, window]);
+    this.windowsSubject.next([...deactivated, newWindow]);
 
-    // 신규 애니메이션 후 isNew 플래그 제거를 위해 약간 대기 (필요시)
+    // 신규 애니메이션 후 isNew 플래그 제거
     setTimeout(() => {
-      const updated = this.windows.map(w => w.id === window.id ? { ...w, isNew: false } : w);
+      const updated = this.windows.map(w => w.id === newWindow.id ? { ...w, isNew: false } : w);
       this.windowsSubject.next(updated);
-    }, 500);
+    }, 300);
   }
 
   /**
-   * 윈도우 포커스
+   * 윈도우 포커스 (복구 및 최상위 전환)
    */
   focusWindow(windowId: string) {
     const currentWindows = this.windows;
-    const window = currentWindows.find(w => w.id === windowId);
-    if (!window) return;
-
-    // 이미 활성화된 상태면 z-index만 업데이트 (필요한 경우)
-    // if (window.isActive && !window.isMinimized) return;
+    const target = currentWindows.find(w => w.id === windowId);
+    if (!target) return;
 
     const updatedWindows = currentWindows.map(w => {
       if (w.id === windowId) {
@@ -105,6 +107,7 @@ export class WindowService {
           ...w, 
           isActive: true, 
           isMinimized: false, 
+          isMinimizing: false,
           zIndex: this.getNextZIndex() 
         };
       } else {
@@ -113,6 +116,20 @@ export class WindowService {
     });
 
     this.windowsSubject.next(updatedWindows);
+  }
+
+  /**
+   * 작업 표시줄 아이콘 토글 (활성화 상태면 최소화, 비활성/최소화 상태면 복구 및 포커스)
+   */
+  toggleWindow(windowId: string) {
+    const target = this.windows.find(w => w.id === windowId);
+    if (!target) return;
+
+    if (target.isActive && !target.isMinimized) {
+      this.minimizeWindow(windowId);
+    } else {
+      this.focusWindow(windowId);
+    }
   }
 
   /**
@@ -142,53 +159,66 @@ export class WindowService {
    * 윈도우 최소화
    */
   minimizeWindow(windowId: string) {
-    const updated = this.windows.map(w => {
+    const currentWindows = this.windows;
+    const target = currentWindows.find(w => w.id === windowId);
+    if (!target) return;
+
+    // 1단계: 애니메이션 시작
+    const step1 = currentWindows.map(w => {
       if (w.id === windowId) {
-        return { ...w, isMinimized: true, isActive: false };
+        return { ...w, isMinimizing: true, isActive: false };
       }
       return w;
     });
-    this.windowsSubject.next(updated);
+    this.windowsSubject.next(step1);
+
+    // 2단계: 애니메이션 완료 후 최소화 상태 적용
+    setTimeout(() => {
+      const latestWindows = this.windows;
+      const step2 = latestWindows.map(w => {
+        if (w.id === windowId) {
+          return { ...w, isMinimizing: false, isMinimized: true, isActive: false };
+        }
+        return w;
+      });
+      this.windowsSubject.next(step2);
+    }, 250);
   }
 
   /**
-   * 윈도우 최대화/복원
-   */
-  maximizeWindow(windowId: string, isMaximized: boolean) {
-    // 최대화 상태는 WindowComponent 내부에서 관리하거나 WindowInstance에 추가할 수 있음
-    // 여기서는 활성화만 처리
-    this.focusWindow(windowId);
-  }
-
-  /**
-   * 모든 창 최소화
+   * 모든 윈도우 최소화
    */
   minimizeAllWindows() {
-    let updated = this.windows.map(w => {
+    const currentWindows = this.windows;
+    const step1 = currentWindows.map(w => {
       if (!w.isMinimized) {
         return { ...w, isMinimizing: true, isActive: false };
       }
       return w;
     });
-    this.windowsSubject.next(updated);
+    this.windowsSubject.next(step1);
 
     setTimeout(() => {
-      const current = this.windowsSubject.value;
-      const finalUpdate = current.map(w => {
+      const latestWindows = this.windows;
+      const step2 = latestWindows.map(w => {
         if (w.isMinimizing) {
-          return { ...w, isMinimizing: false, isMinimized: true };
+          return { ...w, isMinimizing: false, isMinimized: true, isActive: false };
         }
         return w;
       });
-      this.windowsSubject.next(finalUpdate);
-    }, 500);
+      this.windowsSubject.next(step2);
+    }, 250);
   }
 
   /**
-   * 다음 z-index 값 반환 및 증가
+   * 다음 z-index 값 반환 및 증가 (100 ~ 400 범위 순환)
    */
   public getNextZIndex(): number {
-    return ++this.nextZIndex;
+    this.nextZIndex++;
+    if (this.nextZIndex > 400) {
+      this.nextZIndex = 100;
+    }
+    return this.nextZIndex;
   }
 
   /**

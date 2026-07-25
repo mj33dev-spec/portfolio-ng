@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Abstract_File, QuickLookInfo } from '../../components/directory/directory-model';
+import { Abstract_Extension_Others } from '../../components/directory/file-extension-model';
 
 export interface DragPreviewState {
   visible: boolean;
@@ -80,7 +81,7 @@ export class DesktopStateService {
   });
   public contextMenu$ = this.contextMenuSubject.asObservable();
 
-  constructor() {}
+  constructor() { }
 
   /**
    * 드래그 상태 설정
@@ -192,11 +193,31 @@ export class DesktopStateService {
   }
 
   openContextMenu(x: number, y: number, items: ContextMenuItem[]): void {
+    const menuWidth = 220;
+    const submenuWidth = 190;
+    // 실제 메뉴 패딩 및 아이템 규격을 고려한 높이 계산
+    const estimatedHeight = Math.max(200, items.length * 40 + 20);
+
+    const winWidth = window.innerWidth;
+    const winHeight = window.innerHeight;
+
+    // 하단 Dock Bar(위치: bottom 20px, 높이 54px => 상단 Y값: winHeight - 74px)의 Y값 '위'에 메뉴 하단이 위치하도록 보정 (85px 여백)
+    // const maxAllowedY = winHeight - estimatedHeight - 85;
+    const maxAllowedY = winHeight - estimatedHeight - 20;
+    const clampedX = Math.max(10, Math.min(x, winWidth - menuWidth - 10));
+    const clampedY = Math.max(10, Math.min(y, maxAllowedY));
+
+    // 서브메뉴 펼침 방향 계산 (좌측 / 상향)
+    const opensLeft = clampedX + menuWidth + submenuWidth > winWidth - 10;
+    const opensUp = clampedY > winHeight / 2 || clampedY + estimatedHeight > winHeight - 120;
+
     this.contextMenuSubject.next({
       visible: true,
-      x,
-      y,
-      items
+      x: clampedX,
+      y: clampedY,
+      items,
+      opensLeft,
+      opensUp
     });
   }
 
@@ -223,7 +244,7 @@ export class DesktopStateService {
     return [
       {
         label: '새 폴더(N)',
-        icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 4C2 3.44772 2.44772 3 3 3H6.17157C6.43679 3 6.69107 3.10536 6.87868 3.29289L8.12132 4.53553C8.30893 4.72315 8.56321 4.82851 8.82843 4.82851H13C13.5523 4.82851 14 5.27623 14 5.82851V12C14 12.5523 13.5523 13 13 13H3C2.44772 13 2 12.5523 2 12V4Z"/></svg>',
+        icon: '<img src="assets/icons/files/folder.png" alt="folder" width="16" height="16" />',
         action: actions.createNewFolder
       },
       {
@@ -245,13 +266,13 @@ export class DesktopStateService {
         submenu: [
           {
             label: '폴더(F)',
-            icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 4C2 3.44772 2.44772 3 3 3H6.17157C6.43679 3 6.69107 3.10536 6.87868 3.29289L8.12132 4.53553C8.30893 4.72315 8.56321 4.82851 8.82843 4.82851H13C13.5523 4.82851 14 5.27623 14 5.82851V12C14 12.5523 13.5523 13 13 13H3C2.44772 13 2 12.5523 2 12V4Z"/></svg>',
+            icon: '<img src="assets/icons/files/folder.png" alt="folder" width="16" height="16" />',
             action: actions.createNewFolder
           },
           { separator: true, label: '' },
           {
             label: '텍스트 문서',
-            icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2C2.44772 2 2 2.44772 2 3V13C2 13.5523 2.44772 14 3 14H13C13.5523 14 14 13.5523 14 13V3C14 2.44772 13.5523 2 13 2H3ZM4 4H12V6H4V4ZM4 7H12V9H4V7ZM4 10H8V12H4V10Z"/></svg>',
+            icon: `<img src="${Abstract_Extension_Others.generateSvgDataUrl('.txt', '#666666')}" alt="txt" width="16" height="16" />`,
             action: actions.createNewTextFile
           }
         ]
@@ -275,4 +296,6 @@ export interface ContextMenuState {
   x: number;
   y: number;
   items: ContextMenuItem[];
+  opensLeft?: boolean;
+  opensUp?: boolean;
 }

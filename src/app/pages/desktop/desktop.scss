@@ -671,74 +671,61 @@ textarea {
 
   .context-menu {
     position: fixed;
-    min-width: 200px;
-    background: #f0f0f0;
-    border: 1px solid #888;
-    border-radius: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    padding: 3px;
-    z-index: 10000;
+    min-width: 210px;
+    @include glass-card(0.72, 30px, 0.65, 14px);
+    padding: 6px;
+    z-index: 999;
     font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 13px;
 
     .context-menu-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 32px 6px 8px;
-      cursor: pointer;
-      color: #000;
-      position: relative;
-      transition: background-color 0.05s ease;
-
-      &:hover {
-        background: #0078d4;
-        color: #fff;
-
-        svg {
-          color: #fff;
-        }
-      }
-
-      svg {
-        flex-shrink: 0;
-        color: #000;
-        transition: color 0.05s ease;
-      }
-
-      span {
-        flex: 1;
-        user-select: none;
-      }
-
-      &.has-submenu {
-        .submenu-arrow {
-          position: absolute;
-          right: 8px;
-          top: 50%;
-          transform: translateY(-50%);
-        }
-      }
+      @include glass-menu-item();
     }
 
     .context-menu-divider {
       height: 1px;
-      background: #ccc;
-      margin: 3px 0;
+      background: rgba(0, 0, 0, 0.08);
+      margin: 5px 4px;
+    }
+  }
+
+  .context-menu.opens-left {
+    .context-submenu {
+      left: auto;
+      right: calc(100% + 6px);
+
+      &::before {
+        left: auto;
+        right: -12px;
+      }
+    }
+  }
+
+  .context-menu.opens-up {
+    .context-submenu {
+      top: auto;
+      bottom: -6px;
     }
   }
 
   .context-submenu {
     position: absolute;
-    left: 100%;
-    top: -3px;
-    min-width: 160px;
-    background: #f0f0f0;
-    border: 1px solid #888;
-    border-radius: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    padding: 3px;
-    z-index: 10001;
+    left: calc(100% + 6px);
+    top: -6px;
+    min-width: 180px;
+    @include glass-card(0.78, 30px, 0.65, 14px);
+    padding: 6px;
+    z-index: 1000;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      bottom: -10px;
+      left: -12px;
+      width: 16px;
+      background: transparent;
+    }
   }
 
   .properties-icon {
@@ -808,25 +795,9 @@ textarea {
 
   // 윈도우 스타일 플로팅 작업 표시줄
   .dock-bar {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20000;
-    pointer-events: auto;
+    @include glass-dock-bar(20px, 0.55, 30px, 0.5);
     width: 90%;
     max-width: 1200px;
-
-    .dock-inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 6px 12px;
-      @include glassmorphism(0.55, 30px, 0.5);
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3);
-    }
 
     .dock-left {
       display: flex;

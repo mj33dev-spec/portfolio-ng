@@ -132,10 +132,18 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   } | null = null;
 
   // 컨텍스트 메뉴 관련
-  contextMenu = {
+  contextMenu: {
+    visible: boolean;
+    x: number;
+    y: number;
+    opensLeft?: boolean;
+    opensUp?: boolean;
+  } = {
     visible: false,
     x: 0,
     y: 0,
+    opensLeft: false,
+    opensUp: false,
   };
   showNewSubmenu = false;
   showSortSubmenu = false;
@@ -421,7 +429,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         this.contextMenu = {
           visible: state.visible,
           x: state.x,
-          y: state.y
+          y: state.y,
+          opensLeft: !!state.opensLeft,
+          opensUp: !!state.opensUp
         };
         this.contextMenuItems = state.items;
         this.cdr.detectChanges();
@@ -1201,6 +1211,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         visible: true,
         x: this.pendingRightClickInfo.x,
         y: this.pendingRightClickInfo.y,
+        opensLeft: false,
       };
       this.pendingRightClickInfo = null;
     } else if (!allowContextMenu) {
@@ -2328,21 +2339,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
    * 새 윈도우 열기
    */
   openNewWindow(window: WindowInstance) {
-    window.isActive = true;
-    window.isNew = true;
-    this.windows.forEach((w) => (w.isActive = false));
-    this.windows.push(window);
-
-    // 바탕화면 아이콘 선택 해제
+    this.windowService.openNewWindow(window);
     this.selectedFolders.clear();
-
-    // 애니메이션 완료 후 isNew 플래그 제거
-    setTimeout(() => {
-      const w = this.windows.find((w) => w.id === window.id);
-      if (w) {
-        w.isNew = false;
-      }
-    }, 300);
   }
 
   /**
@@ -2351,8 +2349,16 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   focusWindow(windowId: string) {
     this.windowService.focusWindow(windowId);
     this.propertiesWindowIsActive = false;
+    this.selectedFolders.clear();
+    this.lastSelectedUuid = null;
+  }
 
-    // 바탕화면 아이콘 선택 해제
+  /**
+   * 작업 표시줄 아이콘 클릭 시 창 토글 (최소화/복구)
+   */
+  toggleWindow(windowId: string) {
+    this.windowService.toggleWindow(windowId);
+    this.propertiesWindowIsActive = false;
     this.selectedFolders.clear();
     this.lastSelectedUuid = null;
   }
@@ -2381,14 +2387,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
    * 윈도우 최소화
    */
   minimizeWindow(windowId: string) {
-    const window = this.windows.find((w) => w.id === windowId);
-    if (window) {
-      window.isMinimizing = true;
-      setTimeout(() => {
-        window.isMinimizing = false;
-        window.isMinimized = true;
-      }, 500); // 0.5s 애니메이션 시간과 일치
-    }
+    this.windowService.minimizeWindow(windowId);
   }
 
   /**

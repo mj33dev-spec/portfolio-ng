@@ -396,6 +396,8 @@
     @if (contextMenu.visible) {
       <div
         class="context-menu"
+        [class.opens-left]="contextMenu.opensLeft"
+        [class.opens-up]="contextMenu.opensUp"
         [style.left.px]="contextMenu.x"
         [style.top.px]="contextMenu.y"
         (click)="$event.stopPropagation()"
@@ -637,10 +639,10 @@
         @for (window of windows; track window.id) {
           <li
             class="dock-item"
-            [class.active]="window.isActive"
+            [class.active]="window.isActive && !window.isMinimized"
             [class.minimized]="window.isMinimized"
             [class.new]="window.isNew"
-            (click)="focusWindow(window.id)"
+            (click)="toggleWindow(window.id)"
             [title]="window.title"
           >
             <div class="dock-icon">

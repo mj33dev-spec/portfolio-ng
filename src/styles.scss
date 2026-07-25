@@ -52,7 +52,7 @@ app-root {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999999;
+    z-index: 1000;
     transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
 
     &.fade-out {
