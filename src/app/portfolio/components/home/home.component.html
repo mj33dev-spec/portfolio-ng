@@ -1,4 +1,59 @@
-<section class="home-section">
+<section class="home-section relative">
+  <!-- Absolute Login Header for Home Section -->
+  <div class="home-login-container">
+    @if (authService.isLoggedIn()) {
+      <button (click)="handleLogout()" class="home-login-btn logout-btn">
+        Logout
+      </button>
+    } @else {
+      <button (click)="openLoginModal()" class="home-login-btn">
+        Login
+      </button>
+    }
+  </div>
+
+  <!-- Login Modal -->
+  @if (showLoginModal()) {
+    <div class="login-modal-overlay">
+      <div class="login-modal">
+        <h2>Admin Login</h2>
+        
+        <div class="form-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            [ngModel]="loginEmail()"
+            readonly
+          />
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            [ngModel]="loginPassword()"
+            (ngModelChange)="loginPassword.set($event)"
+            (keyup.enter)="handleLogin()"
+            placeholder="Enter admin password"
+            autofocus
+          />
+          @if (loginError()) {
+            <p class="error-msg">Invalid credentials.</p>
+          }
+        </div>
+        
+        <div class="modal-actions">
+          <button (click)="closeLoginModal()" class="cancel-btn">
+            Cancel
+          </button>
+          <button (click)="handleLogin()" class="submit-btn">
+            Sign In
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
   <div class="shapes-container">
     @for (shape of shapes; track $index) {
     <div class="shape animate-float" [class]="colors[$index % colors.length]"

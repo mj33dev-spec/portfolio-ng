@@ -7,6 +7,10 @@ import { routes } from './app.routes';
 import { registerLocaleData } from '@angular/common';
 import localeKo from '@angular/common/locales/ko';
 
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { environment } from '../environments/environment';
+
 registerLocaleData(localeKo);
 
 
@@ -16,5 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
   ],
 };
