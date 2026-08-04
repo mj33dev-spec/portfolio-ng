@@ -1,0 +1,73 @@
+<div class="dropdown-wrapper" [class.multi]="variant === 'multi'">
+  <!-- ANCHOR BUTTON -->
+  @if (variant !== 'more') {
+    <div #anchorRef class="anchor-container" [style.width]="width">
+      <button 
+        type="button" 
+        class="c-button" 
+        [ngClass]="variant === 'fill' ? 'fill-btn' : 'outlined-btn'"
+        [style.width]="width ? '100%' : 'auto'"
+        (click)="toggleOpen($event)">
+        
+        <span class="btn-text">
+          {{ value || '선택' }}
+        </span>
+        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M16.293 9.293 12 13.586 7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z"></path>
+        </svg>
+      </button>
+    </div>
+  } @else {
+    <div #anchorRef class="anchor-container">
+      <button type="button" class="more-btn" (click)="toggleOpen($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- MULTI CHIPS -->
+  @if (variant === 'multi' && selectedValues.length > 0) {
+    @for (val of selectedValues; track val) {
+      <span class="multi-chip">
+        {{ val }}
+        <span class="close-icon" (click)="removeMultiValue($event, val)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </span>
+      </span>
+    }
+  }
+
+  <!-- DROPDOWN MENU -->
+  @if (isOpen()) {
+    <div #menuRef 
+         class="dropdown-menu"
+         [ngClass]="variant === 'fill' ? 'fill-menu' : 'outlined-menu'"
+         [style.position]="'fixed'"
+         [style.top]="menuTop()"
+         [style.bottom]="menuBottom()"
+         [style.left]="menuLeft()"
+         [style.right]="menuRight()"
+         [style.width]="menuWidth()"
+         [style.minWidth]="variant === 'more' ? '180px' : 'auto'">
+      
+      @for (opt of options; track $index) {
+        @if (opt.type === 'divider') {
+          <hr />
+        } @else {
+          <button type="button"
+                  class="dropdown-item"
+                  [class.disabled]="opt.disabled || disabledList.includes(opt.label || '')"
+                  [disabled]="opt.disabled || disabledList.includes(opt.label || '')"
+                  (click)="handleItemClick($event, opt)">
+            @if (opt.icon) {
+              <i class="bx" [ngClass]="opt.icon"></i>
+            }
+            {{ opt.label }}
+          </button>
+        }
+      }
+    </div>
+  }
+</div>

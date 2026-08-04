@@ -1,0 +1,41 @@
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    table-layout: fixed;
+    
+    th {
+        padding: 1rem;
+        font-weight: 600;
+        color: #9ca3af;
+        border-bottom: 2px solid #374151;
+        font-size: 0.875rem;
+    }
+
+    td {
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid #374151;
+        color: #d1d5db;
+        transition: background-color 0.2s;
+    }
+
+    tbody tr {
+        cursor: pointer;
+        animation: fadeInUp 0.5s ease-out forwards;
+        
+        &:hover td {
+            background-color: #1f2937;
+        }
+    }
+}

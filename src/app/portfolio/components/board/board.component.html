@@ -2,46 +2,70 @@
   <div class="board-container">
     <div class="board-header">
       <h2 class="title">blog</h2>
-      @if (isLoggedIn()) {
-        <button class="btn-primary_portfolio" (click)="createNewPost()" style="margin-bottom: 2rem;">
-          새 글 작성
-        </button>
-      }
     </div>
 
-    <div class="post-list">
-      @for (post of paginatedPosts(); track post.id) {
-      <div class="post-card" [style.border-color]="post.color" (click)="goToPost(post.id)" style="cursor: pointer;">
-        <h4 class="post-title">{{ post.title }}</h4>
-        <p class="post-content">{{ post.content }}</p>
+    <!-- .post-list => #post-wrap 선택자명 변경 -->
+    <section id="post-wrap">
+      <div id="post-body">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-num">No</th>
+              <th class="col-title">제목</th>
+              <th class="col-date">작성일</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (post of paginatedPosts(); track post.id; let i = $index) {
+              <tr (click)="goToPost(post.id)">
+                <td class="col-num">{{ getPostNumber(i) }}</td>
+                <td class="col-title">
+                  <div class="title-wrapper">
+                    <span class="color-dot" [style.background-color]="post.color"></span>
+                    <span class="title-text">{{ post.title }}</span>
+                  </div>
+                </td>
+                <td class="col-date">{{ post.created_at | date:'yyyy-MM-dd' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="3" class="empty-state">아직 게시물이 없습니다.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-      } @empty {
-      <p class="empty-state">아직 게시물이 없습니다.</p>
-      }
-    </div>
+      <footer id="post-footer">
+        @if (isLoggedIn()) {
+          <button class="btn-primary_portfolio" (click)="createNewPost()">
+            새 글 작성
+          </button>
+        }
 
-    @if (totalPages() > 1) {
-    <div class="pagination">
-      <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1" class="nav-btn">
-        이전
-      </button>
-      @for (page of pageNumbers(); track page) {
-      <button (click)="goToPage(page)" class="page-btn" [class.active]="currentPage() === page">
-        {{ page }}
-      </button>
-      }
-      <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()" class="nav-btn">
-        다음
-      </button>
-    </div>
-    }
+        @if (totalPages() > 1) {
+        <div class="pagination">
+          <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1" class="nav-btn">
+            이전
+          </button>
+          @for (page of pageNumbers(); track page) {
+          <button (click)="goToPage(page)" class="page-btn" [class.active]="currentPage() === page">
+            {{ page }}
+          </button>
+          }
+          <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()" class="nav-btn">
+            다음
+          </button>
+        </div>
+        }
+      </footer>
+    </section>
   </div>
+
+  @if (activeView() === 'detail' && selectedPostId(); as id) {
+    <app-board-detail [postId]="id" (closeOverlay)="closeOverlay()" (edit)="editPost($event)"></app-board-detail>
+  }
+
+  @if (activeView() === 'editor') {
+    <app-board-editor [postId]="selectedPostId()" (closeOverlay)="closeOverlay()"></app-board-editor>
+  }
 </section>
-
-@if (activeView() === 'detail' && selectedPostId(); as id) {
-  <app-board-detail [postId]="id" (closeOverlay)="closeOverlay()" (edit)="editPost($event)"></app-board-detail>
-}
-
-@if (activeView() === 'editor') {
-  <app-board-editor [postId]="selectedPostId()" (closeOverlay)="closeOverlay()"></app-board-editor>
-}

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BlogService, BlogPost } from '../../blog.service';
 import { AuthService } from '../../auth.service';
+import { CDropdownComponent, CDropdownOption } from '../c-dropdown/c-dropdown.component';
 
 @Component({
   selector: 'app-board-editor',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CDropdownComponent],
   templateUrl: './board-editor.html',
   styleUrl: './board-editor.scss'
 })
@@ -22,6 +23,27 @@ export class BoardEditorComponent implements OnInit {
   title = signal('');
   content = signal('');
   color = signal('#facc15'); // default portfolio primary color
+  category = signal('');
+  imageUrl = signal<string | null>(null);
+  tagsInput = signal('');
+  isUploading = signal(false);
+
+  categoryOptions: CDropdownOption[] = [
+    { label: 'Angular', value: 'Angular' },
+    { label: 'React', value: 'React' },
+    { label: 'Vue', value: 'Vue' },
+    { label: 'Flutter', value: 'Flutter' },
+    { label: 'HTML', value: 'HTML' },
+    { label: 'CSS', value: 'CSS' },
+    { label: 'Javascript', value: 'Javascript' },
+    { label: 'Typescript', value: 'Typescript' },
+    { label: 'VisualBasic', value: 'VisualBasic' },
+    { label: 'Flash', value: 'Flash' },
+    { label: 'node.js', value: 'node.js' },
+    { label: 'nest.js', value: 'nest.js' },
+    { label: 'Database', value: 'Database' },
+    { label: '기타', value: '기타' }
+  ];
 
   async ngOnInit() {
     // Only admin can access this page
@@ -38,6 +60,9 @@ export class BoardEditorComponent implements OnInit {
         this.title.set(data.title);
         this.content.set(data.content);
         this.color.set(data.color);
+        this.category.set(data.category || '');
+        this.imageUrl.set(data.image_url || null);
+        this.tagsInput.set((data.tags || []).join(', '));
       }
     }
   }
@@ -47,15 +72,20 @@ export class BoardEditorComponent implements OnInit {
   }
 
   async savePost() {
-    if (!this.title() || !this.content()) {
-      alert('제목과 내용을 모두 입력해주세요.');
+    if (!this.title() || !this.content() || !this.category()) {
+      alert('제목, 카테고리, 내용을 모두 입력해주세요.');
       return;
     }
+
+    const tagsArray = this.tagsInput().split(',').map(t => t.trim()).filter(t => t.length > 0);
 
     const postData = {
       title: this.title(),
       content: this.content(),
-      color: this.color()
+      color: this.color(),
+      category: this.category(),
+      image_url: this.imageUrl() || null,
+      tags: tagsArray
     };
 
     let success = false;
@@ -70,6 +100,42 @@ export class BoardEditorComponent implements OnInit {
       this.closeOverlay.emit();
     } else {
       alert('저장에 실패했습니다.');
+    }
+  }
+
+  async onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    
+    const file = input.files[0];
+    this.isUploading.set(true);
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+    const filePath = `images/${fileName}`;
+
+    try {
+      const { data, error } = await this.blogService.uploadImage(filePath, file);
+      if (error) {
+        console.error('Upload Error:', error);
+        alert('이미지 업로드에 실패했습니다. (blog-images 버킷 설정을 확인해주세요)');
+      } else {
+        const publicUrl = this.blogService.getImageUrl(filePath);
+        this.imageUrl.set(publicUrl);
+        
+        // 본문에 이미지 마크다운 자동 추가
+        const currentContent = this.content();
+        const newContent = currentContent 
+          ? `${currentContent}\n\n![첨부이미지](${publicUrl})`
+          : `![첨부이미지](${publicUrl})`;
+        this.content.set(newContent);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('이미지 업로드 중 오류가 발생했습니다.');
+    } finally {
+      this.isUploading.set(false);
+      input.value = ''; // 동일 파일 재업로드 가능하게 초기화
     }
   }
 }

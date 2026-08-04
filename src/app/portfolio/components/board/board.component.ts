@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BlogService, BlogPost } from '../../blog.service';
@@ -12,7 +12,7 @@ import { BoardEditorComponent } from '../board-editor/board-editor';
   standalone: true,
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
-  imports: [CommonModule, FormsModule, BoardDetailComponent, BoardEditorComponent],
+  imports: [CommonModule, FormsModule, BoardDetailComponent, BoardEditorComponent, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoardComponent implements OnInit {
@@ -72,5 +72,11 @@ export class BoardComponent implements OnInit {
     if (pageNumber >= 1 && pageNumber <= this.totalPages()) {
       this.currentPage.set(pageNumber);
     }
+  }
+
+  getPostNumber(index: number): number {
+    const total = this.posts().length;
+    const absoluteIndex = (this.currentPage() - 1) * this.itemsPerPage + index;
+    return total - absoluteIndex;
   }
 }

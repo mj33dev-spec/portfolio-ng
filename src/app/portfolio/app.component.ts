@@ -93,7 +93,7 @@ export class AppComponent {
   @HostListener('wheel', ['$event'])
   onWheel(event: WheelEvent) {
     const target = event.target as HTMLElement;
-    if (target.closest('app-projects')) {
+    if (target.closest('app-projects') || target.closest('app-board-editor') || target.closest('app-board-detail')) {
       return;
     }
 

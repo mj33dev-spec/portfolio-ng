@@ -1,4 +1,7 @@
+@use '../../../styles/buttons' as *;
+
 .board-section {
+    position: relative;
     width: 100%;
     height: 100%;
     display: flex;
@@ -6,168 +9,162 @@
     align-items: center;
     justify-content: center;
     padding: 1.25rem;
-    /* p-5 */
 
     @media (min-width: 1024px) {
         padding: 1.5rem;
-        /* lg:p-6 */
-    }
-}
-
-.board-container {
-    width: 100%;
-    max-width: 56rem;
-    /* max-w-4xl */
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.title {
-    font-size: 2.25rem;
-    /* text-4xl */
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2rem;
-    /* mb-8 */
-    color: #facc15;
-    /* text-yellow-400 */
-    flex-shrink: 0;
-
-    @media (min-width: 768px) {
-        font-size: 3rem;
-        /* md:text-5xl */
-    }
-}
-
-.post-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 1rem;
-    /* pr-4 */
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    /* space-y-6 */
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translate3d(0, 20px, 0);
     }
 
-    to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
-}
+    .board-container {
+        width: 100%;
+        max-width: 56rem;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
 
-.post-card {
-    background-color: #181818;
-    /* bg-[#181818] */
-    padding: 1.5rem;
-    /* p-6 */
-    border-radius: 1rem;
-    /* rounded-2xl */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    /* shadow-lg */
-    border-left-width: 8px;
-    /* border-l-8 */
-    animation: fadeInUp 0.5s ease-out forwards;
+        .board-header {
+            .title {
+                font-size: 2.25rem;
+                font-weight: 700;
+                text-align: center;
+                margin-bottom: 2rem;
+                color: #facc15;
+                flex-shrink: 0;
 
-    .post-title {
-        font-size: 1.5rem;
-        /* text-2xl */
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        /* mb-2 */
-        color: white;
-    }
-
-    .post-content {
-        color: #d1d5db;
-        /* text-gray-300 */
-        white-space: pre-wrap;
-        /* whitespace-pre-wrap */
-    }
-}
-
-.empty-state {
-    text-align: center;
-    color: #9ca3af;
-    /* text-gray-400 */
-    padding: 2.5rem 0;
-    /* py-10 */
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    /* gap-2 */
-    margin-top: 2rem;
-    /* mt-8 */
-    flex-shrink: 0;
-
-    @media (min-width: 768px) {
-        gap: 1rem;
-        /* md:gap-4 */
-    }
-
-    .nav-btn {
-        padding: 0.5rem 1rem;
-        /* px-4 py-2 */
-        background-color: #374151;
-        /* bg-gray-700 */
-        color: white;
-        font-weight: 700;
-        border-radius: 0.5rem;
-        /* rounded-lg */
-        transition: background-color 0.2s;
-        border: none;
-        cursor: pointer;
-
-        &:hover:not(:disabled) {
-            background-color: #4b5563;
-            /* hover:bg-gray-600 */
+                @media (min-width: 768px) {
+                    font-size: 3rem;
+                }
+            }
         }
 
-        &:disabled {
-            background-color: #1f2937;
-            /* disabled:bg-gray-800 */
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-    }
+        #post-wrap {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
 
-    .page-btn {
-        width: 2.5rem;
-        /* w-10 */
-        height: 2.5rem;
-        /* h-10 */
-        font-weight: 700;
-        border-radius: 0.5rem;
-        /* rounded-lg */
-        transition: background-color 0.2s;
-        border: none;
-        cursor: pointer;
-        background-color: #374151;
-        /* bg-gray-700 */
-        color: white;
+            #post-body {
+                flex-grow: 0;
+                flex-shrink: 1;
+                overflow-y: auto;
+                padding-right: 1rem;
 
-        &:hover:not(.active) {
-            background-color: #4b5563;
-            /* hover:bg-gray-600 */
-        }
+                .col-num {
+                    width: 70px;
+                    text-align: center;
+                }
 
-        &.active {
-            background-color: #facc15;
-            /* bg-yellow-400 */
-            color: #111827;
-            /* text-gray-900 */
+                .col-title {
+                    width: 70%;
+                    
+                    .title-wrapper {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        color: white;
+                        font-weight: 500;
+                    }
+
+                    .color-dot {
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 50%;
+                        display: inline-block;
+                        flex-shrink: 0;
+                    }
+
+                    .title-text {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+
+                .col-date {
+                    width: 20%;
+                    text-align: center;
+                    font-size: 0.875rem;
+                    color: #9ca3af;
+                }
+
+                .empty-state {
+                    text-align: center;
+                    color: #9ca3af;
+                    padding: 3rem 0;
+                }
+            }
+
+            #post-footer {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                width: 100%;
+                margin-top: 1.5rem;
+                flex-shrink: 0;
+                min-height: 40px; // Ensure it has height even if no pagination
+
+                .btn-primary_portfolio {
+                    position: absolute;
+                    right: 0;
+                }
+
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 0.5rem;
+                    
+                    @media (min-width: 768px) {
+                        gap: 1rem;
+                    }
+
+                    .nav-btn {
+                        padding: 0.5rem 1rem;
+                        background-color: #374151;
+                        color: white;
+                        font-weight: 700;
+                        border-radius: 0.5rem;
+                        transition: background-color 0.2s;
+                        border: none;
+                        cursor: pointer;
+
+                        &:hover:not(:disabled) {
+                            background-color: #4b5563;
+                        }
+
+                        &:disabled {
+                            background-color: #1f2937;
+                            cursor: not-allowed;
+                            opacity: 0.5;
+                        }
+                    }
+
+                    .page-btn {
+                        width: 2.5rem;
+                        height: 2.5rem;
+                        font-weight: 700;
+                        border-radius: 0.5rem;
+                        transition: background-color 0.2s;
+                        border: none;
+                        cursor: pointer;
+                        background-color: #374151;
+                        color: white;
+
+                        &:hover:not(.active) {
+                            background-color: #4b5563;
+                        }
+
+                        &.active {
+                            background-color: #facc15;
+                            color: #111827;
+                        }
+                    }
+                }
+            }
         }
     }
 }

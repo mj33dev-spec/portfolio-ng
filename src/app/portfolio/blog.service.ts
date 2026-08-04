@@ -7,7 +7,21 @@ export interface BlogPost {
   title: string;
   content: string;
   color: string;
+  category: string;
+  image_url: string | null;
+  tags: string[];
+  is_deleted: boolean;
   created_at: string;
+  updated_at: string | null;
+}
+
+export interface BlogPostInput {
+  title: string;
+  content: string;
+  color: string;
+  category: string;
+  image_url: string | null;
+  tags: string[];
 }
 
 @Injectable({
@@ -24,6 +38,7 @@ export class BlogService {
     const { data, error } = await this.supabase
       .from('blogs')
       .select('*')
+      .eq('is_deleted', false)
       .order('created_at', { ascending: false });
       
     if (error) {
@@ -47,7 +62,7 @@ export class BlogService {
     return data;
   }
 
-  async createPost(post: { title: string; content: string; color: string }): Promise<boolean> {
+  async createPost(post: BlogPostInput): Promise<boolean> {
     const { error } = await this.supabase
       .from('blogs')
       .insert([post]);
@@ -59,10 +74,15 @@ export class BlogService {
     return true;
   }
 
-  async updatePost(id: string, post: { title: string; content: string; color: string }): Promise<boolean> {
+  async updatePost(id: string, post: BlogPostInput): Promise<boolean> {
+    const payload = {
+      ...post,
+      updated_at: new Date().toISOString()
+    };
+
     const { error } = await this.supabase
       .from('blogs')
-      .update(post)
+      .update(payload)
       .eq('id', id);
       
     if (error) {
@@ -75,7 +95,7 @@ export class BlogService {
   async deletePost(id: string): Promise<boolean> {
     const { error } = await this.supabase
       .from('blogs')
-      .delete()
+      .update({ is_deleted: true })
       .eq('id', id);
       
     if (error) {
@@ -83,5 +103,14 @@ export class BlogService {
       return false;
     }
     return true;
+  }
+
+  async uploadImage(path: string, file: File) {
+    return await this.supabase.storage.from('blog-images').upload(path, file);
+  }
+
+  getImageUrl(path: string) {
+    const { data } = this.supabase.storage.from('blog-images').getPublicUrl(path);
+    return data.publicUrl;
   }
 }
