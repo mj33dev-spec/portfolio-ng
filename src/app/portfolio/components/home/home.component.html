@@ -2,12 +2,12 @@
   <!-- Absolute Login Header for Home Section -->
   <div class="home-login-container">
     @if (authService.isLoggedIn()) {
-      <button (click)="handleLogout()" class="home-login-btn logout-btn">
-        Logout
+      <button (click)="handleLogout()" class="btn-danger">
+        주인장 로그아웃 😊
       </button>
     } @else {
-      <button (click)="openLoginModal()" class="home-login-btn">
-        Login
+      <button (click)="openLoginModal()" class="btn-primary_portfolio">
+        주인장 로그인 😊
       </button>
     }
   </div>
@@ -43,10 +43,10 @@
         </div>
         
         <div class="modal-actions">
-          <button (click)="closeLoginModal()" class="cancel-btn">
+          <button type="button" class="btn-outlined-dark" (click)="closeLoginModal()">
             Cancel
           </button>
-          <button (click)="handleLogin()" class="submit-btn">
+          <button type="button" class="btn-primary" (click)="handleLogin()">
             Sign In
           </button>
         </div>

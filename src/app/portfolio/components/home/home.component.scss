@@ -1,3 +1,6 @@
+@use '../../../styles/variable' as *;
+@use '../../../styles/buttons' as *;
+
 @keyframes float {
   0% {
     transform: translateY(0px) rotate(0deg);
@@ -139,35 +142,9 @@
 
 .home-login-container {
   position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
+  top: 20px;
+  right: 20px;
   z-index: 50;
-
-  .home-login-btn {
-    pointer-events: auto;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid #475569;
-    color: white;
-    background-color: rgba(30, 41, 59, 0.8);
-    backdrop-filter: blur(4px);
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: rgba(51, 65, 85, 1);
-    }
-
-    &.logout-btn {
-      background-color: rgba(239, 68, 68, 0.8);
-      border-color: #ef4444;
-      &:hover {
-        background-color: rgba(220, 38, 38, 1);
-      }
-    }
-  }
 }
 
 .login-modal-overlay {
@@ -180,62 +157,66 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
 
   .login-modal {
-    background-color: #0f172a;
-    border: 1px solid #334155;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
+    @include glass-card($bg-alpha: 0.85, $blur: 40px, $border-alpha: 0.5, $radius: 16px);
+    padding: 2rem;
     width: 90%;
-    max-width: 28rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 26rem;
     pointer-events: auto;
 
     h2 {
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: white;
-      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $color-dark;
+      margin-bottom: 1.5rem;
+      text-align: center;
     }
 
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
 
       label {
         display: block;
-        color: #cbd5e1;
+        color: $color-dark;
         font-size: 0.875rem;
-        margin-bottom: 0.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
         text-align: left;
       }
 
       input {
         width: 100%;
-        padding: 0.5rem 0.75rem;
-        background-color: #1e293b;
-        border: 1px solid #475569;
-        border-radius: 0.25rem;
-        color: white;
+        padding: 0.75rem 1rem;
+        background-color: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        color: $color-dark;
         outline: none;
         box-sizing: border-box;
+        transition: all 0.2s ease;
 
         &:focus {
-          border-color: #3b82f6;
+          border-color: $color-main;
+          background-color: rgba(255, 255, 255, 0.9);
+          box-shadow: 0 0 0 3px rgba($color-main, 0.15);
         }
 
         &[readonly] {
-          color: #94a3b8;
+          color: $color-grey;
           cursor: not-allowed;
+          background-color: rgba(240, 240, 240, 0.5);
         }
       }
     }
 
     .error-msg {
-      color: #f87171;
-      font-size: 0.75rem;
-      margin-top: 0.25rem;
+      color: $color-danger;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-top: 0.5rem;
       text-align: left;
     }
 
@@ -243,31 +224,7 @@
       display: flex;
       justify-content: flex-end;
       gap: 0.75rem;
-      margin-top: 1.5rem;
-
-      button {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        border: none;
-
-        &.cancel-btn {
-          background: transparent;
-          color: #cbd5e1;
-          &:hover {
-            color: white;
-          }
-        }
-
-        &.submit-btn {
-          background-color: #2563eb;
-          color: white;
-          &:hover {
-            background-color: #1d4ed8;
-          }
-        }
-      }
+      margin-top: 2rem;
     }
   }
 }
