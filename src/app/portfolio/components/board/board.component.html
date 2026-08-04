@@ -11,7 +11,9 @@
           <thead>
             <tr>
               <th class="col-num">No</th>
+              <th class="col-category">카테고리</th>
               <th class="col-title">제목</th>
+              <!-- <th class="col-content">내용</th> -->
               <th class="col-date">작성일</th>
             </tr>
           </thead>
@@ -19,17 +21,24 @@
             @for (post of paginatedPosts(); track post.id; let i = $index) {
               <tr (click)="goToPost(post.id)">
                 <td class="col-num">{{ getPostNumber(i) }}</td>
+                <td class="col-category">
+                  <c-category-badge [category]="post.category" size="sm"></c-category-badge>
+                </td>
                 <td class="col-title">
                   <div class="title-wrapper">
-                    <span class="color-dot" [style.background-color]="post.color"></span>
+                    <img *ngIf="post.image_url" [src]="post.image_url" alt="thumbnail" class="post-thumb">
+                    <!-- <span class="color-dot" [style.background-color]="post.color"></span> -->
                     <span class="title-text">{{ post.title }}</span>
                   </div>
                 </td>
-                <td class="col-date">{{ post.created_at | date:'yyyy-MM-dd' }}</td>
+                <!-- <td class="col-content">
+                  <span class="content-text">{{ post.content }}</span>
+                </td> -->
+                <td class="col-date">{{ (post.updated_at || post.created_at) | date:'yyyy-MM-dd' }}</td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="3" class="empty-state">아직 게시물이 없습니다.</td>
+                <td colspan="5" class="empty-state">아직 게시물이 없습니다.</td>
               </tr>
             }
           </tbody>

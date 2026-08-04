@@ -1,0 +1,67 @@
+@use '../../../styles/variable' as *;
+
+.c-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  
+  .badge-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    object-fit: contain;
+  }
+  
+  &[data-size="sm"] {
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+  
+  &[data-size="md"] {
+    padding: 3px 8px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  &[data-size="lg"] {
+    padding: 4px 12px;
+    font-size: 16px;
+    border-radius: 9999px;
+  }
+  
+  &[data-variant="success"] {
+    color: $color-success;
+    background: rgba($color-success, 0.1);
+  }
+  
+  &[data-variant="warning"] {
+    color: $color-warning;
+    background: rgba($color-warning, 0.1);
+  }
+  
+  &[data-variant="danger"] {
+    color: $color-danger;
+    background: rgba($color-danger, 0.1);
+  }
+  
+  &[data-variant="info"] {
+    color: $color-main;
+    background: rgba($color-main, 0.1);
+  }
+  
+  &[data-variant="neutral"] {
+    color: #9ca3af;
+    background: #374151;
+  }
+  
+  &[data-variant="purple"] {
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.1);
+  }
+}

@@ -93,7 +93,17 @@ export class AppComponent {
   @HostListener('wheel', ['$event'])
   onWheel(event: WheelEvent) {
     const target = event.target as HTMLElement;
-    if (target.closest('app-projects') || target.closest('app-board-editor') || target.closest('app-board-detail')) {
+    
+    // If a panel is open, strictly lock global one-sheet scrolling
+    if (this.scrollService.isPanelOpen()) {
+      // Allow native scrolling ONLY inside the panel's scrollable body
+      if (!target.closest('.panel-body')) {
+        event.preventDefault();
+      }
+      return;
+    }
+
+    if (target.closest('app-projects')) {
       return;
     }
 

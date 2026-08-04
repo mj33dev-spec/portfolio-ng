@@ -6,13 +6,14 @@ import { BlogService, BlogPost } from '../../blog.service';
 import { AuthService } from '../../auth.service';
 import { BoardDetailComponent } from '../board-detail/board-detail';
 import { BoardEditorComponent } from '../board-editor/board-editor';
+import { CategoryBadgeComponent } from '../category-badge/category-badge.component';
 
 @Component({
   selector: 'app-board',
   standalone: true,
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
-  imports: [CommonModule, FormsModule, BoardDetailComponent, BoardEditorComponent, DatePipe],
+  imports: [CommonModule, FormsModule, BoardDetailComponent, BoardEditorComponent, CategoryBadgeComponent, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoardComponent implements OnInit {

@@ -4,10 +4,13 @@ import { BlogService, BlogPost } from '../../blog.service';
 import { AuthService } from '../../auth.service';
 import { marked } from 'marked';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { SidePanelComponent } from '../side-panel/side-panel.component';
+import { CBadgeComponent } from '../c-badge/c-badge.component';
+import { CategoryBadgeComponent } from '../category-badge/category-badge.component';
 
 @Component({
   selector: 'app-board-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, SidePanelComponent, CBadgeComponent, CategoryBadgeComponent],
   templateUrl: './board-detail.html',
   styleUrl: './board-detail.scss'
 })
@@ -22,15 +25,20 @@ export class BoardDetailComponent implements OnInit {
 
   post = signal<BlogPost | null>(null);
   compiledMarkdown = signal<SafeHtml>('');
+  loading = signal(true);
 
   async ngOnInit() {
     if (this.postId) {
+      this.loading.set(true);
       const data = await this.blogService.getPost(this.postId);
       if (data) {
         this.post.set(data);
         const parsed = await marked.parse(data.content);
         this.compiledMarkdown.set(this.sanitizer.bypassSecurityTrustHtml(parsed));
       }
+      this.loading.set(false);
+    } else {
+      this.loading.set(false);
     }
   }
 

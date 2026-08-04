@@ -8,15 +8,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.25rem;
+    padding: 20px;
 
     @media (min-width: 1024px) {
-        padding: 1.5rem;
+        padding: 24px;
     }
 
     .board-container {
         width: 100%;
-        max-width: 56rem;
+        max-width: 896px;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
@@ -24,15 +24,15 @@
 
         .board-header {
             .title {
-                font-size: 2.25rem;
+                font-size: 36px;
                 font-weight: 700;
                 text-align: center;
-                margin-bottom: 2rem;
+                margin-bottom: 32px;
                 color: #facc15;
                 flex-shrink: 0;
 
                 @media (min-width: 768px) {
-                    font-size: 3rem;
+                    font-size: 48px;
                 }
             }
         }
@@ -49,50 +49,94 @@
                 flex-grow: 0;
                 flex-shrink: 1;
                 overflow-y: auto;
-                padding-right: 1rem;
+                padding-right: 16px;
 
-                .col-num {
-                    width: 70px;
-                    text-align: center;
+                table {
+                    table-layout: fixed;
+                    width: 100%;
+                    border-collapse: collapse;
+
+                    th, td {
+                        padding: 12px 16px;
+                        border-bottom: 1px solid #333;
+                        box-sizing: border-box;
+                        text-align: center;
+                    }
+                    .col-num {
+                        width: 60px;
+                        min-width: 60px;
+                        text-align: right;
+                    }
+    
+                    .col-category {
+                        width: 140px;
+                        text-align: left;
+                    }
+    
+                    .col-title {
+                        width: auto;
+                        text-align: left;
+                        
+                        .title-wrapper {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            color: white;
+                            font-weight: 500;
+                        }
+    
+                        .post-thumb {
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 4px;
+                            object-fit: cover;
+                            flex-shrink: 0;
+                        }
+    
+                        .color-dot {
+                            width: 12px;
+                            height: 12px;
+                            border-radius: 50%;
+                            display: inline-block;
+                            flex-shrink: 0;
+                        }
+    
+                        .title-text {
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            font-size: 16px;
+                            font-weight: 500;
+                        }
+                    }
+    
+                    .col-content {
+                        width: 40%;
+                        padding: 0 16px;
+                        
+                        .content-text {
+                            display: block;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            color: #9ca3af;
+                            font-size: 14px;
+                        }
+                    }
+    
+                    .col-date {
+                        width: 130px;
+                        font-size: 14px;
+                        color: #9ca3af;
+                        text-align: left;
+                    }
                 }
 
-                .col-title {
-                    width: 70%;
-                    
-                    .title-wrapper {
-                        display: flex;
-                        align-items: center;
-                        gap: 0.75rem;
-                        color: white;
-                        font-weight: 500;
-                    }
-
-                    .color-dot {
-                        width: 12px;
-                        height: 12px;
-                        border-radius: 50%;
-                        display: inline-block;
-                        flex-shrink: 0;
-                    }
-
-                    .title-text {
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-                }
-
-                .col-date {
-                    width: 20%;
-                    text-align: center;
-                    font-size: 0.875rem;
-                    color: #9ca3af;
-                }
 
                 .empty-state {
                     text-align: center;
                     color: #9ca3af;
-                    padding: 3rem 0;
+                    padding: 48px 0;
                 }
             }
 
@@ -103,9 +147,9 @@
                 justify-content: center;
                 position: relative;
                 width: 100%;
-                margin-top: 1.5rem;
+                margin-top: 24px;
                 flex-shrink: 0;
-                min-height: 40px; // Ensure it has height even if no pagination
+                min-height: 40px;
 
                 .btn-primary_portfolio {
                     position: absolute;
@@ -116,18 +160,18 @@
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    gap: 0.5rem;
+                    gap: 8px;
                     
                     @media (min-width: 768px) {
-                        gap: 1rem;
+                        gap: 16px;
                     }
 
                     .nav-btn {
-                        padding: 0.5rem 1rem;
+                        padding: 8px 16px;
                         background-color: #374151;
                         color: white;
                         font-weight: 700;
-                        border-radius: 0.5rem;
+                        border-radius: 8px;
                         transition: background-color 0.2s;
                         border: none;
                         cursor: pointer;
@@ -144,10 +188,10 @@
                     }
 
                     .page-btn {
-                        width: 2.5rem;
-                        height: 2.5rem;
+                        width: 40px;
+                        height: 40px;
                         font-weight: 700;
-                        border-radius: 0.5rem;
+                        border-radius: 8px;
                         transition: background-color 0.2s;
                         border: none;
                         cursor: pointer;

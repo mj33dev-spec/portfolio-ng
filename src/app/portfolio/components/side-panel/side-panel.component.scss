@@ -1,0 +1,94 @@
+:host {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: inherit;
+}
+
+.side-panel-section {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  color: white;
+  padding: 32px 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border-radius: inherit;
+}
+
+.panel-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-shrink: 0;
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #cbd5e1;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 0.2s;
+    min-width: 80px;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  .panel-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    text-align: center;
+    flex: 1;
+  }
+
+  .panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 80px;
+    justify-content: flex-end;
+  }
+}
+
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  box-sizing: border-box;
+  overscroll-behavior: none; // Prevent scroll chaining to parent window
+  padding-right: 12px; // 스크롤막대에 의해 요소가 짤리는 현상 방지
+
+  // 스크롤막대 커스텀 UI
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; // 배경색 투명
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #facc15; // 막대 색상 노란색
+    border-radius: 9999px;
+  }
+}

@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { BlogService, BlogPost } from '../../blog.service';
 import { AuthService } from '../../auth.service';
 import { CDropdownComponent, CDropdownOption } from '../c-dropdown/c-dropdown.component';
+import { SidePanelComponent } from '../side-panel/side-panel.component';
 
 @Component({
   selector: 'app-board-editor',
-  imports: [CommonModule, FormsModule, CDropdownComponent],
+  imports: [CommonModule, FormsModule, CDropdownComponent, SidePanelComponent],
   templateUrl: './board-editor.html',
   styleUrl: './board-editor.scss'
 })
@@ -122,13 +123,6 @@ export class BoardEditorComponent implements OnInit {
       } else {
         const publicUrl = this.blogService.getImageUrl(filePath);
         this.imageUrl.set(publicUrl);
-        
-        // 본문에 이미지 마크다운 자동 추가
-        const currentContent = this.content();
-        const newContent = currentContent 
-          ? `${currentContent}\n\n![첨부이미지](${publicUrl})`
-          : `![첨부이미지](${publicUrl})`;
-        this.content.set(newContent);
       }
     } catch (error) {
       console.error(error);

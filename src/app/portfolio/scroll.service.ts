@@ -6,6 +6,7 @@ import { Injectable, signal } from '@angular/core';
 })
 export class ScrollService {
   activeSection = signal('home');
+  isPanelOpen = signal(false);
   private observer: IntersectionObserver | undefined;
 
   observeSections(sections: HTMLElement[]): void {
