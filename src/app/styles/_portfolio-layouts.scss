@@ -54,3 +54,33 @@ table {
     background-color: #facc15;
     border-radius: 9999px;
 }
+
+/* 공통 섹션 헤더 스타일 */
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    flex-shrink: 0;
+    width: 100%;
+    
+    .section-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #facc15;
+        margin-bottom: 8px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+
+        @media (min-width: 768px) {
+            font-size: 40px;
+        }
+    }
+
+    .section-subtitle {
+        color: #9ca3af;
+        font-size: 16px;
+        
+        @media (min-width: 768px) {
+            font-size: 18px;
+        }
+    }
+}

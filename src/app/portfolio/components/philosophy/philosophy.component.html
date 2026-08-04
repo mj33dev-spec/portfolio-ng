@@ -1,0 +1,54 @@
+<section class="philosophy-section">
+  <div class="philosophy-container">
+    <div class="section-header">
+      <h2 class="section-title">Philosophy</h2>
+      <p class="section-subtitle">시작부터 완성까지..! 저만의 개발 철학을 소개합니다.</p>
+    </div>
+
+    <div class="accordion-list">
+      @for (card of cards; track card.title; let i = $index) {
+        <div class="accordion-item" [class.active]="openIndex() === i">
+          <button class="accordion-header" (click)="toggleCard(i)">
+            <div class="header-content">
+              <span class="card-icon">
+                @switch (card.icon) {
+                  @case ('design') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                  }
+                  @case ('publishing') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  }
+                  @case ('frontend') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  }
+                  @case ('backend') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                  }
+                  @case ('philosophy') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
+                  }
+                }
+              </span>
+              <div class="titles">
+                <h3 class="main-title">{{ card.title }}</h3>
+                <span class="sub-title">{{ card.subtitle }}</span>
+              </div>
+            </div>
+            
+            <div class="toggle-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+          
+          <div class="accordion-content-wrapper">
+            <div class="accordion-content">
+              <p>{{ card.description }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

@@ -5,6 +5,7 @@ import { RouterOutlet } from '@angular/router';
 
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
+import { PhilosophyComponent } from './components/philosophy/philosophy.component';
 import { ProjectsComponent } from './components/projects/projects.component';
 import { AboutComponent } from './components/about/about.component';
 import { BoardComponent } from './components/board/board.component';
@@ -21,6 +22,7 @@ import { ScrollService } from './scroll.service';
     CommonModule,
     SidebarComponent,
     HomeComponent,
+    PhilosophyComponent,
     ProjectsComponent,
     AboutComponent,
     BoardComponent,
@@ -40,6 +42,7 @@ export class AppComponent {
 
   sections = [
     { id: 'home', name: 'Home' },
+    { id: 'philosophy', name: 'Philosophy' },
     { id: 'projects', name: 'Projects' },
     { id: 'about', name: 'About' },
     { id: 'board', name: 'blog' },

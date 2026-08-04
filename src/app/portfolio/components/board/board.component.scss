@@ -22,21 +22,6 @@
         flex-direction: column;
         height: 100%;
 
-        .board-header {
-            .title {
-                font-size: 36px;
-                font-weight: 700;
-                text-align: center;
-                margin-bottom: 32px;
-                color: #facc15;
-                flex-shrink: 0;
-
-                @media (min-width: 768px) {
-                    font-size: 48px;
-                }
-            }
-        }
-
         #post-wrap {
             flex-grow: 1;
             display: flex;

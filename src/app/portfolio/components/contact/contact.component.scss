@@ -18,30 +18,6 @@
     max-width: 56rem;
     /* max-w-4xl */
     text-align: center;
-
-    h2 {
-        font-size: 2.25rem;
-        /* text-4xl */
-        font-weight: 700;
-        margin-bottom: 1rem;
-        /* mb-4 */
-        color: #facc15;
-        /* text-yellow-400 */
-
-        @media (min-width: 768px) {
-            font-size: 3rem;
-            /* md:text-5xl */
-        }
-    }
-
-    .description {
-        font-size: 1.125rem;
-        /* text-lg */
-        color: #d1d5db;
-        /* text-gray-300 */
-        margin-bottom: 3rem;
-        /* mb-12 */
-    }
 }
 
 .contact-card {
