@@ -1,4 +1,4 @@
-<div class="toast-container" [ngClass]="[type, fadingOut ? 'fading-out' : '']">
+<div class="toast-container" [ngClass]="[type, fadingOut ? 'fading-out' : '']" (click)="close()">
   <div class="toast-icon">
     <!-- Success Icon -->
     @if (type === 'success') {
@@ -17,8 +17,8 @@
     <img src="/assets/icons/system/ic-error.svg" alt="에러">
     }
   </div>
-  <div class="toast-message">{{ message }}</div>
-  <button class="toast-close" (click)="close()">
-    <img src="/assets/icons/system/ic-close.svg" alt="창닫기">
-  </button>
+  <div class="toast-content">
+    <div class="toast-title">{{ getTitle() }}</div>
+    <div class="toast-message">{{ message }}</div>
+  </div>
 </div>

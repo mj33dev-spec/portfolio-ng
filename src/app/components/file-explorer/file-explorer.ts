@@ -246,7 +246,7 @@ export class FileExplorer implements OnInit, OnChanges, OnDestroy {
     // 바탕화면 폴더를 포함한 폴더 구조 생성
     const desktopFolder = new Model_Folder('', '바탕 화면', '/desktop', 0);
     desktopFolder.folder_id = 0;
-    desktopFolder.children = [...this.desktopFolders].sort((a, b) => a.file_name.localeCompare(b.file_name, 'ko')); // 가나다순 정렬
+    desktopFolder.children = [...this.desktopFolders];
     desktopFolder.expanded = 'close';
 
     this.folders = [
@@ -456,7 +456,7 @@ export class FileExplorer implements OnInit, OnChanges, OnDestroy {
    * UUID인 경우 폴더 트리에서 file_name을 찾아 반환
    */
   getPathSegmentDisplayName(part: string, index: number): string {
-    if (part === 'desktop') return '바탕 화면';
+    if (part === 'desktop' || part === 'desktop-files') return '바탕 화면';
     
     // UUID 패턴 감지 (8-4-4-4-12 형태)
     const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

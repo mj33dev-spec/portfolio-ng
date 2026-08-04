@@ -1803,6 +1803,8 @@ export class Desktop
       } catch (e) {
         console.error('Failed to parse drop data (json)', e);
       }
+      this.dragOverFolder = null;
+      this.dragOverFolderCanDrop = false;
       return;
     }
 
@@ -2032,7 +2034,7 @@ export class Desktop
     });
 
     // 바탕화면에 드롭된 경우
-    if (targetFolder.file_path === '/desktop') {
+    if (targetFolder.file_path === '/desktop' || targetFolder.file_path === '/desktop-files') {
       items.forEach((item) => {
         if (!this.desktopFolders.some((f) => f.uuid === item.uuid)) {
           this.desktopFolders.push(item);
@@ -3256,7 +3258,6 @@ export class Desktop
 
     // 바탕화면 구조 정의
     this.desktopFolders = [
-      makeFile('소개글.html', 18391, `${basePath}/index.html`),
       makeFile('포트폴리오.html', 18391, `${basePath}/portfolio.html`),
       makeFolder('포트폴리오 작업물', `${basePath}/포트폴리오 작업물`, [
         makeFolder('작업 과정', `${basePath}/포트폴리오 작업물/작업 과정`, [
@@ -3352,6 +3353,9 @@ export class Desktop
   .c-badge[data-variant="neutral"] { color: #9ca3af; background: #374151; }
 </style>
 <div style="font-family: sans-serif; padding: 20px; line-height: 1.6;">
+  <div style="background-color: #eff6ff; color: #1e3a8a; padding: 6px 12px; border-radius: 6px; margin-bottom: 24px; font-size: 14px; font-weight: 500; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center;">
+    <span>이 파일은 포트폴리오의 blog에 작성된 DB 데이터를 시각화한 자료입니다.</span>
+  </div>
   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
     <div>
       <div style="margin-bottom: 8px;">
@@ -3485,9 +3489,9 @@ export class Desktop
    * @param force 이미 좌표가 있어도 강제로 재계산할지 여부
    */
   private initializeIconCoordinates(force: boolean = false) {
-    const iconWidth = 80;
-    const iconHeight = 100;
-    const gap = 10;
+    const iconWidth = 120;
+    const iconHeight = 140;
+    const gap = 20;
     const padding = 20;
 
     const gridX = iconWidth + gap;
@@ -3751,7 +3755,7 @@ export class Desktop
     // 1. 내부 아이템 드래그 중인지 확인
     const dragPreview = this.desktopStateService.getDragPreview();
     if (dragPreview.visible && dragPreview.items.length > 0) {
-      const desktopRoot = new Model_Folder('', '바탕 화면', '/desktop', 0);
+      const desktopRoot = new Model_Folder('', '바탕 화면', '/desktop-files', 0);
       desktopRoot.folder_id = 0;
 
       if (this.canDropItemsToFolder(dragPreview.items, desktopRoot)) {
@@ -3805,7 +3809,7 @@ export class Desktop
     // 1. 내부 아이템 드래그 처리
     const dragPreview = this.desktopStateService.getDragPreview();
     if (dragPreview.visible && dragPreview.items.length > 0) {
-      const desktopRoot = new Model_Folder('', '바탕 화면', '/desktop', 0);
+      const desktopRoot = new Model_Folder('', '바탕 화면', '/desktop-files', 0);
       desktopRoot.folder_id = 0;
 
       if (this.canDropItemsToFolder(dragPreview.items, desktopRoot)) {

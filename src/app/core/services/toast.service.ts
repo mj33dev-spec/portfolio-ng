@@ -27,7 +27,7 @@ export class ToastService {
       this.toastContainer.className = 'toast-wrapper';
       Object.assign(this.toastContainer.style, {
         position: 'fixed',
-        bottom: '24px',
+        top: '24px',
         right: '24px',
         display: 'flex',
         flexDirection: 'column',
