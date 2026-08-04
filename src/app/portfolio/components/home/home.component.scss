@@ -162,46 +162,61 @@
 
   .login-modal {
     @include glass-card($bg-alpha: 0.85, $blur: 40px, $border-alpha: 0.5, $radius: 16px);
-    padding: 2rem;
+    padding: 24px;
     width: 90%;
     max-width: 26rem;
     pointer-events: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .close-icon-btn {
+      position: absolute;
+      top: 12px; right: 12px;
+      padding: 8px;
+      display: flex;
+      background: none;
+      min-height: auto;
+      color: $color-dark;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      &:hover {
+        opacity: 0.7;
+        transform: rotate(90deg);
+      }
+    }
 
     h2 {
       font-size: 1.5rem;
       font-weight: 700;
       color: $color-dark;
-      margin-bottom: 1.5rem;
       text-align: center;
     }
 
     .form-group {
-      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
 
       label {
         display: block;
         color: $color-dark;
         font-size: 0.875rem;
         font-weight: 600;
-        margin-bottom: 0.5rem;
         text-align: left;
       }
 
       input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        background-color: rgba(255, 255, 255, 0.6);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
         color: $color-dark;
-        outline: none;
-        box-sizing: border-box;
-        transition: all 0.2s ease;
+        // border-color: $color-dark;
+        border-color: rgba(255,255,255,0.5);
 
         &:focus {
-          border-color: $color-main;
-          background-color: rgba(255, 255, 255, 0.9);
-          box-shadow: 0 0 0 3px rgba($color-main, 0.15);
+          border-color: $color-portfolio-main;
+          // border-color: $color-dark;
         }
 
         &[readonly] {
@@ -216,15 +231,17 @@
       color: $color-danger;
       font-size: 0.875rem;
       font-weight: 500;
-      margin-top: 0.5rem;
       text-align: left;
     }
 
     .modal-actions {
+      margin-top: 20px;
       display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      margin-top: 2rem;
+      justify-content: stretch;
+      gap: 8px;
+      > button {
+        flex: 1;
+      }
     }
   }
 }
