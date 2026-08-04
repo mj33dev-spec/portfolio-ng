@@ -2,7 +2,8 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DAlertService } from '../d-alert/d-alert.service';
+import emailjs from '@emailjs/browser';
 
 @Component({
   selector: 'app-contact',
@@ -14,31 +15,60 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class ContactComponent {
   private fb = inject(FormBuilder);
-  private sanitizer = inject(DomSanitizer);
+  private dAlert = inject(DAlertService);
+  
+  // TODO: EmailJS 가입 후 부여받은 키로 교체해주세요. (https://emailjs.com/)
+  private EMAILJS_PUBLIC_KEY = '4ucllUD93JGp0Do2r';
+  private EMAILJS_SERVICE_ID = 'service_cife2ek';
+  private EMAILJS_TEMPLATE_ID = 'template_7yg97j6';
+
+  isSending = signal(false);
 
   contactForm = this.fb.group({
     company: ['', Validators.required],
+    contact: ['', Validators.required],
     name: ['', Validators.required],
-    message: ['', [Validators.required, Validators.minLength(20)]]
+    message: ['', [Validators.required, Validators.minLength(10)]]
   });
   
-  mailtoLink = signal<SafeUrl>('');
-
-  generateMailto(): void {
-    if (this.contactForm.invalid) {
-        return;
-    }
-    const { company, name, message } = this.contactForm.value;
-    const subject = encodeURIComponent(`${company}의 ${name}님으로부터의 연락`);
-    const body = encodeURIComponent(message || '');
-    const href = `mailto:almj3308@gmail.com?subject=${subject}&body=${body}`;
-    this.mailtoLink.set(this.sanitizer.bypassSecurityTrustUrl(href));
-  }
-
   submitForm(): void {
-    this.generateMailto();
-    // In a real app, you might need a small delay or a click on a generated link
-    // as direct window.location can be blocked. For simplicity, we update the href.
-    // The user will click the link that appears.
+    if (this.contactForm.invalid) {
+      this.dAlert.warn('폼을 올바르게 채워주세요.');
+      return;
+    }
+
+    this.dAlert.yesNo(
+      '정말로 이메일을 전송하시겠습니까?',
+      async () => {
+        try {
+          this.isSending.set(true);
+          
+          const { company, contact, name, message } = this.contactForm.value;
+          
+          const templateParams = {
+            company: company,
+            contact: contact,
+            name: name,
+            message: message,
+          };
+
+          // EmailJS 전송 (실제 키 입력 후 정상 작동합니다)
+          await emailjs.send(
+            this.EMAILJS_SERVICE_ID,
+            this.EMAILJS_TEMPLATE_ID,
+            templateParams,
+            this.EMAILJS_PUBLIC_KEY
+          );
+
+          this.dAlert.success('이메일이 성공적으로 전송되었습니다!');
+          this.contactForm.reset();
+        } catch (error) {
+          console.error('EmailJS Error:', error);
+          this.dAlert.error('이메일 전송에 실패했습니다. (API 키 설정을 확인해주세요)');
+        } finally {
+          this.isSending.set(false);
+        }
+      }
+    );
   }
 }

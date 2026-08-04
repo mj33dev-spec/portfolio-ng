@@ -67,6 +67,22 @@ export class DAlertService {
     this.show({ message, title, type: 'warn', buttonType: 'okCancel', onConfirm, onCancel, direction: 'center' });
   }
 
+  yesNo(message: string, onConfirm?: () => void, onCancel?: () => void, title?: string) {
+    this.show({ message, title, type: 'info', buttonType: 'yesNo', onConfirm, onCancel, direction: 'center' });
+  }
+
+  okCancel(message: string, onConfirm?: () => void, onCancel?: () => void, title?: string) {
+    this.show({ message, title, type: 'info', buttonType: 'okCancel', onConfirm, onCancel, direction: 'center' });
+  }
+
+  yesOnly(message: string, onConfirm?: () => void, title?: string) {
+    this.show({ message, title, type: 'info', buttonType: 'yesOnly', onConfirm, direction: 'center' });
+  }
+
+  okOnly(message: string, onConfirm?: () => void, title?: string) {
+    this.show({ message, title, type: 'info', buttonType: 'okOnly', onConfirm, direction: 'center' });
+  }
+
   prompt(message: string, onPromptSubmit: (value: string) => void, promptPlaceholder?: string, title?: string) {
     this.show({ message, title, type: 'info', buttonType: 'okCancel', isPrompt: true, onPromptSubmit, promptPlaceholder, direction: 'center' });
   }

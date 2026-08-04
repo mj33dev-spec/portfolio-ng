@@ -2,31 +2,33 @@
   <div class="content-container">
     <div class="section-header">
       <h2 class="section-title">Contact</h2>
-      <p class="section-subtitle">저는 현재 프리랜서 작업을 할 수 있습니다. 생각하고 있는 프로젝트가 있으신가요? 이야기 나눠봐요.</p>
+      <p class="section-subtitle">저에 대해 더 궁금하신가요?</p>
     </div>
 
     <div class="contact-card">
       <form [formGroup]="contactForm" (ngSubmit)="submitForm()">
         <div class="form-grid">
-          <input formControlName="name" type="text" placeholder="이름" class="form-input">
-          <input formControlName="company" type="text" placeholder="회사명" class="form-input">
+          <div class="input-wrapper">
+            <input formControlName="company" type="text" placeholder="회사명" class="form-input">
+          </div>
+          <div class="input-wrapper">
+            <input formControlName="name" type="text" placeholder="담당자명" class="form-input">
+          </div>
         </div>
         <div class="form-group">
-          <textarea formControlName="message" placeholder="메시지" rows="6" class="form-input"></textarea>
+          <div class="input-wrapper">
+            <input formControlName="contact" type="text" placeholder="이메일 또는 연락처" class="form-input">
+          </div>
         </div>
-        <button type="submit" [disabled]="contactForm.invalid" class="submit-btn">
-          이메일 준비
+        <div class="form-group">
+          <div class="input-wrapper">
+            <textarea formControlName="message" placeholder="내용을 10자 이상 입력해주세요" rows="6" class="form-input"></textarea>
+          </div>
+        </div>
+        <button type="submit" [disabled]="isSending()" class="btn-full" [ngClass]="contactForm.invalid ? 'btn-dark' : 'btn-primary_portfolio'">
+          {{ isSending() ? '전송 중...' : '이메일 전송' }}
         </button>
       </form>
-
-      @if (mailtoLink()) {
-        <div class="success-message">
-          <p>이메일이 준비되었습니다! 아래 링크를 클릭하여 메일 클라이언트를 여세요.</p>
-          <a [href]="mailtoLink()" class="mail-link">
-            이메일 보내기
-          </a>
-        </div>
-      }
     </div>
 
     <div class="social-links">
