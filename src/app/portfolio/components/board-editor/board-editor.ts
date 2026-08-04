@@ -5,6 +5,7 @@ import { BlogService, BlogPost } from '../../blog.service';
 import { AuthService } from '../../auth.service';
 import { CDropdownComponent, CDropdownOption } from '../c-dropdown/c-dropdown.component';
 import { SidePanelComponent } from '../side-panel/side-panel.component';
+import { DAlertService } from '../d-alert/d-alert.service';
 
 @Component({
   selector: 'app-board-editor',
@@ -18,6 +19,7 @@ export class BoardEditorComponent implements OnInit {
 
   private blogService = inject(BlogService);
   public authService = inject(AuthService);
+  private dAlert = inject(DAlertService);
 
   isEditMode = signal(false);
 
@@ -49,8 +51,9 @@ export class BoardEditorComponent implements OnInit {
   async ngOnInit() {
     // Only admin can access this page
     if (!this.authService.isLoggedIn()) {
-      alert('관리자만 접근할 수 있습니다.');
-      this.closeOverlay.emit();
+      this.dAlert.error('관리자만 접근할 수 있습니다.', '권한 없음', () => {
+        this.closeOverlay.emit();
+      });
       return;
     }
 
@@ -74,7 +77,7 @@ export class BoardEditorComponent implements OnInit {
 
   async savePost() {
     if (!this.title() || !this.content() || !this.category()) {
-      alert('제목, 카테고리, 내용을 모두 입력해주세요.');
+      this.dAlert.warn('제목, 카테고리, 내용을 모두 입력해주세요.');
       return;
     }
 
@@ -97,10 +100,11 @@ export class BoardEditorComponent implements OnInit {
     }
 
     if (success) {
-      alert('저장되었습니다.');
-      this.closeOverlay.emit();
+      this.dAlert.success('게시물이 성공적으로 저장되었습니다.', '저장 성공', () => {
+        this.closeOverlay.emit();
+      });
     } else {
-      alert('저장에 실패했습니다.');
+      this.dAlert.error('저장에 실패했습니다.');
     }
   }
 
@@ -119,14 +123,14 @@ export class BoardEditorComponent implements OnInit {
       const { data, error } = await this.blogService.uploadImage(filePath, file);
       if (error) {
         console.error('Upload Error:', error);
-        alert('이미지 업로드에 실패했습니다. (blog-images 버킷 설정을 확인해주세요)');
+        this.dAlert.error('이미지 업로드에 실패했습니다. (blog-images 버킷 설정을 확인해주세요)');
       } else {
         const publicUrl = this.blogService.getImageUrl(filePath);
         this.imageUrl.set(publicUrl);
       }
     } catch (error) {
       console.error(error);
-      alert('이미지 업로드 중 오류가 발생했습니다.');
+      this.dAlert.error('이미지 업로드 중 오류가 발생했습니다.');
     } finally {
       this.isUploading.set(false);
       input.value = ''; // 동일 파일 재업로드 가능하게 초기화

@@ -9,6 +9,7 @@ import { ProjectsComponent } from './components/projects/projects.component';
 import { AboutComponent } from './components/about/about.component';
 import { BoardComponent } from './components/board/board.component';
 import { ContactComponent } from './components/contact/contact.component';
+import { DAlertComponent } from './components/d-alert/d-alert.component';
 import { ScrollService } from './scroll.service';
 
 @Component({
@@ -23,7 +24,8 @@ import { ScrollService } from './scroll.service';
     ProjectsComponent,
     AboutComponent,
     BoardComponent,
-    ContactComponent
+    ContactComponent,
+    DAlertComponent
   ],
 })
 export class AppComponent {

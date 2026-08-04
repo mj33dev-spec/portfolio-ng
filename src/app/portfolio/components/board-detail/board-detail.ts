@@ -7,6 +7,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SidePanelComponent } from '../side-panel/side-panel.component';
 import { CBadgeComponent } from '../c-badge/c-badge.component';
 import { CategoryBadgeComponent } from '../category-badge/category-badge.component';
+import { DAlertService } from '../d-alert/d-alert.service';
 
 @Component({
   selector: 'app-board-detail',
@@ -22,6 +23,7 @@ export class BoardDetailComponent implements OnInit {
   private blogService = inject(BlogService);
   public authService = inject(AuthService);
   private sanitizer = inject(DomSanitizer);
+  private dAlert = inject(DAlertService);
 
   post = signal<BlogPost | null>(null);
   compiledMarkdown = signal<SafeHtml>('');
@@ -55,13 +57,15 @@ export class BoardDetailComponent implements OnInit {
 
   async deletePost() {
     const p = this.post();
-    if (p && confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
-      const success = await this.blogService.deletePost(p.id);
-      if (success) {
-        this.goBack();
-      } else {
-        alert('삭제에 실패했습니다.');
-      }
+    if (p) {
+      this.dAlert.confirm('정말로 이 게시물을 삭제하시겠습니까?', async () => {
+        const success = await this.blogService.deletePost(p.id);
+        if (success) {
+          this.goBack();
+        } else {
+          this.dAlert.error('삭제에 실패했습니다.');
+        }
+      });
     }
   }
 }

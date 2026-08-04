@@ -77,18 +77,4 @@
   box-sizing: border-box;
   overscroll-behavior: none; // Prevent scroll chaining to parent window
   padding-right: 12px; // 스크롤막대에 의해 요소가 짤리는 현상 방지
-
-  // 스크롤막대 커스텀 UI
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent; // 배경색 투명
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #facc15; // 막대 색상 노란색
-    border-radius: 9999px;
-  }
 }

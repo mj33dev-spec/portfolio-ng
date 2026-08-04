@@ -39,3 +39,18 @@ table {
         }
     }
 }
+
+/* 글로벌 스크롤막대 커스텀 UI */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #facc15;
+    border-radius: 9999px;
+}

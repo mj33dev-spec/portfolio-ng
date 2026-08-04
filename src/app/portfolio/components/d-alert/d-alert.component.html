@@ -1,0 +1,72 @@
+<div class="alertOverlay" 
+     [class]="state().direction"
+     [class.active]="hasEntered()"
+     (click)="handleOverlayClick()"
+     *ngIf="state().isOpen || isRetained()">
+  
+  <div class="alertBox" 
+       [class]="state().direction"
+       [class.active]="hasEntered()"
+       (click)="stopPropagation($event)">
+       
+    <div class="alertContent">
+      <div class="iconWrapper" [class]="state().type">
+        <!-- Success Icon -->
+        <svg *ngIf="state().type === 'success'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <!-- Warn Icon -->
+        <svg *ngIf="state().type === 'warn'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <!-- Error Icon -->
+        <svg *ngIf="state().type === 'error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="15" y1="9" x2="9" y2="15" />
+          <line x1="9" y1="9" x2="15" y2="15" />
+        </svg>
+        <!-- Info Icon -->
+        <svg *ngIf="state().type === 'info'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      </div>
+      
+      <div class="textDetails">
+        <h4 class="alertTitle" *ngIf="state().title">{{ state().title }}</h4>
+        <p class="alertMessage">{{ state().message }}</p>
+        
+        <input *ngIf="state().isPrompt"
+               #promptInput
+               class="alertInput"
+               type="text"
+               [placeholder]="state().promptPlaceholder || ''"
+               [ngModel]="inputValue()"
+               (ngModelChange)="inputValue.set($event)"
+               (keydown.enter)="handleConfirm()" />
+      </div>
+    </div>
+    
+    <div class="alertFooter">
+      <div class="buttonGroup" [ngSwitch]="state().buttonType">
+        <ng-container *ngSwitchCase="'yesOnly'">
+          <button [class]="getConfirmButtonClass()" (click)="handleConfirm()">예</button>
+        </ng-container>
+        <ng-container *ngSwitchCase="'yesNo'">
+          <button class="btn-outlined-primary_portfolio" (click)="handleCancel()">아니오</button>
+          <button [class]="getConfirmButtonClass()" (click)="handleConfirm()">예</button>
+        </ng-container>
+        <ng-container *ngSwitchCase="'okOnly'">
+          <button [class]="getConfirmButtonClass()" (click)="handleConfirm()">확인</button>
+        </ng-container>
+        <ng-container *ngSwitchCase="'okCancel'">
+          <button class="btn-outlined-primary_portfolio" (click)="handleCancel()">취소</button>
+          <button [class]="getConfirmButtonClass()" (click)="handleConfirm()">확인</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
