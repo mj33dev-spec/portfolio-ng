@@ -1,5 +1,6 @@
-import { Injectable, signal, inject } from '@angular/core';
-import { Auth, authState, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { Injectable, signal } from '@angular/core';
+import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,14 +9,17 @@ export class AuthService {
   // Only allow this specific email
   private readonly ADMIN_EMAIL = 'blmj3308@gmail.com';
   
-  private auth = inject(Auth);
+  private supabase: SupabaseClient;
 
   // Signal to hold the authentication state
   isLoggedIn = signal<boolean>(false);
 
   constructor() {
-    // Automatically update the signal based on Firebase auth state
-    authState(this.auth).subscribe((user) => {
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+
+    // Automatically update the signal based on Supabase auth state
+    this.supabase.auth.onAuthStateChange((event, session) => {
+      const user = session?.user;
       this.isLoggedIn.set(!!user && user.email === this.ADMIN_EMAIL);
     });
   }
@@ -25,7 +29,11 @@ export class AuthService {
       if (email !== this.ADMIN_EMAIL) {
         return false;
       }
-      await signInWithEmailAndPassword(this.auth, email, password);
+      const { error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -35,7 +43,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await signOut(this.auth);
+      await this.supabase.auth.signOut();
     } catch (error) {
       console.error('Logout error:', error);
     }
