@@ -1,4 +1,18 @@
-import { Component, HostListener, OnDestroy, OnInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, ViewChildren, QueryList, inject, Input, SimpleChanges, ElementRef } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  AfterViewChecked,
+  AfterViewInit,
+  ChangeDetectorRef,
+  ViewChildren,
+  QueryList,
+  inject,
+  Input,
+  SimpleChanges,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common'; // Added DatePipe
 // import { FormsModule } from '@angular/forms';
 import { SHARED_MODULES } from '../../shared/shared-modules';
@@ -27,8 +41,15 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
-import { ApiService, Parameter, UploadProgress } from '../../core/services/api.service';
-import { DesktopStateService, ContextMenuItem } from '../../core/services/desktop-state.service';
+import {
+  ApiService,
+  Parameter,
+  UploadProgress,
+} from '../../core/services/api.service';
+import {
+  DesktopStateService,
+  ContextMenuItem,
+} from '../../core/services/desktop-state.service';
 import { WorkspaceService } from '../../core/services/workspace.service';
 import { ToastService } from '../../core/services/toast.service';
 import { first, firstValueFrom } from 'rxjs';
@@ -39,13 +60,17 @@ import { InputBoxService } from '../../core/services/inputbox.service';
 import { ShortcutService } from '../../core/services/shortcut.service';
 import { FontDialogService } from '../../core/services/font-dialog.service';
 import { AboutDialogService } from '../../core/services/about-dialog.service';
-import { SafePipe } from "../../shared/pipes/safe.pipe";
+import { SafePipe } from '../../shared/pipes/safe.pipe';
 
-import { WindowService, WindowInstance } from '../../core/services/window.service';
+import {
+  WindowService,
+  WindowInstance,
+} from '../../core/services/window.service';
 
 import Psd from '@webtoon/psd';
 import * as XLSX from 'xlsx';
 import { renderAsync } from 'docx-preview';
+import { BlogService } from '../../portfolio/blog.service';
 
 @Component({
   selector: 'app-desktop',
@@ -60,18 +85,15 @@ import { renderAsync } from 'docx-preview';
     DatePipe,
 
     TextEditorComponent,
-    PortfolioComponent
+    PortfolioComponent,
   ],
   templateUrl: './desktop.html',
-  styleUrls: [
-    './desktop.scss',
-    './files/hwp.scss'
-  ],
+  styleUrls: ['./desktop.scss', './files/hwp.scss'],
 })
-export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewInit {
-
+export class Desktop
+  implements OnInit, OnDestroy, AfterViewChecked, AfterViewInit
+{
   @Input() workspaceUUID: string = '';
-
 
   @Input() mode: 'preview' | 'normal' = 'normal';
 
@@ -209,7 +231,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     loading: false,
     x: 0,
     y: 0,
-    type: ''
+    type: '',
   };
 
   // Quick Look 고정 크기 (300x250 기준)
@@ -217,7 +239,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   quickLookHeight = 250;
 
   // windows: WindowInstance[] = []; // WindowService로 이동
-  get windows() { return this.windowService.windows; }
+  get windows() {
+    return this.windowService.windows;
+  }
   taskbarApps: TaskbarApp[] = [];
 
   // 파일 탐색기 인스턴스들 소집
@@ -243,7 +267,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     private shortcutService: ShortcutService,
     private http: HttpClient,
     public windowService: WindowService,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private blogService: BlogService,
   ) {
     // this.toast.error('파일을 삭제할 수 없습니다.');
     // this.toast.warn('파일을 삭제하시겠습니까?');
@@ -277,18 +302,25 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
   // 창 닫기 시도 (저장 확인)
   async tryCloseWindow(id: string) {
-    const window = this.windowService.windows.find(w => w.id === id);
+    const window = this.windowService.windows.find((w) => w.id === id);
     if (window && window.isDirty && window.type === 'text') {
-      const result = await firstValueFrom(this.msgboxService.custom({
-        title: '메모장',
-        message: `변경 내용을 ${window.file?.file_name || '제목 없음'}에 저장하시겠습니까?`,
-        icon: 'info',
-        buttons: [
-          { label: '저장', type: 'primary', value: true, shortcut: 'S' },
-          { label: '저장 안 함', type: 'secondary', value: false, shortcut: 'N' },
-          { label: '취소', type: 'secondary', value: null }
-        ]
-      }));
+      const result = await firstValueFrom(
+        this.msgboxService.custom({
+          title: '메모장',
+          message: `변경 내용을 ${window.file?.file_name || '제목 없음'}에 저장하시겠습니까?`,
+          icon: 'info',
+          buttons: [
+            { label: '저장', type: 'primary', value: true, shortcut: 'S' },
+            {
+              label: '저장 안 함',
+              type: 'secondary',
+              value: false,
+              shortcut: 'N',
+            },
+            { label: '취소', type: 'secondary', value: null },
+          ],
+        }),
+      );
 
       if (result === true) {
         // 저장 (S)
@@ -310,11 +342,15 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     if (!windowInstance.file) return;
 
     // 원본 파일 찾기 (재귀적으로 검색)
-    const originalFile = this.findFileById(windowInstance.file.uuid, this.desktopFolders);
+    const originalFile = this.findFileById(
+      windowInstance.file.uuid,
+      this.desktopFolders,
+    );
 
     if (originalFile) {
       // 텍스트 내용 추출 (TextEditorComponent가 windowInstance.file.extension_info.text를 업데이트했다고 가정)
-      const textContent = (windowInstance.file!.extension_info as any).text || '';
+      const textContent =
+        (windowInstance.file!.extension_info as any).text || '';
 
       // 로컬 참조들 업데이트
       if (originalFile.extension_info.extension_name === '.txt') {
@@ -343,27 +379,34 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     const baseName = dotIndex !== -1 ? oldName.substring(0, dotIndex) : oldName;
     const extension = dotIndex !== -1 ? oldName.substring(dotIndex) : '';
 
-    this.inputboxService.okCancel(
-      '다른 이름으로 저장할 파일 이름을 입력하세요:',
-      '다른 이름으로 저장',
-      baseName + '_사본' + extension
-    ).subscribe(newName => {
-      if (!newName) return;
+    this.inputboxService
+      .okCancel(
+        '다른 이름으로 저장할 파일 이름을 입력하세요:',
+        '다른 이름으로 저장',
+        baseName + '_사본' + extension,
+      )
+      .subscribe((newName) => {
+        if (!newName) return;
 
-      // 새로운 파일 객체 생성 (깊은 복사)
-      const newFile = JSON.parse(JSON.stringify(windowInstance.file)) as Abstract_File;
-      newFile.uuid = this.generateId(); // 새로운 UUID 생성
-      newFile.file_name = newName;
-      newFile.file_path = windowInstance.file!.file_path.replace(oldName, newName);
-      newFile.file_created_at = new Date();
-      newFile.file_updated_at = new Date();
+        // 새로운 파일 객체 생성 (깊은 복사)
+        const newFile = JSON.parse(
+          JSON.stringify(windowInstance.file),
+        ) as Abstract_File;
+        newFile.uuid = this.generateId(); // 새로운 UUID 생성
+        newFile.file_name = newName;
+        newFile.file_path = windowInstance.file!.file_path.replace(
+          oldName,
+          newName,
+        );
+        newFile.file_created_at = new Date();
+        newFile.file_updated_at = new Date();
 
-      // 바탕화면에 추가
-      this.desktopFolders.push(newFile);
+        // 바탕화면에 추가
+        this.desktopFolders.push(newFile);
 
-      this.toast.success(`'${newName}'으로 저장되었습니다.`);
-      windowInstance.showFileMenu = false;
-    });
+        this.toast.success(`'${newName}'으로 저장되었습니다.`);
+        windowInstance.showFileMenu = false;
+      });
   }
 
   private generateId(): string {
@@ -386,7 +429,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
         // 소개글.html 자동 열기
         setTimeout(() => {
-          const aboutFile = this.desktopFolders.find(f => f.file_name === '포트폴리오.html');
+          const aboutFile = this.desktopFolders.find(
+            (f) => f.file_name === '포트폴리오.html',
+          );
           if (aboutFile) {
             this.openFolderWindow(aboutFile, { isMaximized: true });
           }
@@ -401,41 +446,49 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       this.transparentDragImage.src =
         'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-      this.desktopStateService.isModalOpen$.pipe(takeUntil(this.destroy$)).subscribe(isOpen => {
-        if (isOpen) {
-          this.blurAllWindows();
-        }
-      });
+      this.desktopStateService.isModalOpen$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((isOpen) => {
+          if (isOpen) {
+            this.blurAllWindows();
+          }
+        });
 
       // 배경 변경 이벤트 구독 (자신의 workspaceUUID와 일치하는 경우에만 업데이트)
-      this.workspaceService.backgroundChange$.pipe(takeUntil(this.destroy$)).subscribe(({ workspaceUUID, bgId }) => {
-        if (workspaceUUID === this.workspaceUUID) {
-          this.setBackgroundImage(bgId);
-        }
-      });
+      this.workspaceService.backgroundChange$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(({ workspaceUUID, bgId }) => {
+          if (workspaceUUID === this.workspaceUUID) {
+            this.setBackgroundImage(bgId);
+          }
+        });
 
       // Task 1: 전역 드래그 프리뷰 상태 구독 (탐색기 드래그 대응)
-      this.desktopStateService.dragPreview$.pipe(takeUntil(this.destroy$)).subscribe(state => {
-        this.dragPreview = {
-          ...this.dragPreview, // 기존 구조 유지
-          ...state
-        };
-        this.isDraggingSelectedItems = state.visible;
-        this.cdr.detectChanges();
-      });
+      this.desktopStateService.dragPreview$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((state) => {
+          this.dragPreview = {
+            ...this.dragPreview, // 기존 구조 유지
+            ...state,
+          };
+          this.isDraggingSelectedItems = state.visible;
+          this.cdr.detectChanges();
+        });
 
       // Task 2: 전역 컨텍스트 메뉴 상태 구독
-      this.desktopStateService.contextMenu$.pipe(takeUntil(this.destroy$)).subscribe(state => {
-        this.contextMenu = {
-          visible: state.visible,
-          x: state.x,
-          y: state.y,
-          opensLeft: !!state.opensLeft,
-          opensUp: !!state.opensUp
-        };
-        this.contextMenuItems = state.items;
-        this.cdr.detectChanges();
-      });
+      this.desktopStateService.contextMenu$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((state) => {
+          this.contextMenu = {
+            visible: state.visible,
+            x: state.x,
+            y: state.y,
+            opensLeft: !!state.opensLeft,
+            opensUp: !!state.opensUp,
+          };
+          this.contextMenuItems = state.items;
+          this.cdr.detectChanges();
+        });
 
       this.registerShortcuts();
 
@@ -444,20 +497,20 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         key: 'c',
         ctrl: true,
         action: () => this.onCopy(),
-        description: '복사'
+        description: '복사',
       });
       this.shortcutService.register({
         key: 'v',
         ctrl: true,
         action: () => this.onPaste(),
-        description: '붙여넣기'
+        description: '붙여넣기',
       });
     });
 
     // Quick Look 상태 구독
     this.desktopStateService.quickLook$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(state => {
+      .subscribe((state) => {
         this.quickLook.visible = state.visible;
         if (state.visible && state.file) {
           this.quickLook.file = state.file;
@@ -518,40 +571,44 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       {
         key: 'delete',
         action: () => {
-          if (this.windows.some(w => w.isActive)) return;
+          if (this.windows.some((w) => w.isActive)) return;
           this.remove();
-        }
+        },
       },
       {
         key: 'f2',
         action: () => {
           if (this.selectedFolders.size === 1) {
             const fileUuid = Array.from(this.selectedFolders)[0];
-            const file = this.desktopFolders.find(f => f.uuid === fileUuid);
+            const file = this.desktopFolders.find((f) => f.uuid === fileUuid);
             if (file) this.startRename(file);
           }
-        }
+        },
       },
       {
         key: 'a',
         ctrl: true,
         action: () => {
           // 활성화된 탐색기 창이 있는지 확인
-          const activeExplorer = this.fileExplorers.find(fe => fe.isActive);
+          const activeExplorer = this.fileExplorers.find((fe) => fe.isActive);
           if (activeExplorer) {
             activeExplorer.selectAll();
             return;
           }
           this.selectAllFiles();
-        }
+        },
       },
       {
         key: 'escape',
         action: () => {
           // 활성화된 탐색기 창 선택 해제
-          const activeWindow = this.windows.find(w => w.isActive && w.type === 'explorer');
+          const activeWindow = this.windows.find(
+            (w) => w.isActive && w.type === 'explorer',
+          );
           if (activeWindow) {
-            const explorer = this.fileExplorers.find(fe => fe.rootFolder?.uuid === activeWindow.folder?.uuid);
+            const explorer = this.fileExplorers.find(
+              (fe) => fe.rootFolder?.uuid === activeWindow.folder?.uuid,
+            );
             if (explorer) {
               explorer.clearSelection();
               explorer.hideContextMenu();
@@ -560,27 +617,42 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           }
           this.selectedFolders.clear();
           this.hideContextMenu();
-        }
+        },
       },
       {
         key: 'h',
         ctrl: true,
         action: () => {
           // 활성화된 창 최소화
-          const activeWindow = this.windows.find(w => w.isActive) ||
-            [...this.windows].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0))[0];
+          const activeWindow =
+            this.windows.find((w) => w.isActive) ||
+            [...this.windows].sort(
+              (a, b) => (b.zIndex || 0) - (a.zIndex || 0),
+            )[0];
           if (activeWindow) {
             this.minimizeWindow(activeWindow.id);
           }
-        }
+        },
       },
-      { key: 'arrowup', action: () => this.handleKeyboardNavigation('ArrowUp') },
-      { key: 'arrowdown', action: () => this.handleKeyboardNavigation('ArrowDown') },
-      { key: 'arrowleft', action: () => this.handleKeyboardNavigation('ArrowLeft') },
-      { key: 'arrowright', action: () => this.handleKeyboardNavigation('ArrowRight') },
+      {
+        key: 'arrowup',
+        action: () => this.handleKeyboardNavigation('ArrowUp'),
+      },
+      {
+        key: 'arrowdown',
+        action: () => this.handleKeyboardNavigation('ArrowDown'),
+      },
+      {
+        key: 'arrowleft',
+        action: () => this.handleKeyboardNavigation('ArrowLeft'),
+      },
+      {
+        key: 'arrowright',
+        action: () => this.handleKeyboardNavigation('ArrowRight'),
+      },
     ];
 
-    actions.forEach(a => {
+    actions.forEach((a) => {
       this.shortcutService.register(a);
       this.shortcutActions.push({ key: a.key, action: a.action });
     });
@@ -589,7 +661,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   // 바탕화면 모든 파일 선택
   private selectAllFiles() {
     this.selectedFolders.clear();
-    this.desktopFolders.forEach(file => {
+    this.desktopFolders.forEach((file) => {
       this.selectedFolders.add(file.uuid);
     });
   }
@@ -619,7 +691,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     this.sseConnections.clear();
 
     // 등록된 단축키 모두 해제
-    this.shortcutActions.forEach(a => {
+    this.shortcutActions.forEach((a) => {
       this.shortcutService.unregister(a.key, a.action);
     });
 
@@ -632,7 +704,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     if (this.shouldFocusRenameInput) {
       this.shouldFocusRenameInput = false;
       setTimeout(() => {
-        const renameInput = document.querySelector('.rename-input') as HTMLInputElement;
+        const renameInput = document.querySelector(
+          '.rename-input',
+        ) as HTMLInputElement;
         if (renameInput) {
           renameInput.focus();
           renameInput.select();
@@ -654,7 +728,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   // ------------------------------------------------------------
   // 헬퍼 함수
   // ------------------------------------------------------------
-  private findFileById(uuid: string, folders: Abstract_File[]): Abstract_File | null {
+  private findFileById(
+    uuid: string,
+    folders: Abstract_File[],
+  ): Abstract_File | null {
     for (const file of folders) {
       if (file.uuid === uuid) {
         return file;
@@ -669,7 +746,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     return null;
   }
 
-  private findFolderByFolderId(folderId: number, folders: Abstract_File[]): Abstract_File | null {
+  private findFolderByFolderId(
+    folderId: number,
+    folders: Abstract_File[],
+  ): Abstract_File | null {
     for (const file of folders) {
       if (file.folder_id === folderId) {
         return file;
@@ -683,7 +763,6 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     }
     return null;
   }
-
 
   // ------------------------------------------------------------
   // 바탕화면 클릭 이벤트 처리
@@ -736,7 +815,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         const folderUuid = iconElement.getAttribute('data-folder-uuid');
         if (folderUuid) {
           const foundFile = this.desktopFolders.find(
-            (f) => f.uuid === folderUuid
+            (f) => f.uuid === folderUuid,
           );
           contextMenuTarget = foundFile || null;
         }
@@ -822,7 +901,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     this.endDesktopDrag(false);
     this.deactivateAllWindows();
-    this.closeQuickLook();
+    // this.closeQuickLook();
   }
 
   // @HostListener('window:keydown', ['$event'])
@@ -878,8 +957,6 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   //   }
   // }
 
-
-
   async loadQuickLookData(file: Abstract_File) {
     const viewType = file.extension_info.view_type;
     const url = this.getFileUrl(file);
@@ -912,7 +989,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           const imageData = new ImageData(
             new Uint8ClampedArray(compositeBuffer),
             psd.width,
-            psd.height
+            psd.height,
           );
           ctx.putImageData(imageData, 0, 0);
 
@@ -925,56 +1002,69 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       } else if (viewType === 'ai') {
         // AI 파일은 PDF 미리보기 URL 사용 (변환된 이미지)
         // file.file_path가 /desktop/uuid 형태일 수 있으므로 uuid 기반으로 미리보기 경로 유추 필요
-        // 하지만 현재 구조상 정확한 미리보기 URL을 알기 어려우므로, 
+        // 하지만 현재 구조상 정확한 미리보기 URL을 알기 어려우므로,
         // WindowComponent에서 사용하는 방식 참고: getFileProxyUrl은 원본 URL을 반환함.
         // AI 파일의 경우 브라우저에서 직접 표시가 어려우므로, PDF 변환된 url이나 썸네일을 보여줘야 함.
         // 임시로 썸네일 이미지를 보여주거나, PDF 뷰어로 연결 시도.
-        // 여기서는 PSD와 유사하게 처리하되, AI 파일은 보통 변환이 필요함. 
+        // 여기서는 PSD와 유사하게 처리하되, AI 파일은 보통 변환이 필요함.
         // 만약 서버에서 변환된 미리보기를 제공한다면 그 URL을 써야 함.
         // 현재 로직상 AI 파일 뷰어(window type 'ai')는 pdf-viewer를 사용함.
-        // 따라서 quickLook에서도 pdf-viewer를 사용하거나, 
+        // 따라서 quickLook에서도 pdf-viewer를 사용하거나,
         // 단순히 썸네일을 보여주는 방식으로 처리.
         this.quickLook.content = url;
         this.quickLook.loading = false;
-      } else if (viewType === 'html' || viewType === 'code' || viewType === 'text') {
-        if (!url) {
-          this.quickLook.content = '';
+      } else if (
+        viewType === 'html' ||
+        viewType === 'code' ||
+        viewType === 'text'
+      ) {
+        // 이미 텍스트가 메모리에 로드된 가상 파일인 경우 HTTP 호출 생략
+        if ((file.extension_info as any).text) {
+          this.quickLook.content = (file.extension_info as any).text;
           this.quickLook.loading = false;
-          return;
-        }
-        try {
-          const textRes = await fetch(url);
-          if (!textRes.ok) throw new Error(textRes.statusText);
-          let content = await textRes.text();
-
-          // HTML 파일인 경우 base URL 주입하여 상대 경로 리소스(이미지, CSS 등) 해결
-          if (viewType === 'html') {
-            const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-            const baseTag = `<base href="${baseUrl}">`;
-
-            // <head>가 있으면 그 안에, 없으면 <html> 안에, 그것도 없으면 맨 앞에 추가
-            if (content.includes('<head>')) {
-              content = content.replace('<head>', `<head>${baseTag}`);
-            } else if (content.includes('<html>')) {
-              content = content.replace('<html>', `<html><head>${baseTag}</head>`);
-            } else {
-              content = `${baseTag}${content}`;
-            }
+        } else {
+          if (!url) {
+            this.quickLook.content = '';
+            this.quickLook.loading = false;
+            return;
           }
+          try {
+            const textRes = await fetch(url);
+            if (!textRes.ok) throw new Error(textRes.statusText);
+            let content = await textRes.text();
 
-          this.quickLook.content = content;
-        } catch (err) {
-          console.warn('텍스트 파일 로드 실패 (빈 파일일 수 있음):', err);
-          this.quickLook.content = ''; // 빈 내용으로 처리
-        }
+            // HTML 파일인 경우 base URL 주입하여 상대 경로 리소스(이미지, CSS 등) 해결
+            if (viewType === 'html') {
+              const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+              const baseTag = `<base href="${baseUrl}">`;
+
+              // <head>가 있으면 그 안에, 없으면 <html> 안에, 그것도 없으면 맨 앞에 추가
+              if (content.includes('<head>')) {
+                content = content.replace('<head>', `<head>${baseTag}`);
+              } else if (content.includes('<html>')) {
+                content = content.replace(
+                  '<html>',
+                  `<html><head>${baseTag}</head>`,
+                );
+              } else {
+                content = `${baseTag}${content}`;
+              }
+            }
+
+            this.quickLook.content = content;
+          } catch (err) {
+            console.warn('텍스트 파일 로드 실패 (빈 파일일 수 있음):', err);
+            this.quickLook.content = ''; // 빈 내용으로 처리
+          }
+        } // close else block
         this.quickLook.loading = false;
       } else if (viewType === 'excel') {
         const excelRes = await fetch(url);
         const buffer = await excelRes.arrayBuffer();
         const workbook = XLSX.read(buffer, { type: 'array' });
-        const sheets = workbook.SheetNames.map(name => ({
+        const sheets = workbook.SheetNames.map((name) => ({
           name: name,
-          content: XLSX.utils.sheet_to_html(workbook.Sheets[name])
+          content: XLSX.utils.sheet_to_html(workbook.Sheets[name]),
         }));
         this.quickLook.sheets = sheets;
         this.quickLook.activeSheetIndex = 0;
@@ -990,7 +1080,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         } else {
           this.quickLook.loading = false;
         }
-      } else if (viewType === 'folder') {
+      } else if (file.type === 'folder') {
         // 폴더 내용 조회 로직 복구
         const params: Parameter = {
           type: 'GET',
@@ -1000,51 +1090,60 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           route: `/drive/${this.workspaceUUID}/list`,
         };
 
-        this.apiService.api(params).pipe(first()).subscribe({
-          next: (res: any) => {
-            if (res.status === 'success') {
-              const folders = (res.data['folders'] || []).map((item: any) =>
-                new Model_Folder(
-                  item.uuid,
-                  item.folder_name,
-                  `${file.file_path}/${item.folder_name}`,
-                  item.folder_size || 0,
-                  item.folder_color,
-                  item.created_at ? new Date(item.created_at) : undefined,
-                  item.updated_at ? new Date(item.updated_at) : undefined,
-                  undefined,
-                  item.folder_id
-                )
-              );
+        this.apiService
+          .api(params)
+          .pipe(first())
+          .subscribe({
+            next: (res: any) => {
+              if (res.status === 'success') {
+                const folders = (res.data['folders'] || []).map(
+                  (item: any) =>
+                    new Model_Folder(
+                      item.uuid,
+                      item.folder_name,
+                      `${file.file_path}/${item.folder_name}`,
+                      item.folder_size || 0,
+                      item.folder_color,
+                      item.created_at ? new Date(item.created_at) : undefined,
+                      item.updated_at ? new Date(item.updated_at) : undefined,
+                      undefined,
+                      item.folder_id,
+                    ),
+                );
 
-              const files = (res.data['files'] || []).map((item: any) =>
-                new Model_File(
-                  item.uuid || '',
-                  getExtensionModelByFileName(item.file_name || ''),
-                  item.file_name,
-                  item.file_path,
-                  item.file_size || 0,
-                  item.file_created_at ? new Date(item.file_created_at) : undefined,
-                  item.file_updated_at ? new Date(item.file_updated_at) : undefined,
-                  undefined,
-                  item.folder_id
-                )
-              );
+                const files = (res.data['files'] || []).map(
+                  (item: any) =>
+                    new Model_File(
+                      item.uuid || '',
+                      getExtensionModelByFileName(item.file_name || ''),
+                      item.file_name,
+                      item.file_path,
+                      item.file_size || 0,
+                      item.file_created_at
+                        ? new Date(item.file_created_at)
+                        : undefined,
+                      item.file_updated_at
+                        ? new Date(item.file_updated_at)
+                        : undefined,
+                      undefined,
+                      item.folder_id,
+                    ),
+                );
 
-              this.quickLook.children = [...folders, ...files];
-            } else {
+                this.quickLook.children = [...folders, ...files];
+              } else {
+                this.quickLook.children = [];
+              }
+              this.quickLook.loading = false;
+              this.cdr.detectChanges();
+            },
+            error: (err: any) => {
+              console.error('Quick Look 폴더 내용 로드 실패:', err);
               this.quickLook.children = [];
-            }
-            this.quickLook.loading = false;
-            this.cdr.detectChanges();
-          },
-          error: (err: any) => {
-            console.error('Quick Look 폴더 내용 로드 실패:', err);
-            this.quickLook.children = [];
-            this.quickLook.loading = false;
-            this.cdr.detectChanges();
-          }
-        });
+              this.quickLook.loading = false;
+              this.cdr.detectChanges();
+            },
+          });
         return;
       } else {
         this.quickLook.loading = false;
@@ -1054,7 +1153,12 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       this.quickLook.loading = false;
     } finally {
       // 비동기 처리가 있는 타입들을 제외하고는 여기서 로딩 종료 확인
-      if (viewType !== 'word' && viewType !== 'excel' && viewType !== 'hwp' && viewType !== 'folder') {
+      if (
+        viewType !== 'word' &&
+        viewType !== 'excel' &&
+        viewType !== 'hwp' &&
+        viewType !== 'folder'
+      ) {
         this.quickLook.loading = false;
       }
       clearTimeout(safetyTimeout);
@@ -1065,21 +1169,27 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   loadHwpInQuickLook() {
     if (!this.quickLook.file || !this.quickLook.content) return;
 
-    const iframe = document.querySelector('.preview-hwp-iframe iframe') as HTMLIFrameElement;
+    const iframe = document.querySelector(
+      '.preview-hwp-iframe iframe',
+    ) as HTMLIFrameElement;
     if (!iframe || !iframe.contentWindow) return;
 
     const messageHandler = (event: MessageEvent) => {
       // 뷰어 준비 완료 시 렌더링 요청
       if (event.data && event.data.type === 'VIEWER_READY') {
         fetch(this.quickLook.content!)
-          .then(res => res.arrayBuffer())
-          .then(buffer => {
-            iframe.contentWindow?.postMessage({
-              type: 'RENDER_HWP',
-              buffer: buffer
-            }, '*', [buffer]);
+          .then((res) => res.arrayBuffer())
+          .then((buffer) => {
+            iframe.contentWindow?.postMessage(
+              {
+                type: 'RENDER_HWP',
+                buffer: buffer,
+              },
+              '*',
+              [buffer],
+            );
           })
-          .catch(err => {
+          .catch((err) => {
             console.error('HWP QuickLook 데이터 로드 실패:', err);
             this.quickLook.loading = false;
             this.cdr.detectChanges();
@@ -1096,7 +1206,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     window.addEventListener('message', messageHandler);
 
-    // 컴포넌트 파괴나 다른 파일 선택 시 리스너 제거가 필요할 수 있으나, 
+    // 컴포넌트 파괴나 다른 파일 선택 시 리스너 제거가 필요할 수 있으나,
     // 여기서는 HWP_SCALED 수신 시 제거되도록 처리함.
   }
 
@@ -1194,7 +1304,11 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     this.desktopRect = null;
 
     // 우클릭으로 컨텍스트 메뉴를 열 때는 선택을 유지
-    if (this.selectionBox.width < 10 && this.selectionBox.height < 10 && !wasRightClickDrag) {
+    if (
+      this.selectionBox.width < 10 &&
+      this.selectionBox.height < 10 &&
+      !wasRightClickDrag
+    ) {
       this.selectedFolders.clear();
     }
 
@@ -1204,7 +1318,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
       this.contextMenuTarget = this.pendingRightClickInfo.target;
       // 우클릭한 항목이 선택되어 있지 않으면 선택에 추가
-      if (this.contextMenuTarget && !this.selectedFolders.has(this.contextMenuTarget.uuid)) {
+      if (
+        this.contextMenuTarget &&
+        !this.selectedFolders.has(this.contextMenuTarget.uuid)
+      ) {
         this.selectedFolders.add(this.contextMenuTarget.uuid);
       }
       this.contextMenu = {
@@ -1252,7 +1369,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   }
 
   onIconMouseEnter(file: Abstract_File) {
-    if (this.isDragging || this.isDraggingSelectedItems || this.renamingFile) return;
+    if (this.isDragging || this.isDraggingSelectedItems || this.renamingFile)
+      return;
 
     // 키보드로 열린 Quick Look이 있으면 호버 무시
     if (this.desktopStateService.isKeyboardQuickLookActive()) return;
@@ -1265,8 +1383,11 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     }
 
     this.hoverTimeout = setTimeout(() => {
-      const folderElement = document.querySelector(`[data-folder-uuid="${file.uuid}"]`);
-      let x = 0, y = 0;
+      const folderElement = document.querySelector(
+        `[data-folder-uuid="${file.uuid}"]`,
+      );
+      let x = 0,
+        y = 0;
       if (folderElement) {
         const iconWrapper = folderElement.querySelector('.icon-wrapper');
         const rect = (iconWrapper || folderElement).getBoundingClientRect();
@@ -1344,7 +1465,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       this.selectedFolders = new Set(this.initialSelectedFolders);
 
       // 2. 박스 안에 있는 항목들은 반전(Toggle)
-      currentInBox.forEach(uuid => {
+      currentInBox.forEach((uuid) => {
         if (this.initialSelectedFolders.has(uuid)) {
           this.selectedFolders.delete(uuid);
         } else {
@@ -1400,7 +1521,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     // 선택된 항목들 가져오기
     const selectedItems = this.desktopFolders.filter((file) =>
-      this.selectedFolders.has(file.uuid)
+      this.selectedFolders.has(file.uuid),
     );
 
     if (selectedItems.length === 0) {
@@ -1418,7 +1539,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       items: selectedItems,
       fading: false,
       visible: true,
-      source: 'desktop'
+      source: 'desktop',
     });
 
     // 드래그 데이터 설정
@@ -1463,7 +1584,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
    */
   private handleKeyboardNavigation(key: string) {
     // 1. 활성화된 탐색기 창이 있는지 확인하여 이벤트 위임
-    const activeExplorer = this.fileExplorers.find(fe => fe.isActive);
+    const activeExplorer = this.fileExplorers.find((fe) => fe.isActive);
     if (activeExplorer) {
       activeExplorer.handleKeyboardNavigation(key);
       return;
@@ -1477,8 +1598,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     // 다중 선택 상태인 경우, 방향에 따라 기준점(minIndex 또는 maxIndex)을 다르게 설정
     if (this.selectedFolders.size > 1) {
       const selectedIndices = Array.from(this.selectedFolders)
-        .map(uuid => this.desktopFolders.findIndex(f => f.uuid === uuid))
-        .filter(index => index !== -1)
+        .map((uuid) => this.desktopFolders.findIndex((f) => f.uuid === uuid))
+        .filter((index) => index !== -1)
         .sort((a, b) => a - b);
 
       if (selectedIndices.length > 0) {
@@ -1489,7 +1610,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         }
       }
     } else if (this.lastSelectedUuid) {
-      currentIndex = this.desktopFolders.findIndex(f => f.uuid === this.lastSelectedUuid);
+      currentIndex = this.desktopFolders.findIndex(
+        (f) => f.uuid === this.lastSelectedUuid,
+      );
     }
 
     // 현재 인덱스를 찾을 수 없으면 첫 번째 항목 선택
@@ -1507,7 +1630,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     switch (key) {
       case 'ArrowDown':
-        newIndex = currentIndex < this.desktopFolders.length - 1 ? currentIndex + 1 : currentIndex;
+        newIndex =
+          currentIndex < this.desktopFolders.length - 1
+            ? currentIndex + 1
+            : currentIndex;
         break;
       case 'ArrowUp':
         newIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
@@ -1587,7 +1713,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     }
 
     // 전역 상태가 없는데 application/json은 있는 경우 (외부 앱 등에서의 드래그 대비 fallback)
-    const hasApplicationJson = event.dataTransfer?.types?.includes('application/json');
+    const hasApplicationJson =
+      event.dataTransfer?.types?.includes('application/json');
     if (hasApplicationJson) {
       if (event.dataTransfer) {
         event.dataTransfer.dropEffect = 'move';
@@ -1631,20 +1758,22 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
         // 1. 먼저 desktopFolders에서 찾기 (바탕화면 폴더인 경우)
         paths.forEach((path: string) => {
-          const file = this.desktopFolders.find(f => f.file_path === path);
-          if (file && !itemsToMove.find(f => f.uuid === file.uuid)) {
+          const file = this.desktopFolders.find((f) => f.file_path === path);
+          if (file && !itemsToMove.find((f) => f.uuid === file.uuid)) {
             itemsToMove.push(file);
           }
         });
 
         // 2. 모든 file-explorer에서 파일 찾기
-        this.fileExplorers.forEach(explorer => {
+        this.fileExplorers.forEach((explorer) => {
           // selectedFolder의 children에서 직접 찾기 (더 정확함)
           const selectedFolder = explorer.selectedFolder;
           if (selectedFolder && selectedFolder.children) {
             paths.forEach((path: string) => {
-              const file = selectedFolder.children.find((f: Abstract_File) => f.file_path === path);
-              if (file && !itemsToMove.find(f => f.uuid === file.uuid)) {
+              const file = selectedFolder.children.find(
+                (f: Abstract_File) => f.file_path === path,
+              );
+              if (file && !itemsToMove.find((f) => f.uuid === file.uuid)) {
                 itemsToMove.push(file);
               }
             });
@@ -1653,8 +1782,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           // getAllFilesFromExplorer로도 시도 (재귀적으로 모든 파일 검색)
           const allFiles = this.getAllFilesFromExplorer(explorer);
           paths.forEach((path: string) => {
-            const file = allFiles.find(f => f.file_path === path);
-            if (file && !itemsToMove.find(f => f.uuid === file.uuid)) {
+            const file = allFiles.find((f) => f.file_path === path);
+            if (file && !itemsToMove.find((f) => f.uuid === file.uuid)) {
               itemsToMove.push(file);
             }
           });
@@ -1706,7 +1835,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     const collectFiles = (folder: Abstract_File) => {
       if (folder.children) {
-        folder.children.forEach(child => {
+        folder.children.forEach((child) => {
           files.push(child);
           if (child.type === 'folder' && child.children) {
             collectFiles(child);
@@ -1728,20 +1857,34 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   /**
    * FileExplorer에서 발생한 파일 이동 이벤트 처리
    */
-  onExplorerFileMove(event: { target: Abstract_File; items?: Abstract_File[]; paths?: string[]; source: 'desktop' | 'explorer'; sourceParentId?: number }) {
+  onExplorerFileMove(event: {
+    target: Abstract_File;
+    items?: Abstract_File[];
+    paths?: string[];
+    source: 'desktop' | 'explorer';
+    sourceParentId?: number;
+  }) {
     // Desktop에서 드래그된 경우
     if (event.source === 'desktop' && this.isDraggingSelectedItems) {
       const selectedItems = this.dragPreview.items;
       if (selectedItems.length > 0) {
         const canDrop = this.canDropItemsToFolder(selectedItems, event.target);
         if (canDrop) {
-          this.moveItemsToFolder(selectedItems, event.target, event.sourceParentId);
+          this.moveItemsToFolder(
+            selectedItems,
+            event.target,
+            event.sourceParentId,
+          );
         }
       }
       this.stopDraggingSelectedItems();
     }
     // 다른 Explorer나 내부에서 드래그된 경우
-    else if (event.source === 'explorer' && event.items && event.items.length > 0) {
+    else if (
+      event.source === 'explorer' &&
+      event.items &&
+      event.items.length > 0
+    ) {
       const canDrop = this.canDropItemsToFolder(event.items, event.target);
       if (canDrop) {
         this.moveItemsToFolder(event.items, event.target, event.sourceParentId);
@@ -1803,7 +1946,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
    */
   private canDropItemsToFolder(
     items: Abstract_File[],
-    targetFolder: Abstract_File
+    targetFolder: Abstract_File,
   ): boolean {
     if (targetFolder.type !== 'folder') {
       return false;
@@ -1820,7 +1963,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       // 2. 이미 해당 폴더에 있는 파일을 해당 폴더로 이동시키는 경우 방지 (부모 폴더로 이동 금지)
       // 아이템의 진짜 부모 경로(마지막 슬래시 이전)를 추출하여 타겟 폴더의 경로와 비교
       const lastSlashIndex = item.file_path.lastIndexOf('/');
-      const itemParentPath = lastSlashIndex !== -1 ? item.file_path.substring(0, lastSlashIndex) : '';
+      const itemParentPath =
+        lastSlashIndex !== -1
+          ? item.file_path.substring(0, lastSlashIndex)
+          : '';
       const normalizedTargetPath = targetFolder.file_path.replace(/\/+$/, '');
 
       if (itemParentPath === normalizedTargetPath) {
@@ -1833,7 +1979,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         const itemPath = item.file_path;
 
         // targetPath가 itemPath/ 로 시작하면, target은 item의 자손임 -> 이동 불가 (순환 참조 방지)
-        const itemPathWithSeparator = itemPath.endsWith('/') ? itemPath : itemPath + '/';
+        const itemPathWithSeparator = itemPath.endsWith('/')
+          ? itemPath
+          : itemPath + '/';
         if (targetPath.startsWith(itemPathWithSeparator)) {
           return false;
         }
@@ -1849,7 +1997,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   moveItemsToFolder(
     items: Abstract_File[],
     targetFolder: Abstract_File,
-    sourceParentId?: number
+    sourceParentId?: number,
   ) {
     if (!targetFolder.uuid && targetFolder.uuid !== '') {
       console.error('대상 폴더의 UUID를 찾을 수 없습니다.');
@@ -1859,9 +2007,11 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     const targetFolderId = targetFolder.folder_id || 0;
 
     // 로컬 이동 시뮬레이션
-    items.forEach(item => {
+    items.forEach((item) => {
       // 1. 기존 부모에서 제거 (바탕화면인 경우)
-      this.desktopFolders = this.desktopFolders.filter(f => f.uuid !== item.uuid);
+      this.desktopFolders = this.desktopFolders.filter(
+        (f) => f.uuid !== item.uuid,
+      );
 
       // 2. 다른 폴더 검색 및 제거 (필요시)
       // 실제로는 tree 구조이므로 재귀적으로 제거가 필요할 수 있음
@@ -1870,7 +2020,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       if (!targetFolder.children) targetFolder.children = [];
 
       // 중복 체크
-      if (!targetFolder.children.some(c => c.uuid === item.uuid)) {
+      if (!targetFolder.children.some((c) => c.uuid === item.uuid)) {
         item.folder_id = targetFolderId;
         // 경로 업데이트
         const oldPath = item.file_path;
@@ -1883,8 +2033,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     // 바탕화면에 드롭된 경우
     if (targetFolder.file_path === '/desktop') {
-      items.forEach(item => {
-        if (!this.desktopFolders.some(f => f.uuid === item.uuid)) {
+      items.forEach((item) => {
+        if (!this.desktopFolders.some((f) => f.uuid === item.uuid)) {
           this.desktopFolders.push(item);
         }
       });
@@ -1900,10 +2050,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   /**
    * 선택된 항목들을 폴더로 복사 (Desktop 및 FileExplorer 공용)
    */
-  copyItemsToFolder(
-    items: Abstract_File[],
-    targetFolder: Abstract_File
-  ) {
+  copyItemsToFolder(items: Abstract_File[], targetFolder: Abstract_File) {
     if (!targetFolder.uuid && targetFolder.uuid !== '') {
       console.error('대상 폴더의 UUID를 찾을 수 없습니다.');
       return;
@@ -1912,7 +2059,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     const targetFolderId = targetFolder.folder_id || 0;
 
     // 로컬 복사 시뮬레이션
-    items.forEach(item => {
+    items.forEach((item) => {
       // 깊은 복사
       const clonedItem = JSON.parse(JSON.stringify(item)) as Abstract_File;
       clonedItem.uuid = `local-copy-${Date.now()}-${Math.random()}`;
@@ -2029,9 +2176,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     this.hideContextMenu();
 
     // 중복 체크: 이미 열린 창이 있는지 확인
-    const existingWindow = this.windows.find(w =>
-      (w.file?.uuid === file.uuid) ||
-      (w.folder?.uuid === file.uuid && file.type === 'folder')
+    const existingWindow = this.windows.find(
+      (w) =>
+        w.file?.uuid === file.uuid ||
+        (w.folder?.uuid === file.uuid && file.type === 'folder'),
     );
 
     if (existingWindow) {
@@ -2117,7 +2265,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         });
         if (viewType === 'psd') {
           setTimeout(() => {
-            const win = this.windows.find(w => w.file?.uuid === file.uuid && w.type === 'psd');
+            const win = this.windows.find(
+              (w) => w.file?.uuid === file.uuid && w.type === 'psd',
+            );
             if (win) this.loadPSDPreview(win);
           }, 100);
         }
@@ -2138,7 +2288,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           zIndex: this.getNextZIndex(),
         });
         setTimeout(() => {
-          const win = this.windows.find(w => w.file?.uuid === file.uuid && w.type === 'excel');
+          const win = this.windows.find(
+            (w) => w.file?.uuid === file.uuid && w.type === 'excel',
+          );
           if (win) this.loadExcelPreview(win);
         }, 100);
         break;
@@ -2158,7 +2310,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           zIndex: this.getNextZIndex(),
         });
         setTimeout(() => {
-          const win = this.windows.find(w => w.file?.uuid === file.uuid && w.type === 'word');
+          const win = this.windows.find(
+            (w) => w.file?.uuid === file.uuid && w.type === 'word',
+          );
           if (win) this.loadWordPreview(win);
         }, 100);
         break;
@@ -2178,7 +2332,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           zIndex: this.getNextZIndex(),
         });
         setTimeout(() => {
-          const win = this.windows.find(w => w.file?.uuid === file.uuid && w.type === 'hwp');
+          const win = this.windows.find(
+            (w) => w.file?.uuid === file.uuid && w.type === 'hwp',
+          );
           if (win) this.loadHwpPreview(win);
         }, 100);
         break;
@@ -2190,7 +2346,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         const windowId = `${viewType}-${Date.now()}`;
         const initialClonedFile = {
           ...file,
-          extension_info: { ...file.extension_info }
+          extension_info: { ...file.extension_info },
         } as Abstract_File;
 
         if (viewType === 'text') {
@@ -2212,60 +2368,84 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           });
         }
 
-        // 비동기 내용 로드
-        if (file.file_path) {
+        // 비동기 내용 로드 (이미 텍스트가 있으면 HTTP 호출 생략)
+        if ((initialClonedFile.extension_info as any).text) {
+          const win = this.windows.find((w) => w.id === windowId);
+          if (win && win.file) {
+            (win.file.extension_info as any).text = (
+              initialClonedFile.extension_info as any
+            ).text;
+          }
+        } else if (file.file_path) {
           const url = this.getFileUrl(file);
-          this.http.get(url, { responseType: 'text' }).pipe(first()).subscribe({
-            next: (content) => {
-              // HTML 파일인 경우 base URL 주입 (상대 경로 리소스 지원)
-              if (viewType === 'html') {
-                const relativePath = url.substring(0, url.lastIndexOf('/') + 1);
-                // iframe srcdoc 환경에서도 정확한 경로를 찾을 수 있도록 Origin을 포함한 절대 경로 사용
-                const origin = window.location.origin;
-                const absoluteBaseUrl = `${origin}${relativePath.startsWith('/') ? '' : '/'}${relativePath}`;
-                const baseTag = `<base href="${absoluteBaseUrl}">`;
+          this.http
+            .get(url, { responseType: 'text' })
+            .pipe(first())
+            .subscribe({
+              next: (content) => {
+                // HTML 파일인 경우 base URL 주입 (상대 경로 리소스 지원)
+                if (viewType === 'html') {
+                  const relativePath = url.substring(
+                    0,
+                    url.lastIndexOf('/') + 1,
+                  );
+                  // iframe srcdoc 환경에서도 정확한 경로를 찾을 수 있도록 Origin을 포함한 절대 경로 사용
+                  const origin = window.location.origin;
+                  const absoluteBaseUrl = `${origin}${relativePath.startsWith('/') ? '' : '/'}${relativePath}`;
+                  const baseTag = `<base href="${absoluteBaseUrl}">`;
 
-                if (content.includes('<head>')) {
-                  content = content.replace('<head>', `<head>${baseTag}`);
-                } else if (content.includes('<html>')) {
-                  content = content.replace('<html>', `<html><head>${baseTag}</head>`);
-                } else {
-                  content = `${baseTag}${content}`;
-                }
+                  if (content.includes('<head>')) {
+                    content = content.replace('<head>', `<head>${baseTag}`);
+                  } else if (content.includes('<html>')) {
+                    content = content.replace(
+                      '<html>',
+                      `<html><head>${baseTag}</head>`,
+                    );
+                  } else {
+                    content = `${baseTag}${content}`;
+                  }
 
-                // <title> 태그 추출하여 윈도우 제목 업데이트
-                const titleMatch = content.match(/<title>(.*?)<\/title>/i);
-                if (titleMatch && titleMatch[1]) {
-                  const tempTitle = titleMatch[1].trim();
-                  // HTML 엔티티 디코딩을 위해 DOMParser 사용
-                  const doc = new DOMParser().parseFromString(tempTitle, 'text/html');
-                  const decodedTitle = doc.body.textContent || tempTitle;
+                  // <title> 태그 추출하여 윈도우 제목 업데이트
+                  const titleMatch = content.match(/<title>(.*?)<\/title>/i);
+                  if (titleMatch && titleMatch[1]) {
+                    const tempTitle = titleMatch[1].trim();
+                    // HTML 엔티티 디코딩을 위해 DOMParser 사용
+                    const doc = new DOMParser().parseFromString(
+                      tempTitle,
+                      'text/html',
+                    );
+                    const decodedTitle = doc.body.textContent || tempTitle;
 
-                  // 윈도우 찾아서 제목 업데이트
-                  const win = this.windows.find(w => w.id === windowId);
-                  if (win) {
-                    win.title = decodedTitle;
+                    // 윈도우 찾아서 제목 업데이트
+                    const win = this.windows.find((w) => w.id === windowId);
+                    if (win) {
+                      win.title = decodedTitle;
+                    }
                   }
                 }
-              }
-              // 윈도우 인스턴스 찾아서 내용 업데이트
-              const targetWinId = viewType === 'text' ? this.windows.find(w => w.file?.uuid === file.uuid && w.type === 'text')?.id : windowId;
-              if (targetWinId) {
-                const updateData: any = {};
-                // file 객체 내부의 text 프로퍼티 업데이트
-                const win = this.windows.find(w => w.id === targetWinId);
-                if (win && win.file) {
-                  win.file.extension_info.text = content;
-                  // UI 업데이트 트리거 (필요시)
-                  this.cdr.markForCheck();
+                // 윈도우 인스턴스 찾아서 내용 업데이트
+                const targetWinId =
+                  viewType === 'text'
+                    ? this.windows.find(
+                        (w) => w.file?.uuid === file.uuid && w.type === 'text',
+                      )?.id
+                    : windowId;
+                if (targetWinId) {
+                  const updateData: any = {};
+                  // file 객체 내부의 text 프로퍼티 업데이트
+                  const win = this.windows.find((w) => w.id === targetWinId);
+                  if (win && win.file) {
+                    (win.file.extension_info as any).text = content;
+                    // UI 업데이트 트리거 (필요시)
+                    this.cdr.markForCheck();
+                  }
                 }
-              }
-            },
-            error: (err) => {
-              console.error(`${viewType} 내용 로드 오류:`, err);
-              this.toast.error('파일 내용을 불러올 수 없습니다.');
-            }
-          });
+              },
+              error: (err) => {
+                console.error(`${viewType} 내용 로드 오류:`, err);
+                this.toast.error('파일 내용을 불러올 수 없습니다.');
+              },
+            });
         }
         break;
 
@@ -2454,7 +2634,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       const imageData = new ImageData(
         new Uint8ClampedArray(compositeBuffer),
         psd.width,
-        psd.height
+        psd.height,
       );
       ctx.putImageData(imageData, 0, 0);
 
@@ -2480,11 +2660,11 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       if (workbook.SheetNames.length === 0) return;
 
       // 모든 시트 파싱
-      const sheets = workbook.SheetNames.map(name => {
+      const sheets = workbook.SheetNames.map((name) => {
         const worksheet = workbook.Sheets[name];
         return {
           name: name,
-          content: XLSX.utils.sheet_to_html(worksheet)
+          content: XLSX.utils.sheet_to_html(worksheet),
         };
       });
 
@@ -2493,7 +2673,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         this.windowService.updateWindow(win.id, {
           sheets: sheets,
           activeSheetIndex: 0,
-          content: sheets[0].content // 하위 호환성 유지
+          content: sheets[0].content, // 하위 호환성 유지
         });
       }
     } catch (err) {
@@ -2509,7 +2689,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     this.windowService.updateWindow(win.id, {
       activeSheetIndex: index,
-      content: win.sheets[index].content
+      content: win.sheets[index].content,
     });
   }
 
@@ -2524,7 +2704,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     // 윈도우 콘텐츠를 Iframe으로 설정
     this.windowService.updateWindow(win.id, {
-      content: `<iframe id="hwp-viewer-${win.id}" src="${viewerUrl}" style="width:100%; height:100%; border:none;"></iframe>`
+      content: `<iframe id="hwp-viewer-${win.id}" src="${viewerUrl}" style="width:100%; height:100%; border:none;"></iframe>`,
     });
 
     const fileUrl = this.getFileUrl(win.file);
@@ -2536,12 +2716,18 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       // Iframe이 로드될 때까지 기다렸다가 메시지 전송
       const messageHandler = (event: MessageEvent) => {
         if (event.data && event.data.type === 'VIEWER_READY') {
-          const iframe = document.getElementById(`hwp-viewer-${win.id}`) as HTMLIFrameElement;
+          const iframe = document.getElementById(
+            `hwp-viewer-${win.id}`,
+          ) as HTMLIFrameElement;
           if (iframe && iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-              type: 'RENDER_HWP',
-              buffer: buffer
-            }, '*', [buffer]); // 전송 가능 객체(Transferable)로 전송하여 효율성 증대
+            iframe.contentWindow.postMessage(
+              {
+                type: 'RENDER_HWP',
+                buffer: buffer,
+              },
+              '*',
+              [buffer],
+            ); // 전송 가능 객체(Transferable)로 전송하여 효율성 증대
 
             window.removeEventListener('message', messageHandler);
           }
@@ -2549,7 +2735,6 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       };
 
       window.addEventListener('message', messageHandler);
-
     } catch (err) {
       console.error('HWP 파일 로딩 실패:', err);
       this.toast.error('HWP 파일을 로드할 수 없습니다.');
@@ -2578,7 +2763,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     } catch (err) {
       console.error('워드 파일 로딩 실패:', err);
       if (win.file.file_name.toLowerCase().endsWith('.doc')) {
-        this.toast.error('이 .doc 형식은 미리보기를 지원하지 않을 수 있습니다.');
+        this.toast.error(
+          '이 .doc 형식은 미리보기를 지원하지 않을 수 있습니다.',
+        );
       } else {
         this.toast.error('워드 문서를 로드할 수 없습니다.');
       }
@@ -2591,7 +2778,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   onCopy() {
     console.log('onCopy Triggered');
     // 1. 활성화된 파일 탐색기가 있는지 확인
-    const activeExplorer = this.fileExplorers.find(explorer => explorer.isActive);
+    const activeExplorer = this.fileExplorers.find(
+      (explorer) => explorer.isActive,
+    );
     let selectedItems: Abstract_File[] = [];
 
     if (activeExplorer) {
@@ -2599,15 +2788,15 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       // 탐색기 내 선택된 파일들 조회
       const currentFolder = activeExplorer.selectedFolder;
       if (currentFolder && currentFolder.children) {
-        selectedItems = currentFolder.children.filter(child =>
-          activeExplorer.selectedFiles.includes(child.uuid)
+        selectedItems = currentFolder.children.filter((child) =>
+          activeExplorer.selectedFiles.includes(child.uuid),
         );
       }
     } else {
       console.log('No active explorer, checking desktop selection');
       // 바탕화면 선택된 파일들 조회
-      selectedItems = this.desktopFolders.filter(file =>
-        this.selectedFolders.has(file.uuid)
+      selectedItems = this.desktopFolders.filter((file) =>
+        this.selectedFolders.has(file.uuid),
       );
     }
 
@@ -2620,7 +2809,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     // 클립보드에 저장
     this.desktopStateService.setClipboard(selectedItems, 'copy');
-    this.toast.success(`클립보드에 ${selectedItems.length}개 항목이 복사되었습니다.`);
+    this.toast.success(
+      `클립보드에 ${selectedItems.length}개 항목이 복사되었습니다.`,
+    );
   }
 
   /**
@@ -2639,9 +2830,14 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     let targetFolder: Abstract_File;
 
     // 1. 활성화된 파일 탐색기가 있는지 확인 -> 해당 폴더가 타겟
-    const activeExplorer = this.fileExplorers.find(explorer => explorer.isActive);
+    const activeExplorer = this.fileExplorers.find(
+      (explorer) => explorer.isActive,
+    );
     if (activeExplorer && activeExplorer.selectedFolder) {
-      console.log('Pasting into active explorer folder:', activeExplorer.selectedFolder);
+      console.log(
+        'Pasting into active explorer folder:',
+        activeExplorer.selectedFolder,
+      );
       targetFolder = activeExplorer.selectedFolder;
     } else {
       console.log('Pasting into desktop (root)');
@@ -2652,11 +2848,15 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     // 복사 실행
     if (clipboard.op === 'copy') {
-      console.log('Executing copyItemsToFolder with items:', clipboard.items, 'target:', targetFolder);
+      console.log(
+        'Executing copyItemsToFolder with items:',
+        clipboard.items,
+        'target:',
+        targetFolder,
+      );
       this.copyItemsToFolder(clipboard.items, targetFolder);
     }
   }
-
 
   /**
    * 바탕화면 우클릭: 컨텍스트 메뉴 표시
@@ -2676,13 +2876,17 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       const folderUuid = iconElement.getAttribute('data-folder-uuid');
       if (folderUuid) {
         const foundFile = this.desktopFolders.find(
-          (f) => f.uuid === folderUuid
+          (f) => f.uuid === folderUuid,
         );
         contextMenuTarget = foundFile || null;
 
         if (foundFile) {
           // Ctrl/Cmd 키가 눌려있지 않고, 이미 선택된 항목이 있으면 선택 유지
-          if (!event.ctrlKey && !event.metaKey && this.selectedFolders.size === 0) {
+          if (
+            !event.ctrlKey &&
+            !event.metaKey &&
+            this.selectedFolders.size === 0
+          ) {
             this.selectedFolders.clear();
             this.selectedFolders.add(foundFile.uuid);
           } else if (!this.selectedFolders.has(foundFile.uuid)) {
@@ -2721,33 +2925,39 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       items = [
         {
           label: '열기(O)',
-          action: () => this.openFolderWindow(contextMenuTarget!)
+          action: () => this.openFolderWindow(contextMenuTarget!),
         },
         { separator: true, label: '' },
         {
-          label: this.selectedFolders.size > 1 ? `다운로드 (${this.selectedFolders.size}개)` : '다운로드',
+          label:
+            this.selectedFolders.size > 1
+              ? `다운로드 (${this.selectedFolders.size}개)`
+              : '다운로드',
           action: () => {
             this.desktopStateService.closeContextMenu();
             this.downloadFile();
-          }
+          },
         },
         { separator: true, label: '' },
         {
-          label: this.selectedFolders.size > 1 ? `삭제(D) (${this.selectedFolders.size}개)` : '삭제(D)',
+          label:
+            this.selectedFolders.size > 1
+              ? `삭제(D) (${this.selectedFolders.size}개)`
+              : '삭제(D)',
           icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>',
-          action: () => this.remove()
+          action: () => this.remove(),
         },
         { separator: true, label: '' },
         {
           label: '이름 바꾸기(M)',
-          action: () => this.startRename(contextMenuTarget!)
+          action: () => this.startRename(contextMenuTarget!),
         },
         { separator: true, label: '' },
         {
           label: '속성(R)',
           icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v9A1.5 1.5 0 0 1 12.5 14h-9A1.5 1.5 0 0 1 2 12.5v-9ZM3.5 3a.5.5 0 0 0-.5.5V12.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-9Z"/><path d="M5 6.5A.5.5 0 0 1 5.5 6h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 6.5ZM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Z"/></svg>',
-          action: () => this.openProperties(contextMenuTarget!)
-        }
+          action: () => this.openProperties(contextMenuTarget!),
+        },
       ];
     } else {
       // 바탕화면 빈 공간 우클릭 - 공통 로직 사용
@@ -2755,11 +2965,15 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         createNewFolder: () => this.createNewFolder(),
         refresh: () => this.refreshDesktop(),
         sortBy: (criteria: any) => this.sortBy(criteria),
-        createNewTextFile: () => this.createNewTextFile()
+        createNewTextFile: () => this.createNewTextFile(),
       });
     }
 
-    this.desktopStateService.openContextMenu(event.clientX, event.clientY, items);
+    this.desktopStateService.openContextMenu(
+      event.clientX,
+      event.clientY,
+      items,
+    );
   }
 
   /**
@@ -2799,17 +3013,20 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     // desktopFolders는 Abstract_File[]
 
     if (this.selectedFolders.size > 0) {
-      this.selectedFolders.forEach(uuid => {
-        const file = this.desktopFolders.find(f => f.uuid === uuid);
+      this.selectedFolders.forEach((uuid) => {
+        const file = this.desktopFolders.find((f) => f.uuid === uuid);
         if (file && file.type !== 'folder') targetFiles.push(file);
       });
-    } else if (this.contextMenuTarget && this.contextMenuTarget.type !== 'folder') {
+    } else if (
+      this.contextMenuTarget &&
+      this.contextMenuTarget.type !== 'folder'
+    ) {
       targetFiles.push(this.contextMenuTarget);
     }
 
     if (targetFiles.length === 0) return;
 
-    targetFiles.forEach(file => {
+    targetFiles.forEach((file) => {
       const link = document.createElement('a');
       link.href = file.file_path;
       link.download = file.file_name;
@@ -2844,7 +3061,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-      date.getDate()
+      date.getDate(),
     )} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
@@ -2880,11 +3097,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
   private getDesktopRect(): DOMRect | null {
     const desktopContent = document.querySelector(
-      '.desktop-content'
+      '.desktop-content',
     ) as HTMLElement | null;
     return desktopContent ? desktopContent.getBoundingClientRect() : null;
   }
-
 
   /**
    * 새 텍스트 파일 생성
@@ -2909,7 +3125,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       new Date(),
       new Date(),
       [],
-      0
+      0,
     );
 
     this.desktopFolders = [...this.desktopFolders, newFile];
@@ -2917,7 +3133,6 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     this.toast.success('새 텍스트 문서가 생성되었습니다.');
     this.cdr.detectChanges();
   }
-
 
   /**
    * 파일 탐색기에서 새 폴더 생성 이벤트 처리: 바탕화면 폴더에 동기화
@@ -2934,7 +3149,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   onExplorerFileDelete(event: { parentPath: string; filePath: string }) {
     if (event.parentPath === '/desktop') {
       this.desktopFolders = this.desktopFolders.filter(
-        (f) => f.file_path !== event.filePath
+        (f) => f.file_path !== event.filePath,
       );
     }
   }
@@ -2958,7 +3173,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       switch (criteria) {
         case 'name':
           // 이름순 (오름차순)
-          return a.file_name.localeCompare(b.file_name, undefined, { numeric: true, sensitivity: 'base' });
+          return a.file_name.localeCompare(b.file_name, undefined, {
+            numeric: true,
+            sensitivity: 'base',
+          });
         case 'size':
           // 크기순 (내림차순)
           return b.file_size - a.file_size;
@@ -2972,7 +3190,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           return extA.localeCompare(extB);
         case 'modified':
           // 수정한 날짜 (내림차순 - 최신순)
-          return new Date(b.file_updated_at).getTime() - new Date(a.file_updated_at).getTime();
+          return (
+            new Date(b.file_updated_at).getTime() -
+            new Date(a.file_updated_at).getTime()
+          );
         default:
           return 0;
       }
@@ -3005,10 +3226,33 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     const now = new Date();
 
     const makeFile = (name: string, size: number, path: string) =>
-      new Model_File(`f-${Date.now()}-${Math.random()}`, getExtensionModelByFileName(name), name, path, size, now, now, [], 0);
+      new Model_File(
+        `f-${Date.now()}-${Math.random()}`,
+        getExtensionModelByFileName(name),
+        name,
+        path,
+        size,
+        now,
+        now,
+        [],
+        0,
+      );
 
-    const makeFolder = (name: string, path: string, children: Abstract_File[]) =>
-      new Model_Folder(`d-${Date.now()}-${Math.random()}`, name, path, 0, 'Y', now, now, children);
+    const makeFolder = (
+      name: string,
+      path: string,
+      children: Abstract_File[],
+    ) =>
+      new Model_Folder(
+        `d-${Date.now()}-${Math.random()}`,
+        name,
+        path,
+        0,
+        'Y',
+        now,
+        now,
+        children,
+      );
 
     // 바탕화면 구조 정의
     this.desktopFolders = [
@@ -3016,26 +3260,162 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       makeFile('포트폴리오.html', 18391, `${basePath}/portfolio.html`),
       makeFolder('포트폴리오 작업물', `${basePath}/포트폴리오 작업물`, [
         makeFolder('작업 과정', `${basePath}/포트폴리오 작업물/작업 과정`, [
-          makeFile('코드구성.html', 18391, `${basePath}/포트폴리오 작업물/작업 과정/코드구성.html`),
+          makeFile(
+            '코드구성.html',
+            18391,
+            `${basePath}/포트폴리오 작업물/작업 과정/코드구성.html`,
+          ),
         ]),
-        makeFolder('파일뷰어 샘플', `${basePath}/포트폴리오 작업물/파일뷰어 샘플`, [
-          makeFile('Goodbye in Slow Motion.mp3', 4701947, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/Goodbye in Slow Motion.mp3`),
-          makeFile('[붙임2]목업제작_사업계획서양식.hwp', 61440, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/[붙임2]목업제작_사업계획서양식.hwp`),
-          makeFile('index.html', 18391, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/index.html`),
-          makeFile('가로형 89x58.psd', 2500303, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/가로형 89x58.psd`),
-          makeFile('삼강오륜.hwp', 10240, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/삼강오륜.hwp`),
-          makeFile('세로형_시안 56x89.ai', 1569117, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/세로형_시안 56x89.ai`),
-          makeFile('요양보호사_기출문제_업로드_양식.xlsx', 4398106, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/요양보호사_기출문제_업로드_양식.xlsx`),
-          makeFile('편집할내용.xlsx', 13368, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/편집할내용.xlsx`),
-          makeFile('이웃집토토로 배경.jpg', 146890, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/이웃집토토로 배경.jpg`),
-          makeFile('이웃집토토로.webp', 179822, `${basePath}/포트폴리오 작업물/파일뷰어 샘플/이웃집토토로.webp`),
-        ]),
+        makeFolder(
+          '파일뷰어 샘플',
+          `${basePath}/포트폴리오 작업물/파일뷰어 샘플`,
+          [
+            makeFile(
+              'Goodbye in Slow Motion.mp3',
+              4701947,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/Goodbye in Slow Motion.mp3`,
+            ),
+            makeFile(
+              '[붙임2]목업제작_사업계획서양식.hwp',
+              61440,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/[붙임2]목업제작_사업계획서양식.hwp`,
+            ),
+            makeFile(
+              'index.html',
+              18391,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/index.html`,
+            ),
+            makeFile(
+              '가로형 89x58.psd',
+              2500303,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/가로형 89x58.psd`,
+            ),
+            makeFile(
+              '삼강오륜.hwp',
+              10240,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/삼강오륜.hwp`,
+            ),
+            makeFile(
+              '세로형_시안 56x89.ai',
+              1569117,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/세로형_시안 56x89.ai`,
+            ),
+            makeFile(
+              '요양보호사_기출문제_업로드_양식.xlsx',
+              4398106,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/요양보호사_기출문제_업로드_양식.xlsx`,
+            ),
+            makeFile(
+              '편집할내용.xlsx',
+              13368,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/편집할내용.xlsx`,
+            ),
+            makeFile(
+              '이웃집토토로 배경.jpg',
+              146890,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/이웃집토토로 배경.jpg`,
+            ),
+            makeFile(
+              '이웃집토토로.webp',
+              179822,
+              `${basePath}/포트폴리오 작업물/파일뷰어 샘플/이웃집토토로.webp`,
+            ),
+          ],
+        ),
       ]),
-      makeFolder('프로젝트', `${basePath}/프로젝트`, []),
+      makeFolder('Project', `${basePath}/Project`, []),
     ];
+
+    const blogFolder = makeFolder('Blog', `${basePath}/Blog`, []);
+    this.desktopFolders.push(blogFolder);
 
     this.initializeIconCoordinates();
     this.cdr.detectChanges();
+
+    // 블로그 데이터 가져와서 동적으로 파일 아이콘 만들기
+    this.blogService.getPosts().then((blogs) => {
+      if (blogs && blogs.length > 0) {
+        const blogFiles = blogs.map((blog) => {
+          // 한글 특수문자나 띄어쓰기가 파일명에 문제없도록 안전하게 처리할 수도 있지만, 우선 그대로 사용
+          const safeTitle = blog.title || '제목없음';
+          const fileName = `${safeTitle}.html`;
+
+          let htmlContent = `
+<style>
+  .c-badge {
+    display: inline-flex; align-items: center; padding: 3px 10px;
+    border-radius: 9999px; font-size: 14px; font-weight: 500;
+    line-height: 1.4; white-space: nowrap; margin-right: 4px;
+  }
+  .c-badge[data-size="sm"] { padding: 4px 12px; font-size: 14px; border-radius: 4px; }
+  .c-badge[data-variant="info"] { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+  .c-badge[data-variant="neutral"] { color: #9ca3af; background: #374151; }
+</style>
+<div style="font-family: sans-serif; padding: 20px; line-height: 1.6;">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+    <div>
+      <div style="margin-bottom: 8px;">
+        <span class="c-badge" data-size="sm" data-variant="info">${blog.category || '없음'}</span>
+      </div>
+      <h2 style="margin: 0;">${blog.title}</h2>
+    </div>
+    <div style="font-size: 14px; color: #888; text-align: right;">
+      최종수정일: ${new Date(blog.updated_at || blog.created_at).toLocaleString()}
+    </div>
+  </div>
+  <hr style="border: 0; border-top: 1px solid #ddd; margin-bottom: 20px;"/>
+`;
+
+          if (blog.image_url) {
+            htmlContent += `
+  <div style="margin-bottom: 20px;">
+    <strong>이미지</strong><br/>
+    <img src="${blog.image_url}" alt="블로그 이미지" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;" />
+  </div>
+`;
+          }
+
+          htmlContent += `
+  <div style="margin-bottom: 20px;">
+    <strong>내용</strong><br/>
+    <div style="margin-top: 10px; white-space: pre-wrap;">${blog.content}</div>
+  </div>
+`;
+
+          if (blog.tags && blog.tags.length > 0) {
+            htmlContent += `
+  <div style="margin-top: 30px;">
+    <strong>태그</strong><br/>
+    <div style="margin-top: 10px;">
+      ${blog.tags.map(tag => `<span class="c-badge" data-size="sm" data-variant="neutral">#${tag}</span>`).join('')}
+    </div>
+  </div>
+`;
+          }
+
+          htmlContent += `</div>`;
+
+          const file = new Model_File(
+            `f-blog-${blog.id}`,
+            getExtensionModelByFileName(fileName),
+            fileName,
+            `${basePath}/Blog/${fileName}`,
+            new Blob([htmlContent]).size,
+            new Date(blog.created_at),
+            new Date(blog.updated_at || blog.created_at),
+            [],
+            0,
+          );
+
+          // 텍스트 에디터나 QuickLook에서 읽을 수 있도록 내용 주입
+          (file.extension_info as any).text = htmlContent;
+          return file;
+        });
+
+        blogFolder.children = blogFiles;
+        this.cdr.detectChanges(); // 변경 사항 화면에 반영
+      }
+    });
   }
 
   getData() {
@@ -3062,7 +3442,6 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   private calculatePreviewScale() {
     console.log('calculatePreviewScale mode:', this.mode);
     if (this.mode === 'preview') {
-
       // 렌더링 후 실행을 위해 setTimeout 사용
       setTimeout(() => {
         const hostElement = this.elementRef.nativeElement;
@@ -3071,7 +3450,13 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
 
-        console.log('calculatePreviewScale dims:', hostWidth, hostHeight, windowWidth, windowHeight);
+        console.log(
+          'calculatePreviewScale dims:',
+          hostWidth,
+          hostHeight,
+          windowWidth,
+          windowHeight,
+        );
 
         // 가로/세로 비율 중 더 작은 쪽을 기준으로 축소 (화면에 꽉 차게 보임, 잘림 방지)
         if (windowWidth > 0 && windowHeight > 0) {
@@ -3081,7 +3466,12 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           // 최소 스케일 제한 (너무 작아지지 않도록)
           this.previewScale = Math.max(this.previewScale, 0.1);
 
-          console.log('calculatePreviewScale new scale (X, Y, Final):', scaleX, scaleY, this.previewScale);
+          console.log(
+            'calculatePreviewScale new scale (X, Y, Final):',
+            scaleX,
+            scaleY,
+            this.previewScale,
+          );
         }
         this.cdr.detectChanges();
       }, 0);
@@ -3119,7 +3509,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     let currentX = padding;
     let currentY = padding;
 
-    this.desktopFolders.forEach(file => {
+    this.desktopFolders.forEach((file) => {
       // 강제 재배치이거나 좌표가 없는 경우 계산
       if (force || file.x === undefined || file.y === undefined) {
         file.x = currentX;
@@ -3218,7 +3608,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       new Date(),
       new Date(),
       [],
-      Math.floor(Math.random() * 1000000) // Mock folder_id
+      Math.floor(Math.random() * 1000000), // Mock folder_id
     );
 
     this.desktopFolders = [...this.desktopFolders, newFolder];
@@ -3244,7 +3634,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     }
 
     // 로컬 상태에서 삭제
-    this.desktopFolders = this.desktopFolders.filter(f => !itemsToDelete.includes(f.uuid));
+    this.desktopFolders = this.desktopFolders.filter(
+      (f) => !itemsToDelete.includes(f.uuid),
+    );
     this.selectedFolders.clear();
     this.initializeIconCoordinates(true);
     this.toast.success(`${itemsToDelete.length}개 항목이 삭제되었습니다.`);
@@ -3302,17 +3694,24 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     }
 
     // 중복 이름 체크 (바탕화면)
-    const isDuplicate = this.desktopFolders.some(f => f.file_name === newName && f.uuid !== this.renamingFile!.uuid);
+    const isDuplicate = this.desktopFolders.some(
+      (f) => f.file_name === newName && f.uuid !== this.renamingFile!.uuid,
+    );
     if (isDuplicate) {
       this.toast.error('이미 같은 이름의 항목이 존재합니다.');
       return;
     }
 
     // 로컬 상태 업데이트
-    const targetFile = this.desktopFolders.find(f => f.uuid === this.renamingFile!.uuid);
+    const targetFile = this.desktopFolders.find(
+      (f) => f.uuid === this.renamingFile!.uuid,
+    );
     if (targetFile) {
       targetFile.file_name = newName;
-      targetFile.file_path = targetFile.file_path.replace(originalName, newName);
+      targetFile.file_path = targetFile.file_path.replace(
+        originalName,
+        newName,
+      );
       targetFile.file_updated_at = new Date();
     }
 
@@ -3333,7 +3732,9 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
     // 포커스가 해제될 때(Blur) 이름이 중복이면 알림 제공 (사용자 요청)
     if (newName && newName !== originalName) {
-      const isDuplicate = this.desktopFolders.some(f => f.file_name === newName && f.uuid !== this.renamingFile!.uuid);
+      const isDuplicate = this.desktopFolders.some(
+        (f) => f.file_name === newName && f.uuid !== this.renamingFile!.uuid,
+      );
       if (isDuplicate) {
         this.toast.error(`이미 같은 이름의 항목이 존재합니다: ${newName}`);
       }
@@ -3420,7 +3821,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       const items = Array.from(event.dataTransfer.items);
 
       // 폴더가 포함되어 있는지 확인
-      const hasDirectory = items.some(item => {
+      const hasDirectory = items.some((item) => {
         const entry = (item as any).webkitGetAsEntry?.();
         return entry && entry.isDirectory;
       });
@@ -3464,7 +3865,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         new Date(),
         new Date(),
         [],
-        folderId
+        folderId,
       );
 
       if (folderId === 0) {
@@ -3472,9 +3873,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         // 중복 이름 체크 및 이름 변경 (자동 피하기)
         let finalName = fileName;
         let count = 1;
-        while (this.desktopFolders.some(f => f.file_name === finalName)) {
+        while (this.desktopFolders.some((f) => f.file_name === finalName)) {
           const dotIndex = fileName.lastIndexOf('.');
-          const base = dotIndex !== -1 ? fileName.substring(0, dotIndex) : fileName;
+          const base =
+            dotIndex !== -1 ? fileName.substring(0, dotIndex) : fileName;
           const ext = dotIndex !== -1 ? fileName.substring(dotIndex) : '';
           finalName = `${base} (${count++})${ext}`;
         }
@@ -3482,16 +3884,22 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         this.desktopFolders = [...this.desktopFolders, newFile];
       } else {
         // 특정 폴더 내부에 업로드
-        const targetFolder = this.findFileById(folderId.toString(), this.desktopFolders) ||
+        const targetFolder =
+          this.findFileById(folderId.toString(), this.desktopFolders) ||
           this.findFolderByFolderId(folderId, this.desktopFolders);
         if (targetFolder) {
           if (!targetFolder.children) targetFolder.children = [];
 
           let finalName = fileName;
           let count = 1;
-          while (targetFolder.children.some((f: Abstract_File) => f.file_name === finalName)) {
+          while (
+            targetFolder.children.some(
+              (f: Abstract_File) => f.file_name === finalName,
+            )
+          ) {
             const dotIndex = fileName.lastIndexOf('.');
-            const base = dotIndex !== -1 ? fileName.substring(0, dotIndex) : fileName;
+            const base =
+              dotIndex !== -1 ? fileName.substring(0, dotIndex) : fileName;
             const ext = dotIndex !== -1 ? fileName.substring(dotIndex) : '';
             finalName = `${base} (${count++})${ext}`;
           }
@@ -3531,13 +3939,22 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       }, 5000); // 5초 타임아웃
 
       eventSource.onopen = () => {
-        console.log('SSE 연결 성공:', uploadId, 'readyState:', eventSource.readyState);
+        console.log(
+          'SSE 연결 성공:',
+          uploadId,
+          'readyState:',
+          eventSource.readyState,
+        );
       };
 
       eventSource.onmessage = (event) => {
         try {
           // 빈 메시지나 heartbeat는 무시
-          if (!event.data || event.data.trim() === '' || event.data.startsWith(':')) {
+          if (
+            !event.data ||
+            event.data.trim() === '' ||
+            event.data.startsWith(':')
+          ) {
             return;
           }
 
@@ -3554,7 +3971,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           }
 
           // S3 업로드 진행률 업데이트
-          if (data.fileIndex !== undefined && this.uploadFileList[data.fileIndex]) {
+          if (
+            data.fileIndex !== undefined &&
+            this.uploadFileList[data.fileIndex]
+          ) {
             console.log('S3 진행률 업데이트:', {
               fileIndex: data.fileIndex,
               fileName: this.uploadFileList[data.fileIndex].file.name,
@@ -3566,7 +3986,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
 
             // 데이터 유효성 검사
             const loaded = Number(data.loaded) || 0;
-            const total = Number(data.total) || this.uploadFileList[data.fileIndex].total || 0;
+            const total =
+              Number(data.total) ||
+              this.uploadFileList[data.fileIndex].total ||
+              0;
             const percentage = Number(data.percentage) || 0;
 
             // Angular change detection을 위해 새 객체로 업데이트
@@ -3643,13 +4066,20 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   /**
    * 단일 파일 업로드
    */
-  private uploadSingleFile(file: File, index: number, uploadId: string, folderId: number = 0) {
+  private uploadSingleFile(
+    file: File,
+    index: number,
+    uploadId: string,
+    folderId: number = 0,
+  ) {
     // 엑셀(.xlsx) 파일의 MIME 타입이 DB 컬럼(file_type) 길이를 초과하는 문제 해결 (varchar(50) 제한 등)
     // application/vnd.openxmlformats-officedocument.spreadsheetml.sheet (65자) -> application/vnd.ms-excel (24자)
     let uploadFile = file;
     if (file.type && file.type.length > 50) {
       const blob = file.slice(0, file.size, 'application/vnd.ms-excel');
-      uploadFile = new File([blob], file.name, { type: 'application/vnd.ms-excel' });
+      uploadFile = new File([blob], file.name, {
+        type: 'application/vnd.ms-excel',
+      });
     }
 
     const formData = new FormData();
@@ -3666,22 +4096,28 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     const progressSubject = new Subject<UploadProgress>();
 
     // 진행률 구독
-    const progressSubscription = progressSubject.pipe(first()).subscribe((progress) => {
-      if (this.uploadFileList[index]) {
-        this.uploadFileList[index].progress = progress.percentage;
-        this.uploadFileList[index].loaded = progress.loaded;
-        this.uploadFileList[index].total = progress.total;
+    const progressSubscription = progressSubject
+      .pipe(first())
+      .subscribe((progress) => {
+        if (this.uploadFileList[index]) {
+          this.uploadFileList[index].progress = progress.percentage;
+          this.uploadFileList[index].loaded = progress.loaded;
+          this.uploadFileList[index].total = progress.total;
 
-        // 100% 도달 시 서버 처리 중 상태로 변경
-        if (progress.percentage >= 100) {
-          this.uploadFileList[index].status = 'processing';
+          // 100% 도달 시 서버 처리 중 상태로 변경
+          if (progress.percentage >= 100) {
+            this.uploadFileList[index].status = 'processing';
+          }
         }
-      }
-    });
+      });
 
     // 업로드 실행
     const uploadSubscription = this.apiService
-      .fileUploadWithProgress(formData, { route: '/upload/file' }, progressSubject)
+      .fileUploadWithProgress(
+        formData,
+        { route: '/upload/file' },
+        progressSubject,
+      )
       .pipe(first())
       .subscribe(
         (res: any) => {
@@ -3690,17 +4126,21 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
             if (res.status === 'success') {
               this.uploadFileList[index].status = 'completed';
               this.uploadFileList[index].progress = 100;
-              this.uploadFileList[index].loaded = this.uploadFileList[index].total;
+              this.uploadFileList[index].loaded =
+                this.uploadFileList[index].total;
 
               // 모든 파일 업로드 완료 확인
               const allCompleted = this.uploadFileList.every(
-                (uf) => uf.status === 'completed' || uf.status === 'error'
+                (uf) => uf.status === 'completed' || uf.status === 'error',
               );
               if (allCompleted) {
                 // SSE 연결 종료 (모든 업로드 완료 시)
                 const eventSource = this.sseConnections.get(uploadId);
                 if (eventSource) {
-                  console.log('All uploads completed: Closing SSE connection:', uploadId);
+                  console.log(
+                    'All uploads completed: Closing SSE connection:',
+                    uploadId,
+                  );
                   eventSource.close();
                   this.sseConnections.delete(uploadId);
                 }
@@ -3709,7 +4149,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
                 setTimeout(() => {
                   if (folderId > 0) {
                     // 폴더에 업로드한 경우 해당 폴더만 새로고침
-                    const targetFolder = this.findFolderByFolderId(folderId, this.desktopFolders);
+                    const targetFolder = this.findFolderByFolderId(
+                      folderId,
+                      this.desktopFolders,
+                    );
                     if (targetFolder) {
                       this.refreshFolder(targetFolder);
                     }
@@ -3734,9 +4177,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           console.error('파일 업로드 에러:', err);
           if (this.uploadFileList[index]) {
             this.uploadFileList[index].status = 'error';
-            this.uploadFileList[index].error = err.message || '업로드 중 오류가 발생했습니다.';
+            this.uploadFileList[index].error =
+              err.message || '업로드 중 오류가 발생했습니다.';
           }
-        }
+        },
       );
 
     this.subscriptions.push(uploadSubscription);
@@ -3804,7 +4248,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   /**
    * 폴더 구조 업로드 (재귀적)
    */
-  private async uploadFolderStructure(items: DataTransferItem[], parentFolderId: number) {
+  private async uploadFolderStructure(
+    items: DataTransferItem[],
+    parentFolderId: number,
+  ) {
     // 업로드 ID 생성
     const uploadId = `upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -3819,7 +4266,11 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     this.openUploadWindow();
 
     // 디렉토리 엔트리 읽기 (모든 항목을 재귀적으로 읽기)
-    const readDirectoryEntries = (reader: any, folderPath: string, folderId: number): Promise<void> => {
+    const readDirectoryEntries = (
+      reader: any,
+      folderPath: string,
+      folderId: number,
+    ): Promise<void> => {
       return new Promise((resolve, reject) => {
         const processBatch = async (): Promise<void> => {
           return new Promise((resolveBatch, rejectBatch) => {
@@ -3836,16 +4287,27 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
                 if (entry.isDirectory) {
                   // 하위 폴더인 경우
                   const folderName = entry.name;
-                  const newFolderPath = folderPath ? `${folderPath}/${folderName}` : folderName;
+                  const newFolderPath = folderPath
+                    ? `${folderPath}/${folderName}`
+                    : folderName;
 
                   // 폴더 생성
                   try {
-                    const newFolderId = await this.createFolder(folderName, folderId);
+                    const newFolderId = await this.createFolder(
+                      folderName,
+                      folderId,
+                    );
                     folderMap.set(newFolderPath, newFolderId);
 
                     // 하위 폴더 내용 읽기
                     const subReader = entry.createReader();
-                    promises.push(readDirectoryEntries(subReader, newFolderPath, newFolderId));
+                    promises.push(
+                      readDirectoryEntries(
+                        subReader,
+                        newFolderPath,
+                        newFolderId,
+                      ),
+                    );
                   } catch (error) {
                     console.error('폴더 생성 실패:', folderName, error);
                   }
@@ -3857,11 +4319,13 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
                         allFiles.push({
                           file,
                           folderId,
-                          path: folderPath ? `${folderPath}/${file.name}` : file.name,
+                          path: folderPath
+                            ? `${folderPath}/${file.name}`
+                            : file.name,
                         });
                         resolveFile();
                       });
-                    })
+                    }),
                   );
                 }
               }
@@ -3880,7 +4344,11 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
     };
 
     // 모든 항목을 재귀적으로 처리
-    const processItems = async (items: DataTransferItem[], currentPath: string, currentFolderId: number) => {
+    const processItems = async (
+      items: DataTransferItem[],
+      currentPath: string,
+      currentFolderId: number,
+    ) => {
       const promises: Promise<void>[] = [];
 
       for (const item of items) {
@@ -3890,16 +4358,23 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
         if (entry.isDirectory) {
           // 폴더인 경우
           const folderName = entry.name;
-          const folderPath = currentPath ? `${currentPath}/${folderName}` : folderName;
+          const folderPath = currentPath
+            ? `${currentPath}/${folderName}`
+            : folderName;
 
           // 폴더 생성
           try {
-            const newFolderId = await this.createFolder(folderName, currentFolderId);
+            const newFolderId = await this.createFolder(
+              folderName,
+              currentFolderId,
+            );
             folderMap.set(folderPath, newFolderId);
 
             // 폴더 내용 읽기
             const reader = entry.createReader();
-            promises.push(readDirectoryEntries(reader, folderPath, newFolderId));
+            promises.push(
+              readDirectoryEntries(reader, folderPath, newFolderId),
+            );
           } catch (error) {
             console.error('폴더 생성 실패:', folderName, error);
           }
@@ -3915,7 +4390,7 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
                 });
                 resolve();
               });
-            })
+            }),
           );
         }
       }
@@ -3946,17 +4421,19 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
       const sseConnected = this.connectSSE(uploadId);
 
       // SSE 연결 후 파일 업로드 시작
-      sseConnected.then(() => {
-        console.log('SSE 연결 완료, 폴더 구조 업로드 시작:', uploadId);
-        allFiles.forEach((item, index) => {
-          this.uploadSingleFile(item.file, index, uploadId, item.folderId);
+      sseConnected
+        .then(() => {
+          console.log('SSE 연결 완료, 폴더 구조 업로드 시작:', uploadId);
+          allFiles.forEach((item, index) => {
+            this.uploadSingleFile(item.file, index, uploadId, item.folderId);
+          });
+        })
+        .catch((error) => {
+          console.error('SSE 연결 실패, 폴더 구조 업로드 계속 진행:', error);
+          allFiles.forEach((item, index) => {
+            this.uploadSingleFile(item.file, index, uploadId, item.folderId);
+          });
         });
-      }).catch((error) => {
-        console.error('SSE 연결 실패, 폴더 구조 업로드 계속 진행:', error);
-        allFiles.forEach((item, index) => {
-          this.uploadSingleFile(item.file, index, uploadId, item.folderId);
-        });
-      });
     } catch (error) {
       console.error('폴더 구조 업로드 중 오류:', error);
       this.toast.error('폴더 업로드 중 오류가 발생했습니다.');
@@ -3967,7 +4444,10 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
   /**
    * 폴더 생성
    */
-  private async createFolder(folderName: string, parentId: number): Promise<number> {
+  private async createFolder(
+    folderName: string,
+    parentId: number,
+  ): Promise<number> {
     return new Promise((resolve, reject) => {
       const params: Parameter = {
         type: 'POST',
@@ -3993,9 +4473,8 @@ export class Desktop implements OnInit, OnDestroy, AfterViewChecked, AfterViewIn
           (err: any) => {
             console.error('폴더 생성 에러:', err);
             reject(err);
-          }
+          },
         );
     });
   }
-
 }

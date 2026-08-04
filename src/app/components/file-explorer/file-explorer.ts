@@ -24,6 +24,7 @@ import { SHARED_MODULES } from '../../shared/shared-modules';
 import { DesktopStateService, ContextMenuActions } from '../../core/services/desktop-state.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../core/services/toast.service';
+import { DAlertService } from '../../portfolio/components/d-alert/d-alert.service';
 
 
 const _RESET_POSITION: number = -9999;
@@ -231,7 +232,8 @@ export class FileExplorer implements OnInit, OnChanges, OnDestroy {
     private apiService: ApiService,
     private cdr: ChangeDetectorRef,
     private desktopStateService: DesktopStateService,
-    private toast: ToastService
+    private toast: ToastService,
+    private dAlert: DAlertService
   ) {}
 
   /**
@@ -1272,16 +1274,23 @@ export class FileExplorer implements OnInit, OnChanges, OnDestroy {
       const newExt = newExtIndex !== -1 ? newName.substring(newExtIndex) : '';
 
       if (oldExt.toLowerCase() !== newExt.toLowerCase()) {
-        const confirmed = window.confirm('확장자를 변경할까요?\n파일을 사용할 수 없게 될 수도 있습니다.');
-        if (!confirmed) {
-          // 취소 시 원래 이름으로 되돌림
+        this.dAlert.yesNo('확장자를 변경할까요?\n파일을 사용할 수 없게 될 수도 있습니다.', () => {
+          this.commitRenameRequest(originalName, newName);
+        }, () => {
           this.renameText = originalName;
           this.renamingFile = null;
           this.renameText = '';
-          return;
-        }
+          this.cdr.detectChanges();
+        });
+        return;
       }
     }
+
+    this.commitRenameRequest(originalName, newName);
+  }
+
+  private commitRenameRequest(originalName: string, newName: string) {
+    if (!this.renamingFile) return;
 
     // 백엔드에 이름 변경 요청
     const params: Parameter = {
