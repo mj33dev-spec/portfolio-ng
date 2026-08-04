@@ -1,0 +1,34 @@
+<section class="editor-section">
+  <div class="editor-container">
+    <div class="editor-header">
+      <button class="back-btn" (click)="goBack()">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        취소
+      </button>
+
+      <h2 class="page-title">{{ isEditMode() ? '게시물 수정' : '새 게시물 작성' }}</h2>
+      
+      <button class="btn-primary_portfolio" (click)="savePost()">저장하기</button>
+    </div>
+
+    <div class="editor-body">
+      <div class="form-group">
+        <label>제목</label>
+        <input type="text" [ngModel]="title()" (ngModelChange)="title.set($event)" placeholder="글 제목을 입력하세요" autofocus>
+      </div>
+
+      <div class="form-group">
+        <label>테마 컬러</label>
+        <input type="color" [ngModel]="color()" (ngModelChange)="color.set($event)" class="color-picker">
+      </div>
+
+      <div class="form-group">
+        <label>내용 (Markdown 지원)</label>
+        <textarea [ngModel]="content()" (ngModelChange)="content.set($event)" placeholder="마크다운 문법으로 내용을 작성하세요..." rows="15"></textarea>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,6 +1,7 @@
 
 import { Component, ChangeDetectionStrategy, signal, ElementRef, viewChild, afterNextRender, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
@@ -22,7 +23,7 @@ import { ScrollService } from './scroll.service';
     ProjectsComponent,
     AboutComponent,
     BoardComponent,
-    ContactComponent,
+    ContactComponent
   ],
 })
 export class AppComponent {

@@ -1,10 +1,17 @@
 <section class="board-section">
   <div class="board-container">
-    <h2 class="title">blog</h2>
+    <div class="board-header">
+      <h2 class="title">blog</h2>
+      @if (isLoggedIn()) {
+        <button class="btn-primary_portfolio" (click)="createNewPost()" style="margin-bottom: 2rem;">
+          새 글 작성
+        </button>
+      }
+    </div>
 
     <div class="post-list">
       @for (post of paginatedPosts(); track post.id) {
-      <div class="post-card" [style.border-color]="post.color">
+      <div class="post-card" [style.border-color]="post.color" (click)="goToPost(post.id)" style="cursor: pointer;">
         <h4 class="post-title">{{ post.title }}</h4>
         <p class="post-content">{{ post.content }}</p>
       </div>
@@ -30,3 +37,11 @@
     }
   </div>
 </section>
+
+@if (activeView() === 'detail' && selectedPostId(); as id) {
+  <app-board-detail [postId]="id" (closeOverlay)="closeOverlay()" (edit)="editPost($event)"></app-board-detail>
+}
+
+@if (activeView() === 'editor') {
+  <app-board-editor [postId]="selectedPostId()" (closeOverlay)="closeOverlay()"></app-board-editor>
+}

@@ -1,0 +1,27 @@
+<section class="detail-section" *ngIf="post()">
+  <div class="detail-container">
+    <div class="detail-header">
+      <button class="back-btn" (click)="goBack()">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        목록으로
+      </button>
+
+      <div class="admin-actions" *ngIf="authService.isLoggedIn()">
+        <button class="btn-outlined-dark" (click)="editPost()">수정</button>
+        <button class="btn-danger" (click)="deletePost()">삭제</button>
+      </div>
+    </div>
+
+    <article class="post-content-container">
+      <div class="title-strip" [style.backgroundColor]="post()?.color"></div>
+      <h1 class="post-title">{{ post()?.title }}</h1>
+      <div class="post-meta">
+        <span class="date">{{ post()?.created_at | date:'yyyy년 MM월 dd일 HH:mm' }}</span>
+      </div>
+      <div class="markdown-body" [innerHTML]="compiledMarkdown()"></div>
+    </article>
+  </div>
+</section>

@@ -158,6 +158,9 @@
 .btn-primary_portfolio {
   @include btnTheme("primaryPortfolio");
 }
+.btn-outlined-primary_portfolio {
+  @include btnTheme("outlinedPrimaryPortfolio");
+}
 .btn-disabled {
   @include btnTheme("disabled");
 }

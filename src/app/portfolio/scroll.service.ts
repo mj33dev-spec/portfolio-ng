@@ -20,7 +20,17 @@ export class ScrollService {
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          this.activeSection.set(entry.target.id);
+          const id = entry.target.id;
+          this.activeSection.set(id);
+          if (id === 'home') {
+            if (window.location.hash) {
+              window.history.replaceState(null, '', window.location.pathname);
+            }
+          } else {
+            if (window.location.hash !== `#${id}`) {
+               window.history.replaceState(null, '', `${window.location.pathname}#${id}`);
+            }
+          }
         }
       });
     }, options);

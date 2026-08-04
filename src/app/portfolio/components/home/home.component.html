@@ -2,11 +2,11 @@
   <!-- Absolute Login Header for Home Section -->
   <div class="home-login-container">
     @if (authService.isLoggedIn()) {
-      <button (click)="handleLogout()" class="btn-danger">
+      <button (click)="handleLogout()" class="btn-outlined-danger">
         주인장 로그아웃 😊
       </button>
     } @else {
-      <button (click)="openLoginModal()" class="btn-primary_portfolio">
+      <button (click)="openLoginModal()" class="btn-outlined-primary_portfolio">
         주인장 로그인 😊
       </button>
     }
