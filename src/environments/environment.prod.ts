@@ -9,6 +9,8 @@ export const environment = {
   commonServerURL: 'https://api.alicerabbit.space:3010/api/portfolio',
   commonServerSocketURL: 'https://api.alicerabbit.space:3010/api/portfolio',
 
-  encryptionKey: 'portfolio-user-info-encryption-key-prod'
+  encryptionKey: 'portfolio-user-info-encryption-key-prod',
 
+  supabaseUrl: 'https://dqpzasjfqnwdkeenowoi.supabase.co',
+  supabaseKey: 'sb_publishable_kAbXvkBAP6Oxi7IuaOMACQ_CxDVF3F5'
 };

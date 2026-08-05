@@ -7,7 +7,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
 import { PhilosophyComponent } from './components/philosophy/philosophy.component';
 import { ProjectsComponent } from './components/projects/projects.component';
-import { AboutComponent } from './components/about/about.component';
+import { CareerComponent } from './components/career/career.component';
 import { BoardComponent } from './components/board/board.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { DAlertComponent } from './components/d-alert/d-alert.component';
@@ -24,7 +24,7 @@ import { ScrollService } from './scroll.service';
     HomeComponent,
     PhilosophyComponent,
     ProjectsComponent,
-    AboutComponent,
+    CareerComponent,
     BoardComponent,
     ContactComponent,
     DAlertComponent
@@ -44,7 +44,7 @@ export class AppComponent {
     { id: 'home', name: 'Home' },
     { id: 'philosophy', name: 'Philosophy' },
     { id: 'projects', name: 'Projects' },
-    { id: 'about', name: 'About' },
+    { id: 'career', name: 'Career' },
     { id: 'board', name: 'blog' },
     { id: 'contact', name: 'Contact' }
   ];

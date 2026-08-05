@@ -1,0 +1,39 @@
+<section class="career-section">
+  <div class="career-container">
+    <div class="section-header">
+      <h2 class="section-title">Career</h2>
+      <p class="section-subtitle">저의 성과를 소개합니다</p>
+    </div>
+
+    <div class="vertical-timeline">
+      <!-- Centered Vertical Spine Line -->
+      <div class="timeline-spine"></div>
+
+      <!-- Alternating Zig-Zag Items -->
+      <div 
+        *ngFor="let yearItem of careerList; let i = index" 
+        class="timeline-item"
+        [ngClass]="[i % 2 === 0 ? 'item-left' : 'item-right', 'item-idx-' + i]">
+
+        <!-- Center Node with Year Badge -->
+        <div class="timeline-center-node">
+          <div class="year-badge">
+            <span class="year-text">{{ yearItem.year }}</span>
+          </div>
+          <div class="node-dot">
+            <div class="dot-inner"></div>
+          </div>
+        </div>
+
+        <!-- Message Box Card -->
+        <div class="timeline-card">
+          <div class="card-arrow"></div>
+          <ul class="achievement-list">
+            <li *ngFor="let item of yearItem.items">{{ item }}</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
