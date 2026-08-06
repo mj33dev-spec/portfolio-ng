@@ -13,9 +13,10 @@
             <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.mobile')?.value">
               <span>Mobile</span>
             </div>
+            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.mobile')?.value" (click)="removeImage('platformImages.mobile', $event)">✕</button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.mobile']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.mobile')" [disabled]="isUploading()['platformImages.mobile']">
-              <span *ngIf="!isUploading()['platformImages.mobile']">+</span>
+              <span *ngIf="!isUploading()['platformImages.mobile']" style="text-align: center;">+<br>375 x 667(px)</span>
               <span *ngIf="isUploading()['platformImages.mobile']">...</span>
             </label>
             <input type="hidden" formControlName="mobile">
@@ -28,9 +29,10 @@
             <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.pc')?.value">
               <span>PC</span>
             </div>
+            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.pc')?.value" (click)="removeImage('platformImages.pc', $event)">✕</button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.pc']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.pc')" [disabled]="isUploading()['platformImages.pc']">
-              <span *ngIf="!isUploading()['platformImages.pc']">+</span>
+              <span *ngIf="!isUploading()['platformImages.pc']" style="text-align: center;">+<br>1440 x 895(px)</span>
               <span *ngIf="isUploading()['platformImages.pc']">...</span>
             </label>
             <input type="hidden" formControlName="pc">
@@ -43,9 +45,10 @@
             <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.tablet')?.value">
               <span>Tablet</span>
             </div>
+            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.tablet')?.value" (click)="removeImage('platformImages.tablet', $event)">✕</button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.tablet']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.tablet')" [disabled]="isUploading()['platformImages.tablet']">
-              <span *ngIf="!isUploading()['platformImages.tablet']">+</span>
+              <span *ngIf="!isUploading()['platformImages.tablet']" style="text-align: center;">+<br>584 x 895(px)</span>
               <span *ngIf="isUploading()['platformImages.tablet']">...</span>
             </label>
             <input type="hidden" formControlName="tablet">
@@ -200,7 +203,7 @@
       </div>
 
       <div class="full-width retrospective form-group">
-        <h3>회고 및 소감문</h3>
+        <h3>프로젝트 회고</h3>
         <textarea formControlName="retrospective" rows="4" placeholder="프로젝트를 진행하며 느낀 점이나 회고를 적어주세요."></textarea>
       </div>
       

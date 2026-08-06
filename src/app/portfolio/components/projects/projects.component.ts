@@ -85,6 +85,11 @@ export class ProjectsComponent {
     this.projectToEdit.set(null);
   }
 
+  onSaveComplete() {
+    this.loadProjects();
+    this.closeModal(); // 상세 시트 닫기
+  }
+
   async deleteProject(project: Project, event?: Event) {
     event?.stopPropagation();
     this.dAlert.yesNo(
@@ -93,6 +98,8 @@ export class ProjectsComponent {
         try {
           await this.projectService.deleteProject((project as any).id);
           this.loadProjects();
+          this.closeModal();
+          this.dAlert.success('성공적으로 삭제되었습니다.');
         } catch (err) {
           this.dAlert.error('삭제에 실패했습니다.');
         }

@@ -119,6 +119,6 @@
 }
 
 @if (isFormModalOpen()) {
-<app-project-form-modal [project]="projectToEdit()" (closeModal)="closeFormModal()" (saveComplete)="loadProjects()">
+<app-project-form-modal [project]="projectToEdit()" (closeModal)="closeFormModal()" (saveComplete)="onSaveComplete()">
 </app-project-form-modal>
 }

@@ -205,7 +205,6 @@ export class ProjectFormModalComponent implements OnInit {
     }
     
     const filePath = `${folder}/${fileName}`;
-
     try {
       const { error } = await this.projectService.uploadImage(filePath, file);
       if (error) {
@@ -226,6 +225,13 @@ export class ProjectFormModalComponent implements OnInit {
       this.isUploading.update(state => ({ ...state, [controlPath]: false }));
       input.value = ''; // 동일 파일 재업로드 가능하게 초기화
     }
+  }
+
+  removeImage(controlPath: string, event?: Event) {
+    event?.stopPropagation();
+    event?.preventDefault();
+    this.projectForm.get(controlPath)?.setValue('');
+    this.projectForm.get(controlPath)?.markAsDirty();
   }
 
   toggleArrayValue(controlName: string, value: string) {

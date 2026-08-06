@@ -82,7 +82,7 @@
   </div>
 
   <!-- 리사이즈 핸들 -->
-  <ng-container *ngIf="resizable">
+  <ng-container *ngIf="resizable && !isMaximized">
     <div
       class="resize-handle resize-handle-n"
       (mousedown)="startResize($event, 'n')"

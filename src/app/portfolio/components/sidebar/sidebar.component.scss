@@ -7,14 +7,11 @@
     top: 40px;
     left: 0;
     height: calc(100% - 40px);
-    width: 16rem;
-    /* w-64 */
+    width: 256px;
     background-color: #181818;
-    /* bg-[#181818] */
     z-index: 30;
     transition: transform 0.3s ease-in-out;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    /* shadow-2xl */
     transform: translateX(-100%);
 
     @media (min-width: 1024px) {
@@ -27,22 +24,16 @@
 }
 
 .sidebar-content {
-    padding: 2rem;
+    padding: 32px;
     /* p-8 */
     display: flex;
     flex-direction: column;
     height: 100%;
 
-    .logo {
-        font-size: 1.875rem;
-        /* text-3xl */
-        line-height: 2.25rem;
-        font-weight: 700;
-        /* font-bold */
-        color: #facc15;
-        /* text-yellow-400 */
-        margin-bottom: 3rem;
-        /* mb-12 */
+    .none-box {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 24px;
     }
 
     .nav-list {
@@ -51,14 +42,14 @@
         margin: 0;
 
         li+li {
-            margin-top: 1rem;
+            margin-top: 16px;
             /* space-y-4 */
         }
 
         .nav-link {
-            font-size: 1.125rem;
+            font-size: 18px;
             /* text-lg */
-            line-height: 1.75rem;
+            line-height: 28px;
             font-weight: 600;
             /* font-semibold */
             cursor: pointer;
@@ -82,9 +73,9 @@
 
     .footer {
         margin-top: auto;
-        font-size: 0.875rem;
+        font-size: 14px;
         /* text-sm */
-        line-height: 1.25rem;
+        line-height: 20px;
         color: #6b7280;
         /* text-gray-500 */
     }

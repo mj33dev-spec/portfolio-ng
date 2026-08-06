@@ -143,15 +143,17 @@ export class WindowComponent implements OnInit, OnDestroy {
     this.focusEvent.emit();
 
     if (this.isMaximized) {
+      return;
+      
       // 전체화면 모드에서 리사이즈 시작 시: 최대화 해제하되 현재 최대화 크기(x:0, y:0, w:innerWidth, h:innerHeight-85)를 출발 사이즈로 유지
-      this.isMaximized = false;
-      this.maximizeEvent.emit(false);
+      // this.isMaximized = false;
+      // this.maximizeEvent.emit(false);
 
-      this.windowPosition = { x: 0, y: 0 };
-      this.windowSize = {
-        width: window.innerWidth,
-        height: window.innerHeight - 85,
-      };
+      // this.windowPosition = { x: 0, y: 0 };
+      // this.windowSize = {
+      //   width: window.innerWidth,
+      //   height: window.innerHeight - 85,
+      // };
     }
 
     this.isResizing = true;
