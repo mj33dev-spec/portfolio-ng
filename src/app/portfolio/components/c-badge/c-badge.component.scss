@@ -11,21 +11,21 @@
   white-space: nowrap;
   
   .badge-icon {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     margin-right: 6px;
     object-fit: contain;
   }
   
   &[data-size="sm"] {
-    padding: 2px 8px;
-    font-size: 12px;
-    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 14px;
+    border-radius: 6px;
   }
   
   &[data-size="md"] {
-    padding: 3px 8px;
-    font-size: 14px;
+    padding: 4px 12px;
+    font-size: 16px;
     border-radius: 8px;
   }
   

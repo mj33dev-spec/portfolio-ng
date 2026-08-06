@@ -60,6 +60,8 @@
     margin: 0;
     text-align: center;
     flex: 1;
+    min-width: 0;
+    word-break: keep-all;
   }
 
   .panel-actions {

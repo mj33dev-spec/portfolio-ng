@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, effect, untracked } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { AuthService } from '../../auth.service';
 import { BoardDetailComponent } from '../board-detail/board-detail';
 import { BoardEditorComponent } from '../board-editor/board-editor';
 import { CategoryBadgeComponent } from '../category-badge/category-badge.component';
+import { ScrollService } from '../../scroll.service';
 
 @Component({
   selector: 'app-board',
@@ -19,8 +20,21 @@ import { CategoryBadgeComponent } from '../category-badge/category-badge.compone
 export class BoardComponent implements OnInit {
   private blogService = inject(BlogService);
   private authService = inject(AuthService);
+  private scrollService = inject(ScrollService);
 
   isLoggedIn = this.authService.isLoggedIn;
+
+  constructor() {
+    effect(() => {
+      // Close overlay when active section changes
+      this.scrollService.activeSection();
+      untracked(() => {
+        if (this.activeView() !== 'list') {
+          this.closeOverlay();
+        }
+      });
+    });
+  }
   
   activeView = signal<'list' | 'detail' | 'editor'>('list');
   selectedPostId = signal<string | null>(null);

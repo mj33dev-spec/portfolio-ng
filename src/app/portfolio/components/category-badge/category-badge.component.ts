@@ -51,7 +51,7 @@ const CATEGORY_MAP: Record<string, CategoryConfig> = {
     customBgColor: 'rgba(96, 165, 250, 0.15)',
   },
   'node.js': {
-    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original-wordmark.svg',
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg',
     customColor: '#4ade80',
     customBgColor: 'rgba(74, 222, 128, 0.15)',
   },
@@ -59,6 +59,11 @@ const CATEGORY_MAP: Record<string, CategoryConfig> = {
     iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nestjs/nestjs-original.svg',
     customColor: '#ea2845',
     customBgColor: 'rgba(234, 40, 69, 0.15)',
+  },
+  'Dart': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/dart/dart-original.svg',
+    customColor: '#0175C2',
+    customBgColor: 'rgba(1, 117, 194, 0.15)',
   },
   'Database': {
     iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/azuresqldatabase/azuresqldatabase-original.svg',

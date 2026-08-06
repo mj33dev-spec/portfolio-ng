@@ -13,12 +13,41 @@
           <img [src]="project.imageUrl" alt="{{ project.title }}">
         </div>
         <div class="info-wrapper">
-          <h3>{{ project.title }}</h3>
-          <p>{{ project.description }}</p>
-          <div class="tags">
-            @for (tag of project.tags; track tag) {
-            <span class="tag">{{ tag }}</span>
-            }
+          <div class="header-group">
+            <div class="badge-wrapper">
+              <c-badge [label]="project.affiliation" [customBgColor]="getTagBgColor(project.affiliation)" [customColor]="getTagColor(project.affiliation)" [iconUrl]="getTagIcon(project.affiliation)" size="sm"></c-badge>
+            </div>
+            
+            <div class="logo-title-group">
+              @if (project.logo) {
+                <img [src]="project.logo" alt="{{ project.title }} 로고" class="project-logo">
+              } @else {
+                <div class="project-logo-fallback"></div>
+              }
+              
+              <div class="text-group">
+                <p class="subtitle">{{ project.title }}</p>
+                <h3 class="title">{{ project.description }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="tags-container" style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="tag-group">
+              <div class="tag-label">서비스</div>
+              <div class="tags">
+                @for (tag of project.serviceTags; track tag) {
+                <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="sm"></c-badge>
+                }
+              </div>
+            </div>
+            <div class="tag-group">
+              <div class="tag-label">담당 파트</div>
+              <div class="tags">
+                @for (tag of project.roleTags; track tag) {
+                <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="sm"></c-badge>
+                }
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -28,8 +57,9 @@
 
   <div class="pagination">
     @for (project of projects(); track $index) {
-    <button (click)="currentProjectIndex.set($index)" class="dot"
-      [class.active]="currentProjectIndex() === $index">
+    <button (click)="selectProjectIndex($index)" class="gauge-segment"
+      [class.active]="currentProjectIndex() >= $index"
+      [class.current]="currentProjectIndex() === $index">
     </button>
     }
   </div>
