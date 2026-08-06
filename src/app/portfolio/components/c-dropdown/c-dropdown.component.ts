@@ -12,10 +12,14 @@ import {
   OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CBadgeComponent } from '../c-badge/c-badge.component';
 
 export interface CDropdownOption {
   label?: string;
   icon?: string;
+  image?: string;
+  customColor?: string;
+  customBgColor?: string;
   disabled?: boolean;
   type?: 'divider' | 'item';
   value?: any;
@@ -24,7 +28,7 @@ export interface CDropdownOption {
 @Component({
   selector: 'c-dropdown',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CBadgeComponent],
   templateUrl: './c-dropdown.component.html',
   styleUrl: './c-dropdown.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -104,31 +108,28 @@ export class CDropdownComponent implements OnDestroy {
   }
 
   updatePosition() {
-    if (!this.anchorRef || typeof window === 'undefined') return;
-    const rect = this.anchorRef.nativeElement.getBoundingClientRect();
-    
     // Width logic
     if (this.variant === 'more') {
       this.menuWidth.set(this.width || 'max-content');
     } else {
-      this.menuWidth.set(`${rect.width}px`);
+      this.menuWidth.set(this.width || '100%');
     }
 
     // Vertical positioning
     if (this.direction === 'up') {
-      this.menuBottom.set(`${window.innerHeight - rect.top + 8}px`);
+      this.menuBottom.set('calc(100% + 8px)');
       this.menuTop.set('auto');
     } else {
-      this.menuTop.set(`${rect.bottom + 8}px`);
+      this.menuTop.set('calc(100% + 8px)');
       this.menuBottom.set('auto');
     }
 
     // Horizontal positioning
     if (this.align === 'right') {
-      this.menuRight.set(`${window.innerWidth - rect.right}px`);
+      this.menuRight.set('0px');
       this.menuLeft.set('auto');
     } else {
-      this.menuLeft.set(`${rect.left}px`);
+      this.menuLeft.set('0px');
       this.menuRight.set('auto');
     }
   }
@@ -140,15 +141,25 @@ export class CDropdownComponent implements OnDestroy {
     const disabled = option.disabled || this.disabledList.includes(labelStr);
     
     if (disabled) return;
-
-    if (option.value !== undefined) {
-      this.valueChange.emit(option.value);
-    }
+    
+    this.valueChange.emit(option.value || option.label);
     this.optionClick.emit(option);
     
     if (this.variant !== 'multi') {
       this.close();
     }
+  }
+
+  getOptionByValue(val: string): CDropdownOption | undefined {
+    return this.options.find(o => (o.value || o.label) === val);
+  }
+
+  isSelected(opt: CDropdownOption): boolean {
+    const val = opt.value || opt.label;
+    if (this.variant === 'multi') {
+      return this.selectedValues.includes(val);
+    }
+    return this.value === val;
   }
 
   removeMultiValue(e: MouseEvent, val: string) {

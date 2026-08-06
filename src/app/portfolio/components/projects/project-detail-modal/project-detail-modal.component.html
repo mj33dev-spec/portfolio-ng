@@ -1,16 +1,45 @@
 <app-side-panel [title]="project().description" (back)="closeModal.emit()">
+  <div header-actions *ngIf="authService.isLoggedIn()" class="header-admin-actions">
+    <button class="btn-text" (click)="editProject.emit(project())">수정</button>
+    <button class="btn-text-danger" (click)="deleteProject.emit(project())">삭제</button>
+  </div>
   <div class="detail-container">
     <!-- Image at the top -->
     <div class="project-image-container">
-      <img [src]="project().platformImages.pc" alt="{{ project().title }} PC mockup">
+      <div class="image-preview-wrapper has-image">
+        <ng-container *ngIf="project().platformImages?.pc || project().platformImages?.tablet || project().platformImages?.mobile; else fallbackImage">
+          <div class="thumbnail-preview-layout">
+            <div class="preview-slot preview-mobile" *ngIf="project().platformImages?.mobile">
+              <img class="device-frame" src="assets/portfolio/device-mobile.png" alt="Mobile Frame">
+              <img class="user-screen" [src]="project().platformImages!.mobile" alt="Mobile Image">
+            </div>
+            <div class="preview-slot preview-pc" *ngIf="project().platformImages?.pc">
+              <img class="device-frame" src="assets/portfolio/device-pc.png" alt="PC Frame">
+              <img class="user-screen" [src]="project().platformImages!.pc" alt="PC Image">
+            </div>
+            <div class="preview-slot preview-tablet" *ngIf="project().platformImages?.tablet">
+              <img class="device-frame" src="assets/portfolio/device-tablet.png" alt="Tablet Frame">
+              <img class="user-screen" [src]="project().platformImages!.tablet" alt="Tablet Image">
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #fallbackImage>
+          <img *ngIf="project().imageUrl" [src]="project().imageUrl" alt="{{ project().title }}">
+          <div *ngIf="!project().imageUrl" class="empty-thumbnail">이미지 없음</div>
+        </ng-template>
+      </div>
     </div>
 
     <!-- Details below -->
     <div class="details-grid">
       <div class="full-width project-header">
         <div class="affiliation-status-row">
-          <c-badge [label]="project().affiliation" [customBgColor]="getTagBgColor(project().affiliation)" [customColor]="getTagColor(project().affiliation)" [iconUrl]="getTagIcon(project().affiliation)" size="md"></c-badge>
-          <span class="status-badge" [ngClass]="getStatusClass(project().status)">{{ project().status }}</span>
+          <div class="badges">
+            @if (project().affiliation !== '앨리스래빗') {
+              <c-badge [label]="project().affiliation" [customBgColor]="getTagBgColor(project().affiliation)" [customColor]="getTagColor(project().affiliation)" [iconUrl]="getTagIcon(project().affiliation)" size="md"></c-badge>
+            }
+            <span class="status-badge" [ngClass]="getStatusClass(project().status)">{{ project().status }}</span>
+          </div>
         </div>
         <div class="subtitle">{{ project().title }}</div>
         <div class="title-row">
@@ -52,7 +81,7 @@
       </div>
 
       <div class="detail-item">
-        <h3>작업 범위 및 참여도</h3>
+        <h3>주요 업무</h3>
         <p class="content-text">{{ project().scopeAndContribution }}</p>
       </div>
 

@@ -101,4 +101,19 @@ export class ProjectService {
     const currentProjects = this._projects.getValue();
     this._projects.next(currentProjects.filter(p => (p as any).id !== id));
   }
+
+  /**
+   * Upload an image to Supabase Storage
+   */
+  async uploadImage(path: string, file: File) {
+    return await this.supabase.storage.from('project-images').upload(path, file);
+  }
+
+  /**
+   * Get the public URL for an uploaded image
+   */
+  getImageUrl(path: string) {
+    const { data } = this.supabase.storage.from('project-images').getPublicUrl(path);
+    return data.publicUrl;
+  }
 }

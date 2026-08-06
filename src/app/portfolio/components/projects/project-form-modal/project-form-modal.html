@@ -1,152 +1,223 @@
-<div class="modal-overlay" (click)="closeModal.emit()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>{{ project() ? '프로젝트 수정' : '새 프로젝트 추가' }}</h2>
-      <button class="close-btn" (click)="closeModal.emit()">&times;</button>
-    </div>
+<app-side-panel [title]="project() ? '프로젝트 수정' : '프로젝트 추가'" (back)="closeModal.emit()">
+  <form [formGroup]="projectForm" (ngSubmit)="save()" class="detail-container">
+    
+    <!-- Interactive Thumbnail Layout -->
+    <div class="project-image-container form-group" formGroupName="platformImages">
+      <div class="image-upload-wrapper has-image interactive-thumbnail">
+        <div class="thumbnail-preview-layout">
 
-    <div class="modal-body">
-      <form [formGroup]="projectForm" (ngSubmit)="save()" class="project-form">
-        <div class="form-group">
-          <label>프로젝트명 *</label>
-          <input type="text" formControlName="title" placeholder="예: 서한그룹-B2B">
-        </div>
-
-        <div class="form-group">
-          <label>한줄 설명 *</label>
-          <input type="text" formControlName="description" placeholder="예: B2B 기업 관리 시스템">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>소속 (Affiliation)</label>
-            <input type="text" formControlName="affiliation" placeholder="예: 앨리스래빗">
-          </div>
-          <div class="form-group">
-            <label>진행 상태 (Status)</label>
-            <input type="text" formControlName="status" placeholder="예: 운영중">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>작업 기간</label>
-            <input type="text" formControlName="workPeriod" placeholder="예: 24년4월29일 ~ 진행중">
-          </div>
-          <div class="form-group">
-            <label>대표 색상 (Color)</label>
-            <input type="text" formControlName="color" placeholder="예: orange 또는 #ff9800">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>로고 이미지 URL</label>
-            <input type="text" formControlName="logo" placeholder="assets/portfolio/seohan.png">
-          </div>
-          <div class="form-group">
-            <label>대표 이미지 URL</label>
-            <input type="text" formControlName="imageUrl">
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>프로젝트 URL</label>
-          <input type="text" formControlName="url" placeholder="https://...">
-        </div>
-
-        <div class="form-group">
-          <label>주요 역할 및 기여도 (Scope & Contribution)</label>
-          <textarea formControlName="scopeAndContribution" rows="3"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>회고 및 소감문 (Retrospective)</label>
-          <textarea formControlName="retrospective" rows="3"></textarea>
-        </div>
-
-        <!-- Tags -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>서비스 태그 (콤마로 구분)</label>
-            <input type="text" formControlName="serviceTags" placeholder="App, Web, Admin">
-          </div>
-          <div class="form-group">
-            <label>역할 태그 (콤마로 구분)</label>
-            <input type="text" formControlName="roleTags" placeholder="Frontend, Publishing">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>개발 환경 (콤마로 구분)</label>
-            <input type="text" formControlName="developmentEnvironment" placeholder="Flutter, Angular, node.js">
-          </div>
-          <div class="form-group">
-            <label>개발 언어 (콤마로 구분)</label>
-            <input type="text" formControlName="developmentLanguage" placeholder="Dart, HTML, CSS, Typescript">
-          </div>
-        </div>
-
-        <!-- Platform Images -->
-        <fieldset formGroupName="platformImages" class="form-fieldset">
-          <legend>플랫폼별 이미지 URL</legend>
-          <div class="form-row">
-            <div class="form-group">
-              <label>PC</label>
-              <input type="text" formControlName="pc">
+          <!-- Mobile Slot -->
+          <div class="preview-slot preview-mobile" [class.has-img]="projectForm.get('platformImages.mobile')?.value">
+            <img class="device-frame" src="assets/portfolio/device-mobile.png" alt="Mobile Frame">
+            <img class="user-screen" *ngIf="projectForm.get('platformImages.mobile')?.value" [src]="projectForm.get('platformImages.mobile')?.value" alt="Mobile Image">
+            <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.mobile')?.value">
+              <span>Mobile</span>
             </div>
-            <div class="form-group">
-              <label>Tablet</label>
-              <input type="text" formControlName="tablet">
-            </div>
-            <div class="form-group">
-              <label>Mobile</label>
-              <input type="text" formControlName="mobile">
-            </div>
-          </div>
-        </fieldset>
-
-        <!-- Links -->
-        <fieldset class="form-fieldset">
-          <div class="fieldset-header">
-            <legend>관련 링크</legend>
-            <button type="button" class="btn-secondary btn-sm" (click)="addLink()">+ 링크 추가</button>
+            <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.mobile']">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.mobile')" [disabled]="isUploading()['platformImages.mobile']">
+              <span *ngIf="!isUploading()['platformImages.mobile']">+</span>
+              <span *ngIf="isUploading()['platformImages.mobile']">...</span>
+            </label>
+            <input type="hidden" formControlName="mobile">
           </div>
           
-          <div formArrayName="links" class="links-container">
-            @for (link of links.controls; track $index) {
-              <div [formGroupName]="$index" class="link-row">
-                <select formControlName="type">
-                  <option value="ios">iOS 앱</option>
-                  <option value="android">Android 앱</option>
-                  <option value="web">웹사이트</option>
-                  <option value="admin">관리자페이지</option>
-                  <option value="github">Github</option>
-                  <option value="figma">Figma</option>
-                  <option value="document">문서</option>
-                  <option value="other">기타</option>
-                </select>
-                <input type="text" formControlName="label" placeholder="라벨 (예: 웹사이트)">
-                <input type="text" formControlName="url" placeholder="URL">
-                <button type="button" class="btn-danger btn-icon" (click)="removeLink($index)">&times;</button>
-              </div>
-            }
+          <!-- PC Slot -->
+          <div class="preview-slot preview-pc" [class.has-img]="projectForm.get('platformImages.pc')?.value">
+            <img class="device-frame" src="assets/portfolio/device-pc.png" alt="PC Frame">
+            <img class="user-screen" *ngIf="projectForm.get('platformImages.pc')?.value" [src]="projectForm.get('platformImages.pc')?.value" alt="PC Image">
+            <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.pc')?.value">
+              <span>PC</span>
+            </div>
+            <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.pc']">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.pc')" [disabled]="isUploading()['platformImages.pc']">
+              <span *ngIf="!isUploading()['platformImages.pc']">+</span>
+              <span *ngIf="isUploading()['platformImages.pc']">...</span>
+            </label>
+            <input type="hidden" formControlName="pc">
           </div>
-        </fieldset>
 
-        <div class="form-group">
-          <label>정렬 순서 (Sort Order)</label>
-          <input type="number" formControlName="sortOrder">
-        </div>
+          <!-- Tablet Slot -->
+          <div class="preview-slot preview-tablet" [class.has-img]="projectForm.get('platformImages.tablet')?.value">
+            <img class="device-frame" src="assets/portfolio/device-tablet.png" alt="Tablet Frame">
+            <img class="user-screen" *ngIf="projectForm.get('platformImages.tablet')?.value" [src]="projectForm.get('platformImages.tablet')?.value" alt="Tablet Image">
+            <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.tablet')?.value">
+              <span>Tablet</span>
+            </div>
+            <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.tablet']">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.tablet')" [disabled]="isUploading()['platformImages.tablet']">
+              <span *ngIf="!isUploading()['platformImages.tablet']">+</span>
+              <span *ngIf="isUploading()['platformImages.tablet']">...</span>
+            </label>
+            <input type="hidden" formControlName="tablet">
+          </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="closeModal.emit()" [disabled]="isSaving">취소</button>
-          <button type="submit" class="btn-primary" [disabled]="isSaving || projectForm.invalid">
-            {{ isSaving ? '저장 중...' : '저장하기' }}
-          </button>
         </div>
-      </form>
+      </div>
     </div>
-  </div>
-</div>
+
+    <!-- Details below -->
+    <div class="details-grid">
+      <div class="full-width project-header form-group">
+        <div class="affiliation-status-row">
+          <c-dropdown 
+            width="150px"
+            [options]="affiliationOptions" 
+            [value]="projectForm.get('affiliation')?.value || '소속 선택 *'"
+            (valueChange)="projectForm.get('affiliation')?.setValue($event)">
+          </c-dropdown>
+          
+          <c-dropdown 
+            width="200px"
+            [options]="statusOptions" 
+            [value]="projectForm.get('status')?.value || '상태 선택 *'"
+            (valueChange)="projectForm.get('status')?.setValue($event)"
+            align="right">
+          </c-dropdown>
+        </div>
+        
+        <input type="text" formControlName="title" placeholder="프로젝트/회사명 (예: 아이엠히어) *" class="subtitle-input" />
+        
+        <div class="title-row">
+          <div class="logo-upload-wrapper">
+            <img *ngIf="projectForm.get('logo')?.value" [src]="projectForm.get('logo')?.value" alt="Logo" class="logo">
+            <div class="logo-placeholder" *ngIf="!projectForm.get('logo')?.value">
+              <span>로고 <span class="required-asterisk">*</span></span>
+            </div>
+            <label class="logo-upload-btn" [class.uploading]="isUploading()['logo']">
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'logo')" [disabled]="isUploading()['logo']">
+              +
+            </label>
+            <!-- 숨겨진 로고 URL 컨트롤 -->
+            <input type="hidden" formControlName="logo">
+          </div>
+          
+          <input type="text" formControlName="description" placeholder="프로젝트 서브타이틀 (예: 온라인 가구 쇼핑몰 커머스) *" class="title-input" />
+        </div>
+      </div>
+
+
+      <div class="detail-item form-group">
+        <h3>서비스 <span class="required-asterisk">*</span></h3>
+        <c-dropdown 
+          width="100%"
+          variant="multi"
+          [options]="serviceOptions" 
+          [selectedValues]="projectForm.get('serviceTags')?.value || []"
+          (optionClick)="toggleArrayValue('serviceTags', $event.value)"
+          (removeValue)="removeArrayValue('serviceTags', $event)">
+        </c-dropdown>
+      </div>
+
+      <div class="detail-item form-group">
+        <h3>담당 파트 <span class="required-asterisk">*</span></h3>
+        <c-dropdown 
+          width="100%"
+          variant="multi"
+          [options]="roleOptions" 
+          [selectedValues]="projectForm.get('roleTags')?.value || []"
+          (optionClick)="toggleArrayValue('roleTags', $event.value)"
+          (removeValue)="removeArrayValue('roleTags', $event)">
+        </c-dropdown>
+      </div>
+
+
+
+      <div class="detail-item form-group">
+        <h3>개발 기간 <span class="required-asterisk">*</span></h3>
+        <input type="text" formControlName="workPeriod" placeholder="YYYY.MM ~ YYYY.MM" />
+      </div>
+
+      <div class="detail-item form-group">
+        <h3>작업 환경 <span class="required-asterisk">*</span></h3>
+        <c-dropdown 
+          width="100%"
+          variant="multi"
+          [options]="envOptions" 
+          [selectedValues]="projectForm.get('developmentEnvironment')?.value || []"
+          (optionClick)="toggleArrayValue('developmentEnvironment', $event.value)"
+          (removeValue)="removeArrayValue('developmentEnvironment', $event)">
+        </c-dropdown>
+      </div>
+
+      <div class="detail-item form-group">
+        <h3>주요 업무<span class="required-asterisk">*</span></h3>
+        <textarea formControlName="scopeAndContribution" placeholder="주요 업무를 작성해주세요."></textarea>
+      </div>
+
+      <div class="detail-item form-group">
+        <h3>개발 언어 <span class="required-asterisk">*</span></h3>
+        <c-dropdown 
+          width="100%"
+          variant="multi"
+          [options]="langOptions" 
+          [selectedValues]="projectForm.get('developmentLanguage')?.value || []"
+          (optionClick)="toggleArrayValue('developmentLanguage', $event.value)"
+          (removeValue)="removeArrayValue('developmentLanguage', $event)">
+        </c-dropdown>
+      </div>
+      
+      <div class="detail-item form-group">
+        <h3>정렬 순서 (높을수록 상단)</h3>
+        <input type="number" formControlName="sortOrder" placeholder="0" />
+      </div>
+
+      <div class="detail-item form-group">
+        <h3>포트폴리오 카드 색상 (Hex)</h3>
+        <input type="text" formControlName="color" placeholder="#000000" />
+      </div>
+
+
+
+
+
+      <!-- Links -->
+      <div class="full-width links-section form-fieldset">
+        <div class="fieldset-header">
+          <h3>관련 링크 (첨부하지 않을 항목은 비워두세요)</h3>
+        </div>
+        <div formGroupName="links" class="links-container">
+          <div class="link-row">
+            <span class="link-label">iOS 앱</span>
+            <input type="text" formControlName="ios" placeholder="URL" />
+          </div>
+          <div class="link-row">
+            <span class="link-label">Android 앱</span>
+            <input type="text" formControlName="android" placeholder="URL" />
+          </div>
+          <div class="link-row">
+            <span class="link-label">랜딩페이지</span>
+            <input type="text" formControlName="landing" placeholder="URL" />
+          </div>
+          <div class="link-row">
+            <span class="link-label">메인 웹사이트</span>
+            <input type="text" formControlName="web" placeholder="URL" />
+          </div>
+          <div class="link-row">
+            <span class="link-label">관리자페이지</span>
+            <input type="text" formControlName="admin" placeholder="URL" />
+          </div>
+        </div>
+      </div>
+
+      <div class="full-width retrospective form-group">
+        <h3>회고 및 소감문</h3>
+        <textarea formControlName="retrospective" rows="4" placeholder="프로젝트를 진행하며 느낀 점이나 회고를 적어주세요."></textarea>
+      </div>
+      
+    </div>
+
+    <div class="modal-footer">
+      <!-- <button type="button" class="btn-secondary" (click)="closeModal.emit()" [disabled]="isSaving">취소</button> -->
+      
+      @if (projectForm.valid) {
+        <button type="submit" class="btn-primary" [disabled]="isSaving">
+          {{ isSaving ? '저장 중...' : '저장하기' }}
+        </button>
+      } @else {
+        <button type="button" class="btn-disabled" disabled>
+          저장하기
+        </button>
+      }
+    </div>
+  </form>
+</app-side-panel>

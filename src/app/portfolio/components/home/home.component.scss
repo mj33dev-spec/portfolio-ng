@@ -209,14 +209,12 @@
         text-align: left;
       }
 
-      input {
+      input, textarea {
         color: $color-dark;
-        // border-color: $color-dark;
         border-color: rgba(255,255,255,0.5);
 
         &:focus {
           border-color: $color-portfolio-main;
-          // border-color: $color-dark;
         }
 
         &[readonly] {

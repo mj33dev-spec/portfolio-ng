@@ -32,6 +32,9 @@
   }
 
   .btn-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -127,9 +130,19 @@
     background: rgba(255, 255, 255, 0.1);
   }
 
+  &.selected {
+    color: #facc15;
+    background: rgba(250, 204, 21, 0.1);
+  }
+
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .check-icon {
+    min-width: 16px;
+    margin-right: -2px;
   }
 }
 
@@ -137,11 +150,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(250, 204, 21, 0.1);
-  color: #facc15;
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 12px;
 
   .close-icon {
     cursor: pointer;
@@ -154,4 +162,11 @@
       opacity: 1;
     }
   }
+}
+
+.dropdown-img {
+  width: 16px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 4px;
 }

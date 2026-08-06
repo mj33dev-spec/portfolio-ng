@@ -225,3 +225,35 @@ $color-grey: #999;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
 }
+
+// 폼 입력 요소 (input, textarea, select, dropdown) 공통 테마 믹스인
+@mixin form-input-theme() {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  outline: none;
+  letter-spacing: 0.5px;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $color-portfolio-main;
+  }
+  // background-color: #27272a;
+  // border: 1px solid #3f3f46;
+  // color: white;
+  // transition: border-color 0.2s, box-shadow 0.2s;
+
+  // &:focus, &:hover {
+  //   border-color: $color-portfolio-main;
+  // }
+  
+  // &[readonly], &:disabled {
+  //   color: $color-grey;
+  //   cursor: not-allowed;
+  //   background-color: rgba(240, 240, 240, 0.1);
+  // }
+}

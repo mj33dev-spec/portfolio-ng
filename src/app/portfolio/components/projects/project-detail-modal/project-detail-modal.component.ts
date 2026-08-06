@@ -4,6 +4,8 @@ import { Project } from '../../../project.model';
 import { SidePanelComponent } from '../../side-panel/side-panel.component';
 import { CBadgeComponent } from '../../c-badge/c-badge.component';
 import { CategoryBadgeComponent } from '../../category-badge/category-badge.component';
+import { inject } from '@angular/core';
+import { AuthService } from '../../../auth.service';
 
 @Component({
   selector: 'app-project-detail-modal',
@@ -14,8 +16,11 @@ import { CategoryBadgeComponent } from '../../category-badge/category-badge.comp
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectDetailModalComponent {
+  authService = inject(AuthService);
   project = input.required<Project>();
   closeModal = output();
+  editProject = output<Project>();
+  deleteProject = output<Project>();
 
   getTagColor(tag: string): string {
     const lowerTag = tag.toLowerCase();

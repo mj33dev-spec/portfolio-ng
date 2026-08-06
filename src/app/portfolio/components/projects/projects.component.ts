@@ -7,6 +7,7 @@ import { ScrollService } from '../../scroll.service';
 import { ProjectService } from '../../project.service';
 import { AuthService } from '../../auth.service';
 import { ProjectFormModalComponent } from './project-form-modal/project-form-modal';
+import { DAlertService } from '../d-alert/d-alert.service';
 
 const SCROLL__WHEEL_RANGE: number = 3;
 
@@ -20,6 +21,8 @@ const SCROLL__WHEEL_RANGE: number = 3;
 export class ProjectsComponent {
   authService = inject(AuthService);
   private scrollService = inject(ScrollService);
+  private projectService = inject(ProjectService);
+  private dAlert = inject(DAlertService);
 
   isPageScrolling = input<boolean>(false);
   private isThrottled = false;
@@ -47,8 +50,6 @@ export class ProjectsComponent {
 
   projects = signal<Project[]>([]);
   isLoading = signal<boolean>(true);
-
-  private projectService = inject(ProjectService);
 
   ngOnInit() {
     this.loadProjects();
@@ -84,16 +85,21 @@ export class ProjectsComponent {
     this.projectToEdit.set(null);
   }
 
-  async deleteProject(project: Project, event: Event) {
-    event.stopPropagation();
-    if (confirm(`'${project.title}' 프로젝트를 정말 삭제하시겠습니까?`)) {
-      try {
-        await this.projectService.deleteProject((project as any).id);
-        this.loadProjects();
-      } catch (err) {
-        alert('삭제에 실패했습니다.');
-      }
-    }
+  async deleteProject(project: Project, event?: Event) {
+    event?.stopPropagation();
+    this.dAlert.yesNo(
+      `'${project.title}' 프로젝트를 정말 삭제하시겠습니까?`,
+      async () => {
+        try {
+          await this.projectService.deleteProject((project as any).id);
+          this.loadProjects();
+        } catch (err) {
+          this.dAlert.error('삭제에 실패했습니다.');
+        }
+      },
+      undefined,
+      '프로젝트 삭제'
+    );
   }
 
   currentProject = computed(() => this.projects()[this.currentProjectIndex()]);
@@ -112,7 +118,7 @@ export class ProjectsComponent {
   onWheel(event: WheelEvent) {
     // If the modal is open, do not interfere with the native scroll behavior.
     // This allows scrolling within the modal content.
-    if (this.selectedProject()) {
+    if (this.selectedProject() || this.isFormModalOpen()) {
       return;
     }
 

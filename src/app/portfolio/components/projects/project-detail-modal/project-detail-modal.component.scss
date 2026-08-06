@@ -3,25 +3,147 @@
 }
 
 .detail-container {
-    padding: 32px;
-    
-    @media (max-width: 1024px) {
-        padding: 16px;
+    padding: 0;
+
+    @media (min-width: 768px) {
+        padding: 0;
+    }
+}
+
+.header-admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 6px;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+
+    .btn-text {
+        color: #9ca3af;
+    }
+
+    .btn-text-danger {
+        color: #ef4444;
     }
 }
 
 .project-image-container {
     width: 100%;
-    margin-bottom: 32px;
-
-    img {
+    margin-bottom: 64px;
+    
+    .image-preview-wrapper {
+        position: relative;
         width: 100%;
-        height: auto;
-        border-radius: 8px;
-        /* rounded-lg */
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        /* shadow-lg */
-        object-fit: cover;
+        padding-top: 56.25%;
+        border-radius: 12px;
+        overflow: hidden;
+        border: none;
+        
+        > img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .empty-thumbnail {
+            position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .thumbnail-preview-layout {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+
+            background-color: rgba(209, 213, 219, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+
+            .preview-slot {
+                position: absolute;
+                background-color: transparent;
+
+                .device-frame {
+                    position: absolute;
+                    inset: 0;
+                    z-index: 2;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    pointer-events: none;
+                }
+
+                .user-screen {
+                    position: absolute;
+                    z-index: 1;
+                    object-fit: cover;
+                }
+            }
+
+            .preview-mobile { 
+                width: 16.8%;
+                height: 55%; 
+                bottom: 32px;
+                left: 12%;
+                z-index: 3;
+
+                .user-screen {
+                    top: 13%;
+                    left: 12%;
+                    width: 76%;
+                    height: 74%;
+                    border-radius: 4px;
+                }
+            }
+            .preview-pc { 
+                width: 56.8%;
+                height: 85%; 
+                bottom: 32px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1;
+
+                .user-screen {
+                    top: 6%;
+                    left: 4%;
+                    width: 92%;
+                    height: 62%;
+                }
+            }
+            .preview-tablet { 
+                width: 29.2%;
+                height: 70%; 
+                bottom: 32px;
+                right: 5%;
+                z-index: 2;
+
+                .user-screen {
+                    top: 7%;
+                    left: 9%;
+                    width: 82%;
+                    height: 86%;
+                    border-radius: 4px;
+                }
+            }
+        }
     }
 }
 
@@ -50,6 +172,12 @@
         justify-content: space-between;
         align-items: center;
         gap: 8px;
+
+        .badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
         .status-badge {
             font-size: 13px;
@@ -133,9 +261,6 @@
 }
 
 .links-section {
-    margin-top: 16px;
-    margin-bottom: 16px;
-
     h3 {
         font-size: 14px;
         font-weight: 700;

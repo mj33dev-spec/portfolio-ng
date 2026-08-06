@@ -10,7 +10,17 @@
         (click)="toggleOpen($event)">
         
         <span class="btn-text">
-          {{ value || '선택' }}
+          @if (value) {
+            @if (getOptionByValue(value)?.image) {
+              <img [src]="getOptionByValue(value)?.image" class="dropdown-img" alt="" />
+            }
+            @if (getOptionByValue(value)?.icon) {
+              <i class="bx" [ngClass]="getOptionByValue(value)?.icon"></i>
+            }
+            {{ value }}
+          } @else {
+            선택
+          }
         </span>
         <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
           <path d="M16.293 9.293 12 13.586 7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z"></path>
@@ -31,7 +41,13 @@
   @if (variant === 'multi' && selectedValues.length > 0) {
     @for (val of selectedValues; track val) {
       <span class="multi-chip">
-        {{ val }}
+        <c-badge
+          [label]="val"
+          [customColor]="getOptionByValue(val)?.customColor || '#facc15'"
+          [customBgColor]="getOptionByValue(val)?.customBgColor || 'rgba(250, 204, 21, 0.1)'"
+          [iconUrl]="getOptionByValue(val)?.image"
+          size="md">
+        </c-badge>
         <span class="close-icon" (click)="removeMultiValue($event, val)">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </span>
@@ -44,13 +60,13 @@
     <div #menuRef 
          class="dropdown-menu"
          [ngClass]="variant === 'fill' ? 'fill-menu' : 'outlined-menu'"
-         [style.position]="'fixed'"
+         [style.position]="'absolute'"
          [style.top]="menuTop()"
          [style.bottom]="menuBottom()"
          [style.left]="menuLeft()"
          [style.right]="menuRight()"
          [style.width]="menuWidth()"
-         [style.minWidth]="variant === 'more' ? '180px' : 'auto'">
+         [style.minWidth]="variant === 'more' ? '180px' : '120px'">
       
       @for (opt of options; track $index) {
         @if (opt.type === 'divider') {
@@ -59,8 +75,17 @@
           <button type="button"
                   class="dropdown-item"
                   [class.disabled]="opt.disabled || disabledList.includes(opt.label || '')"
+                  [class.selected]="variant === 'multi' ? selectedValues.includes(opt.value || opt.label || '') : value === (opt.value || opt.label)"
                   [disabled]="opt.disabled || disabledList.includes(opt.label || '')"
                   (click)="handleItemClick($event, opt)">
+            @if (variant === 'multi' ? selectedValues.includes(opt.value || opt.label || '') : value === (opt.value || opt.label)) {
+              <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            }
+            @if (opt.image) {
+              <img [src]="opt.image" class="dropdown-img" alt="" />
+            }
             @if (opt.icon) {
               <i class="bx" [ngClass]="opt.icon"></i>
             }

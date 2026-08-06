@@ -12,17 +12,37 @@
   } @else {
   <div class="projects-container">
     @for (project of projects(); track project.title; let i = $index) {
-    <div class="project-card" [class.active]="currentProjectIndex() === i"
-      (click)="selectProject(project)">
+    <div class="project-card" [class.active]="currentProjectIndex() === i">
       <div class="card-content">
-        <div class="image-wrapper">
-          <img [src]="project.imageUrl" alt="{{ project.title }}">
+        <div class="image-wrapper" [class.has-platform-images]="project.platformImages.pc || project.platformImages.tablet || project.platformImages.mobile">
+          <ng-container *ngIf="project.platformImages.pc || project.platformImages.tablet || project.platformImages.mobile; else fallbackImage">
+            <div class="thumbnail-preview-layout">
+              <div class="preview-slot preview-mobile" *ngIf="project.platformImages.mobile">
+                <img class="device-frame" src="assets/portfolio/device-mobile.png" alt="Mobile Frame">
+                <img class="user-screen" [src]="project.platformImages!.mobile" alt="Mobile Image">
+              </div>
+              <div class="preview-slot preview-pc" *ngIf="project.platformImages.pc">
+                <img class="device-frame" src="assets/portfolio/device-pc.png" alt="PC Frame">
+                <img class="user-screen" [src]="project.platformImages!.pc" alt="PC Image">
+              </div>
+              <div class="preview-slot preview-tablet" *ngIf="project.platformImages.tablet">
+                <img class="device-frame" src="assets/portfolio/device-tablet.png" alt="Tablet Frame">
+                <img class="user-screen" [src]="project.platformImages!.tablet" alt="Tablet Image">
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #fallbackImage>
+            <img *ngIf="project.imageUrl" [src]="project.imageUrl" alt="{{ project.title }}">
+            <div *ngIf="!project.imageUrl" class="empty-thumbnail">이미지 없음</div>
+          </ng-template>
         </div>
         <div class="info-wrapper">
           <div class="header-group">
-            <div class="badge-wrapper">
-              <c-badge [label]="project.affiliation" [customBgColor]="getTagBgColor(project.affiliation)" [customColor]="getTagColor(project.affiliation)" [iconUrl]="getTagIcon(project.affiliation)" size="sm"></c-badge>
-            </div>
+            @if (project.affiliation !== '앨리스래빗') {
+              <div class="badge-wrapper">
+                <c-badge [label]="project.affiliation" [customBgColor]="getTagBgColor(project.affiliation)" [customColor]="getTagColor(project.affiliation)" [iconUrl]="getTagIcon(project.affiliation)" size="sm"></c-badge>
+              </div>
+            }
             
             <div class="logo-title-group">
               @if (project.logo) {
@@ -55,42 +75,46 @@
               </div>
             </div>
           </div>
+          <button class="btn-outlined-primary_portfolio view-detail-btn" (click)="selectProject(project)">
+            더보기
+          </button>
         </div>
       </div>
     </div>
     }
   </div>
 
-  <div class="pagination">
-    @for (project of projects(); track $index) {
-    <button (click)="selectProjectIndex($index)" class="gauge-segment"
-      [class.active]="currentProjectIndex() >= $index"
-      [class.current]="currentProjectIndex() === $index">
-    </button>
-    }
-  </div>
+  @if (!selectedProject() && !isFormModalOpen()) {
+    <div class="pagination">
+      @for (project of projects(); track $index) {
+      <button (click)="selectProjectIndex($index)" class="gauge-segment"
+        [class.active]="currentProjectIndex() >= $index"
+        [class.current]="currentProjectIndex() === $index">
+      </button>
+      }
+    </div>
+  }
   }
 
-  @if (authService.isLoggedIn() && !isLoading()) {
+  @if (authService.isLoggedIn() && !isLoading() && !isFormModalOpen() && !selectedProject()) {
     <div class="floating-admin-actions">
       <button class="btn-primary_portfolio" (click)="openAddModal()">
-        생성
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+        </svg>
       </button>
-      @if (currentProject()) {
-        <button class="btn-outlined-primary_portfolio" (click)="$event.stopPropagation(); openEditModal(currentProject())">
-          수정
-        </button>
-        <button class="btn-outlined-danger" (click)="deleteProject(currentProject(), $event)">
-          삭제
-        </button>
-      }
     </div>
   }
 
 </section>
 
 @if (selectedProject(); as project) {
-<app-project-detail-modal [project]="project" (closeModal)="closeModal()">
+<app-project-detail-modal 
+  [project]="project" 
+  (closeModal)="closeModal()"
+  (editProject)="openEditModal($event)"
+  (deleteProject)="deleteProject($event, undefined)">
 </app-project-detail-modal>
 }
 
