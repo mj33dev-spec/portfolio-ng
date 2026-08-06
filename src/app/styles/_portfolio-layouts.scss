@@ -62,6 +62,30 @@ table {
     flex-shrink: 0;
     width: 100%;
     
+    .title-with-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .add-project-btn {
+        padding: 8px 16px;
+        background-color: #6366f1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s;
+        margin-right: 16px; // Adjust padding on the right
+
+        &:hover {
+            background-color: #4f46e5;
+        }
+    }
+
     .section-title {
         font-size: 32px;
         font-weight: 700;

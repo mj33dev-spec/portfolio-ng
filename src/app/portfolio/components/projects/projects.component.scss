@@ -20,6 +20,31 @@
         padding: 24px;
         /* lg:p-6 */
     }
+    margin: 0 auto;
+}
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 0;
+    color: #9ca3af; // gray-400
+    font-size: 16px;
+    gap: 16px;
+
+    .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top-color: #6366f1; // indigo-500
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
 }
 
 .projects-container {
@@ -50,22 +75,13 @@
     }
 
     .card-content {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 32px;
-        /* gap-8 */
-        align-items: center;
-        justify-content: center;
-        background-color: #181818;
-        /* bg-[#181818] */
         padding: 24px;
-        /* p-6 */
+        width: 100%; height: 100%;
+        display: flex; flex-direction: column; gap: 32px;
+        align-items: center; justify-content: center;
         border-radius: 16px;
-        /* rounded-2xl */
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        /* shadow-lg */
+        border: 1px solid #9ca3af;
+        background-color: #181818;
 
         @media (min-width: 768px) {
             flex-direction: row;
@@ -117,6 +133,14 @@
         .badge-wrapper {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
         }
 
         .logo-title-group {
@@ -215,6 +239,8 @@
             font-weight: 600;
             margin-bottom: 2px;
         }
+
+
     }
 }
 
@@ -243,11 +269,53 @@
         }
 
         &.active {
-            background-color: rgba(255, 255, 255, 0.5);
+            background-color: #facc15;
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
         }
         
         &.current {
             background-color: #fff;
         }
+    }
+}
+
+.floating-admin-actions {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    display: grid;
+    grid-template-columns: repeat(2, 50px);
+    grid-template-rows: repeat(2, 50px);
+    grid-template-areas: 
+        ". a"
+        "b c";
+    gap: 8px;
+    z-index: 5;
+
+    > button {
+        padding: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        &:nth-child(1) { grid-area: a }
+        &:nth-child(2) { grid-area: b }
+        &:nth-child(3) { grid-area: c }
+    }
+
+    @media (max-width: 767px) {
+        bottom: 24px;
+        right: 24px;
+    }
+
+    > button {
+        padding: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
     }
 }

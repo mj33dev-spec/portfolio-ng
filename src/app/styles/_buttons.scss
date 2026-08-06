@@ -132,19 +132,11 @@
   } @else if $type == "danger" {
     @include _privateApply_btnTheme(#fff, $color-danger, $color-danger, $size);
   } @else if $type == "outlinedDanger" {
-    @include _privateApply_btnTheme($color-danger, $color-danger, #fff, $size);
+    @include _privateApply_btnTheme($color-danger, $color-danger, transparent, $size);
   } @else if $type == "primaryPortfolio" {
-  //   @include _privateApply_btnTheme($color-dark, $color-dark, $color-portfolio-main, $size);
-  // } @else if $type == "outlinedPrimaryPortfolio" {
-  //   @include _privateApply_btnTheme($color-portfolio-main, $color-dark, $color-dark, $size);
-
-  //   @include _privateApply_btnTheme($color-dark, $color-portfolio-main, $color-portfolio-main, $size);
-  // } @else if $type == "outlinedPrimaryPortfolio" {
-  //   @include _privateApply_btnTheme($color-portfolio-main, $color-portfolio-main, $color-dark, $size);
-  
     @include _privateApply_btnTheme($color-dark, rgba(255,255,255,0.5), $color-portfolio-main, $size);
   } @else if $type == "outlinedPrimaryPortfolio" {
-    @include _privateApply_btnTheme($color-portfolio-main, rgba(255,255,255,0.5), $color-dark, $size);
+    @include _privateApply_btnTheme($color-portfolio-main, $color-portfolio-main, transparent, $size);
   }
 }
 

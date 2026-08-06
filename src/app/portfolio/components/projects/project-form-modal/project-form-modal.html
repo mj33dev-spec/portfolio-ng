@@ -1,0 +1,152 @@
+<div class="modal-overlay" (click)="closeModal.emit()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ project() ? '프로젝트 수정' : '새 프로젝트 추가' }}</h2>
+      <button class="close-btn" (click)="closeModal.emit()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="projectForm" (ngSubmit)="save()" class="project-form">
+        <div class="form-group">
+          <label>프로젝트명 *</label>
+          <input type="text" formControlName="title" placeholder="예: 서한그룹-B2B">
+        </div>
+
+        <div class="form-group">
+          <label>한줄 설명 *</label>
+          <input type="text" formControlName="description" placeholder="예: B2B 기업 관리 시스템">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>소속 (Affiliation)</label>
+            <input type="text" formControlName="affiliation" placeholder="예: 앨리스래빗">
+          </div>
+          <div class="form-group">
+            <label>진행 상태 (Status)</label>
+            <input type="text" formControlName="status" placeholder="예: 운영중">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>작업 기간</label>
+            <input type="text" formControlName="workPeriod" placeholder="예: 24년4월29일 ~ 진행중">
+          </div>
+          <div class="form-group">
+            <label>대표 색상 (Color)</label>
+            <input type="text" formControlName="color" placeholder="예: orange 또는 #ff9800">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>로고 이미지 URL</label>
+            <input type="text" formControlName="logo" placeholder="assets/portfolio/seohan.png">
+          </div>
+          <div class="form-group">
+            <label>대표 이미지 URL</label>
+            <input type="text" formControlName="imageUrl">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>프로젝트 URL</label>
+          <input type="text" formControlName="url" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+          <label>주요 역할 및 기여도 (Scope & Contribution)</label>
+          <textarea formControlName="scopeAndContribution" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>회고 및 소감문 (Retrospective)</label>
+          <textarea formControlName="retrospective" rows="3"></textarea>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>서비스 태그 (콤마로 구분)</label>
+            <input type="text" formControlName="serviceTags" placeholder="App, Web, Admin">
+          </div>
+          <div class="form-group">
+            <label>역할 태그 (콤마로 구분)</label>
+            <input type="text" formControlName="roleTags" placeholder="Frontend, Publishing">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>개발 환경 (콤마로 구분)</label>
+            <input type="text" formControlName="developmentEnvironment" placeholder="Flutter, Angular, node.js">
+          </div>
+          <div class="form-group">
+            <label>개발 언어 (콤마로 구분)</label>
+            <input type="text" formControlName="developmentLanguage" placeholder="Dart, HTML, CSS, Typescript">
+          </div>
+        </div>
+
+        <!-- Platform Images -->
+        <fieldset formGroupName="platformImages" class="form-fieldset">
+          <legend>플랫폼별 이미지 URL</legend>
+          <div class="form-row">
+            <div class="form-group">
+              <label>PC</label>
+              <input type="text" formControlName="pc">
+            </div>
+            <div class="form-group">
+              <label>Tablet</label>
+              <input type="text" formControlName="tablet">
+            </div>
+            <div class="form-group">
+              <label>Mobile</label>
+              <input type="text" formControlName="mobile">
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Links -->
+        <fieldset class="form-fieldset">
+          <div class="fieldset-header">
+            <legend>관련 링크</legend>
+            <button type="button" class="btn-secondary btn-sm" (click)="addLink()">+ 링크 추가</button>
+          </div>
+          
+          <div formArrayName="links" class="links-container">
+            @for (link of links.controls; track $index) {
+              <div [formGroupName]="$index" class="link-row">
+                <select formControlName="type">
+                  <option value="ios">iOS 앱</option>
+                  <option value="android">Android 앱</option>
+                  <option value="web">웹사이트</option>
+                  <option value="admin">관리자페이지</option>
+                  <option value="github">Github</option>
+                  <option value="figma">Figma</option>
+                  <option value="document">문서</option>
+                  <option value="other">기타</option>
+                </select>
+                <input type="text" formControlName="label" placeholder="라벨 (예: 웹사이트)">
+                <input type="text" formControlName="url" placeholder="URL">
+                <button type="button" class="btn-danger btn-icon" (click)="removeLink($index)">&times;</button>
+              </div>
+            }
+          </div>
+        </fieldset>
+
+        <div class="form-group">
+          <label>정렬 순서 (Sort Order)</label>
+          <input type="number" formControlName="sortOrder">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal.emit()" [disabled]="isSaving">취소</button>
+          <button type="submit" class="btn-primary" [disabled]="isSaving || projectForm.invalid">
+            {{ isSaving ? '저장 중...' : '저장하기' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

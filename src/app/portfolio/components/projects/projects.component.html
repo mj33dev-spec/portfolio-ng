@@ -4,6 +4,12 @@
     <p class="section-subtitle">개발 철학을 코드로 녹여낸 소중한 산출물들 입니다</p>
   </div>
 
+  @if (isLoading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>프로젝트 데이터를 불러오는 중입니다...</p>
+  </div>
+  } @else {
   <div class="projects-container">
     @for (project of projects(); track project.title; let i = $index) {
     <div class="project-card" [class.active]="currentProjectIndex() === i"
@@ -63,9 +69,32 @@
     </button>
     }
   </div>
+  }
+
+  @if (authService.isLoggedIn() && !isLoading()) {
+    <div class="floating-admin-actions">
+      <button class="btn-primary_portfolio" (click)="openAddModal()">
+        생성
+      </button>
+      @if (currentProject()) {
+        <button class="btn-outlined-primary_portfolio" (click)="$event.stopPropagation(); openEditModal(currentProject())">
+          수정
+        </button>
+        <button class="btn-outlined-danger" (click)="deleteProject(currentProject(), $event)">
+          삭제
+        </button>
+      }
+    </div>
+  }
+
 </section>
 
 @if (selectedProject(); as project) {
 <app-project-detail-modal [project]="project" (closeModal)="closeModal()">
 </app-project-detail-modal>
+}
+
+@if (isFormModalOpen()) {
+<app-project-form-modal [project]="projectToEdit()" (closeModal)="closeFormModal()" (saveComplete)="loadProjects()">
+</app-project-form-modal>
 }

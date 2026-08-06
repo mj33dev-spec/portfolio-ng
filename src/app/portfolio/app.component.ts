@@ -1,5 +1,5 @@
 
-import { Component, ChangeDetectionStrategy, signal, ElementRef, viewChild, afterNextRender, inject, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, ElementRef, viewChild, afterNextRender, inject, HostListener, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
@@ -33,6 +33,7 @@ import { ScrollService } from './scroll.service';
 export class AppComponent {
   private scrollService = inject(ScrollService);
   private elementRef = inject(ElementRef);
+  private ngZone = inject(NgZone);
 
   mainContainer = viewChild<ElementRef<HTMLElement>>('mainContainer');
 
@@ -56,6 +57,20 @@ export class AppComponent {
         this.scrollService.observeSections(
           Array.from(container.children) as HTMLElement[]
         );
+
+        // Handle initial load with URL hash (e.g., localhost:4200/#blog)
+        setTimeout(() => {
+          const hash = window.location.hash.replace('#', '');
+          if (hash) {
+            // Find section by id or name
+            const targetSection = this.sections.find(s => s.id === hash || s.name === hash);
+            if (targetSection) {
+              this.scrollToSection(targetSection.id);
+            } else {
+              this.scrollToSection(hash); // Fallback
+            }
+          }
+        }, 100);
       }
     });
   }
@@ -64,10 +79,65 @@ export class AppComponent {
     this.isSidebarOpen.update(open => !open);
   }
 
+  private scrollAnimationId: number | null = null;
+
   scrollToSection(id: string): void {
     const sectionElement = this.elementRef.nativeElement.querySelector(`#${id}`);
-    if (sectionElement) {
-      sectionElement.scrollIntoView({ behavior: 'smooth' });
+    const container = this.mainContainer()?.nativeElement;
+    
+    if (sectionElement && container) {
+      if (window.location.hash !== `#${id}`) {
+        window.history.pushState(null, '', `${window.location.pathname}#${id}`);
+      }
+      
+      // Set scrolling state to prevent trackpad wheel events from interrupting
+      this.isScrolling.set(true);
+
+      // Temporarily disable scroll-snap and native smooth scrolling to prevent CSS conflicts
+      container.style.scrollSnapType = 'none';
+      container.style.scrollBehavior = 'auto';
+
+      if (this.scrollAnimationId !== null) {
+        cancelAnimationFrame(this.scrollAnimationId);
+        this.scrollAnimationId = null;
+      }
+      
+      const startPosition = container.scrollTop;
+      const targetPosition = sectionElement.offsetTop;
+      const distance = targetPosition - startPosition;
+      const duration = 800; // 800ms for a slow, premium smooth transition
+      let startTime: number | null = null;
+
+      // easeInOutSine: most natural feeling curve, identical to standard CSS ease-in-out
+      const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
+
+      const animation = (currentTime: number) => {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        
+        container.scrollTop = startPosition + distance * easeInOutSine(progress);
+
+        if (timeElapsed < duration) {
+          this.scrollAnimationId = requestAnimationFrame(animation);
+        } else {
+          // Re-enable scroll-snap and CSS smooth scrolling after animation finishes
+          container.style.scrollSnapType = '';
+          container.style.scrollBehavior = '';
+          this.scrollAnimationId = null;
+          
+          // Add a 200ms cooldown before releasing the scroll lock to absorb any remaining trackpad momentum
+          setTimeout(() => {
+            this.ngZone.run(() => {
+              this.isScrolling.set(false);
+            });
+          }, 200);
+        }
+      };
+
+      this.ngZone.runOutsideAngular(() => {
+        this.scrollAnimationId = requestAnimationFrame(animation);
+      });
     }
     this.isSidebarOpen.set(false);
   }
@@ -87,11 +157,7 @@ export class AppComponent {
     }
 
     if (nextSection) {
-      this.isScrolling.set(true);
       this.scrollToSection(nextSection.id);
-      setTimeout(() => {
-        this.isScrolling.set(false);
-      }, 1000);
     }
   }
 
@@ -117,6 +183,14 @@ export class AppComponent {
       return;
     }
 
+    // ALWAYS prevent default to stop native scroll from mixing with custom scroll
+    event.preventDefault();
+
+    // Ignore microscopic scroll movements (trackpad noise) but allow single mouse wheel notches (deltaY > 5)
+    if (Math.abs(event.deltaY) < 5) {
+      return;
+    }
+
     const currentSectionId = this.activeSection();
     const currentIdx = this.sections.findIndex(s => s.id === currentSectionId);
     if (currentIdx === -1) return;
@@ -131,12 +205,7 @@ export class AppComponent {
     }
 
     if (nextSection) {
-      event.preventDefault();
-      this.isScrolling.set(true);
       this.scrollToSection(nextSection.id);
-      setTimeout(() => {
-        this.isScrolling.set(false);
-      }, 1000);
     }
   }
 }
