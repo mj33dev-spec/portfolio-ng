@@ -58,7 +58,11 @@ export class ProjectsComponent {
   loadProjects() {
     this.isLoading.set(true);
     this.projectService.fetchProjects().then(data => {
-      this.projects.set(data);
+      const visibleProjects = this.authService.isLoggedIn() 
+        ? data 
+        : data.filter(p => p.is_visible !== false);
+        
+      this.projects.set(visibleProjects);
       this.isLoading.set(false);
     }).catch(err => {
       console.error('Failed to load projects', err);

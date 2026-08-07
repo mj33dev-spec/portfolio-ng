@@ -121,10 +121,14 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
 
             .preview-slot {
-                position: absolute;
+                position: relative;
                 background-color: transparent;
+                flex-shrink: 0;
 
                 .device-frame {
                     position: absolute;
@@ -139,16 +143,15 @@
                 .user-screen {
                     position: absolute;
                     z-index: 1;
-                    object-fit: cover;
+                    object-fit: unset;
                 }
             }
 
             .preview-mobile { 
                 width: 16.8%;
                 height: 55%; 
-                bottom: 0;
-                left: 12%;
                 z-index: 3;
+                margin-right: -7.2%;
                 
                 .user-screen {
                     top: 13%;
@@ -161,9 +164,6 @@
             .preview-pc { 
                 width: 56.8%;
                 height: 85%; 
-                bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
                 z-index: 1;
 
                 .user-screen {
@@ -176,9 +176,8 @@
             .preview-tablet { 
                 width: 29.2%;
                 height: 70%; 
-                bottom: 0;
-                right: 5%;
                 z-index: 2;
+                margin-left: -12.6%;
 
                 .user-screen {
                     top: 7%;
@@ -276,6 +275,8 @@
         .project-logo-fallback {
             background-color: #374151; // gray-700
             border: 1px solid #4b5563; // gray-600
+            padding: 8px;
+            object-fit: contain;
         }
 
         .subtitle {

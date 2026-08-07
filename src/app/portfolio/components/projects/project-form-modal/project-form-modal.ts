@@ -39,6 +39,11 @@ export class ProjectFormModalComponent implements OnInit {
     { label: '운영중단됨', value: '운영중단됨' },
   ];
 
+  visibilityOptions: CDropdownOption[] = [
+    { label: '노출', value: true },
+    { label: '비노출', value: false }
+  ];
+
   serviceOptions: CDropdownOption[] = [
     { label: 'App', value: 'App', customColor: '#02569B', customBgColor: 'rgba(2, 86, 155, 0.15)' },
     { label: 'Web', value: 'Web', customColor: '#4caf50', customBgColor: 'rgba(76, 175, 80, 0.15)' },
@@ -97,7 +102,7 @@ export class ProjectFormModalComponent implements OnInit {
       status: ['', Validators.required],
       affiliation: ['', Validators.required],
       workPeriod: ['', Validators.required],
-      logo: ['', Validators.required],
+      logo: [''],
       scopeAndContribution: ['', Validators.required],
       serviceTags: [[], [Validators.required, Validators.minLength(1)]],
       roleTags: [[], [Validators.required, Validators.minLength(1)]],
@@ -117,7 +122,8 @@ export class ProjectFormModalComponent implements OnInit {
         admin: ['']
       }),
       color: [''],
-      sortOrder: [0]
+      sortOrder: [0],
+      is_visible: [true]
     });
   }
 
@@ -137,7 +143,8 @@ export class ProjectFormModalComponent implements OnInit {
       developmentEnvironment: project.developmentEnvironment || [],
       developmentLanguage: project.developmentLanguage || [],
       platformImages: project.platformImages || { pc: '', tablet: '', mobile: '' },
-      sortOrder: (project as any).sortOrder || 0
+      sortOrder: (project as any).sortOrder || 0,
+      is_visible: project.is_visible ?? true
     });
 
     if (project.links) {

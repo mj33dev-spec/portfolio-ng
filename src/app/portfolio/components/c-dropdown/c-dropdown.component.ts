@@ -142,7 +142,8 @@ export class CDropdownComponent implements OnDestroy {
     
     if (disabled) return;
     
-    this.valueChange.emit(option.value || option.label);
+    const emitValue = option.value !== undefined ? option.value : option.label;
+    this.valueChange.emit(emitValue);
     this.optionClick.emit(option);
     
     if (this.variant !== 'multi') {
@@ -150,12 +151,15 @@ export class CDropdownComponent implements OnDestroy {
     }
   }
 
-  getOptionByValue(val: string): CDropdownOption | undefined {
-    return this.options.find(o => (o.value || o.label) === val);
+  getOptionByValue(val: any): CDropdownOption | undefined {
+    return this.options.find(o => {
+      const optionVal = o.value !== undefined ? o.value : o.label;
+      return optionVal === val;
+    });
   }
 
   isSelected(opt: CDropdownOption): boolean {
-    const val = opt.value || opt.label;
+    const val = opt.value !== undefined ? opt.value : opt.label;
     if (this.variant === 'multi') {
       return this.selectedValues.includes(val);
     }

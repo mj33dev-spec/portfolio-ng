@@ -13,7 +13,7 @@
             <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.mobile')?.value">
               <span>Mobile</span>
             </div>
-            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.mobile')?.value" (click)="removeImage('platformImages.mobile', $event)">✕</button>
+            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.mobile')?.value" (click)="removeImage('platformImages.mobile', $event)"></button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.mobile']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.mobile')" [disabled]="isUploading()['platformImages.mobile']">
               <span *ngIf="!isUploading()['platformImages.mobile']" style="text-align: center;">+<br>375 x 667(px)</span>
@@ -29,7 +29,7 @@
             <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.pc')?.value">
               <span>PC</span>
             </div>
-            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.pc')?.value" (click)="removeImage('platformImages.pc', $event)">✕</button>
+            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.pc')?.value" (click)="removeImage('platformImages.pc', $event)"></button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.pc']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.pc')" [disabled]="isUploading()['platformImages.pc']">
               <span *ngIf="!isUploading()['platformImages.pc']" style="text-align: center;">+<br>1440 x 895(px)</span>
@@ -45,7 +45,7 @@
             <div class="slot-placeholder" *ngIf="!projectForm.get('platformImages.tablet')?.value">
               <span>Tablet</span>
             </div>
-            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.tablet')?.value" (click)="removeImage('platformImages.tablet', $event)">✕</button>
+            <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.tablet')?.value" (click)="removeImage('platformImages.tablet', $event)"></button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.tablet']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.tablet')" [disabled]="isUploading()['platformImages.tablet']">
               <span *ngIf="!isUploading()['platformImages.tablet']" style="text-align: center;">+<br>584 x 895(px)</span>
@@ -68,14 +68,23 @@
             [value]="projectForm.get('affiliation')?.value || '소속 선택 *'"
             (valueChange)="projectForm.get('affiliation')?.setValue($event)">
           </c-dropdown>
-          
-          <c-dropdown 
-            width="200px"
-            [options]="statusOptions" 
-            [value]="projectForm.get('status')?.value || '상태 선택 *'"
-            (valueChange)="projectForm.get('status')?.setValue($event)"
-            align="right">
-          </c-dropdown>
+
+          <div class="right">
+            <c-dropdown 
+              width="150px"
+              [options]="statusOptions" 
+              [value]="projectForm.get('status')?.value || '상태 선택 *'"
+              (valueChange)="projectForm.get('status')?.setValue($event)">
+            </c-dropdown>
+            
+            <c-dropdown 
+              width="100px"
+              [options]="visibilityOptions" 
+              [value]="projectForm.get('is_visible')?.value"
+              (valueChange)="projectForm.get('is_visible')?.setValue($event)"
+              align="right">
+            </c-dropdown>
+          </div>
         </div>
         
         <input type="text" formControlName="title" placeholder="프로젝트/회사명 (예: 아이엠히어) *" class="subtitle-input" />
@@ -83,9 +92,8 @@
         <div class="title-row">
           <div class="logo-upload-wrapper">
             <img *ngIf="projectForm.get('logo')?.value" [src]="projectForm.get('logo')?.value" alt="Logo" class="logo">
-            <div class="logo-placeholder" *ngIf="!projectForm.get('logo')?.value">
-              <span>로고 <span class="required-asterisk">*</span></span>
-            </div>
+            <img *ngIf="!projectForm.get('logo')?.value" src="assets/icons/logo-white.svg" alt="Default 로고" class="logo fallback">
+            <button type="button" class="delete-logo-btn" *ngIf="projectForm.get('logo')?.value" (click)="removeImage('logo', $event)"></button>
             <label class="logo-upload-btn" [class.uploading]="isUploading()['logo']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'logo')" [disabled]="isUploading()['logo']">
               +

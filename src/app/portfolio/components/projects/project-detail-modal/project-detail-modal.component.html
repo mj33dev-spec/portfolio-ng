@@ -38,12 +38,19 @@
             @if (project().affiliation !== '앨리스래빗') {
               <c-badge [label]="project().affiliation" [customBgColor]="getTagBgColor(project().affiliation)" [customColor]="getTagColor(project().affiliation)" [iconUrl]="getTagIcon(project().affiliation)" size="md"></c-badge>
             }
+            @if (project().is_visible === false) {
+              <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="md"></c-badge>
+            }
             <span class="status-badge" [ngClass]="getStatusClass(project().status)">{{ project().status }}</span>
           </div>
         </div>
         <div class="subtitle">{{ project().title }}</div>
         <div class="title-row">
-          <img *ngIf="project().logo" [src]="project().logo" alt="{{ project().title }} 로고" class="logo">
+          @if (project().logo) {
+            <img [src]="project().logo" alt="{{ project().title }} 로고" class="logo">
+          } @else {
+            <img src="assets/icons/logo-white.svg" alt="Default 로고" class="logo fallback">
+          }
           <h2>{{ project().description }}</h2>
         </div>
       </div>

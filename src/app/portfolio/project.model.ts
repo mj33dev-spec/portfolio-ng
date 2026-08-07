@@ -26,4 +26,5 @@ export interface Project {
     tablet: string;
     mobile: string;
   };
+  is_visible?: boolean;
 }

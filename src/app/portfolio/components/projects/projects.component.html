@@ -38,9 +38,14 @@
         </div>
         <div class="info-wrapper">
           <div class="header-group">
-            @if (project.affiliation !== '앨리스래빗') {
-              <div class="badge-wrapper">
-                <c-badge [label]="project.affiliation" [customBgColor]="getTagBgColor(project.affiliation)" [customColor]="getTagColor(project.affiliation)" [iconUrl]="getTagIcon(project.affiliation)" size="sm"></c-badge>
+            @if (project.affiliation !== '앨리스래빗' || project.is_visible === false) {
+              <div class="badge-wrapper" style="justify-content: flex-start; gap: 8px;">
+                @if (project.affiliation !== '앨리스래빗') {
+                  <c-badge [label]="project.affiliation" [customBgColor]="getTagBgColor(project.affiliation)" [customColor]="getTagColor(project.affiliation)" [iconUrl]="getTagIcon(project.affiliation)" size="sm"></c-badge>
+                }
+                @if (project.is_visible === false) {
+                  <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="sm"></c-badge>
+                }
               </div>
             }
             
@@ -48,7 +53,7 @@
               @if (project.logo) {
                 <img [src]="project.logo" alt="{{ project.title }} 로고" class="project-logo">
               } @else {
-                <div class="project-logo-fallback"></div>
+                <img src="assets/icons/logo-white.svg" alt="Default 로고" class="project-logo-fallback">
               }
               
               <div class="text-group">

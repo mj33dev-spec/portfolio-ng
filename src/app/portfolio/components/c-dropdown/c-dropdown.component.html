@@ -10,14 +10,14 @@
         (click)="toggleOpen($event)">
         
         <span class="btn-text">
-          @if (value) {
+          @if (value !== undefined && value !== null && value !== '') {
             @if (getOptionByValue(value)?.image) {
               <img [src]="getOptionByValue(value)?.image" class="dropdown-img" alt="" />
             }
             @if (getOptionByValue(value)?.icon) {
               <i class="bx" [ngClass]="getOptionByValue(value)?.icon"></i>
             }
-            {{ value }}
+            {{ getOptionByValue(value)?.label ?? value }}
           } @else {
             선택
           }

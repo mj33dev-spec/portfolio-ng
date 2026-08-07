@@ -18,16 +18,14 @@ export interface YearCareer {
 export class CareerComponent {
   careerList: YearCareer[] = [
     {
-      year: '2026 ~',
+      year: '2026',
       num: '01',
       items: [
-        '- 20.12.10 - 26.03.06 | 앨리스래빗 근무 5년',
-        '- [NeuroBlinker] 의료 관련 웹 프로젝트 (웹퍼블리싱 & 개발)',
-        '- [Carepasspro] 자격증 모의시험 CBT 웹 프로젝트 (기획 & 디자인 & 풀스택)',
-        '- [앨리스메모] 사내프로젝트 앱 프로젝트 (개발)',
+        '- 20.12.10 - 26.03.06 | 앨리스래빗',
+        '- [NeuroBlinker] 의료 관련 웹 프로젝트 (웹퍼블리싱 & 풀스택)',
+        '- [Carepasspro] 자격증 모의시험 CBT 웹 프로젝트 (기획 & 웹퍼블리싱 & 풀스택)',
+        '- [앨리스메모] 사내 프로젝트 앱 개발 (프론트엔드)',
         '- [mj_ui_kits] 플러터 package 개발 및 상용화',
-        '사내 올해의 우수 사원상 (Best Developer) 수상',
-        '실시간 소켓 연동 차트 시각화 모듈 구축'
       ]
     },
     {
@@ -49,7 +47,7 @@ export class CareerComponent {
       ]
     },
     {
-      year: '~ 2020',
+      year: '2020',
       num: '04',
       items: [
         '2020.08 | 정보처리기사 자격 취득',
