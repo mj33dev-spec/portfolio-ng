@@ -433,6 +433,8 @@
                 font-size: 14px;
                 font-weight: 500;
                 transition: all 0.2s ease;
+                cursor: pointer;
+                font-family: inherit;
 
                 &:hover {
                     background-color: $portfolio-bg-darker;
@@ -440,10 +442,25 @@
                     transform: translateY(-1px);
                 }
 
-                .external-icon {
+                .external-icon, .blog-icon {
                     width: 16px;
                     height: 16px;
                     opacity: 0.7;
+                }
+
+                &.blog-link {
+                    border-color: rgba(99, 179, 237, 0.4);
+                    color: #90cdf4;
+                    background-color: rgba(99, 179, 237, 0.05);
+
+                    &:hover {
+                        background-color: rgba(99, 179, 237, 0.12);
+                        border-color: rgba(99, 179, 237, 0.7);
+                    }
+
+                    .blog-icon {
+                        opacity: 1;
+                    }
                 }
             }
         }

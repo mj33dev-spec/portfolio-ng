@@ -28,7 +28,7 @@ export class BlogComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      // Close overlay when active section changes
+      // Close overlay when active section changes away from blog
       this.scrollService.activeSection();
       untracked(() => {
         if (this.activeView() !== 'list') {

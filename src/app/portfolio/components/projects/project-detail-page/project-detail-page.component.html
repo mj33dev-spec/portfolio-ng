@@ -113,10 +113,19 @@
         }
         @if (project().retrospective_link) {
         <div style="margin-top: 16px;">
-          <a [href]="project().retrospective_link" target="_blank" class="project-link">
-            <span class="link-label">자세히보기</span>
-            <svg class="external-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-          </a>
+          @if (isExternalLink(project().retrospective_link!)) {
+            <!-- 외부 URL: 새 탭으로 열기 -->
+            <a [href]="project().retrospective_link" target="_blank" class="project-link">
+              <span class="link-label">자세히보기</span>
+              <svg class="external-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            </a>
+          } @else if (isUuidLink(project().retrospective_link!)) {
+            <!-- UUID: 블로그 게시물로 이동 -->
+            <button type="button" class="project-link blog-link" (click)="navigateToBlogPost(project().retrospective_link!)">
+              <svg class="blog-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span class="link-label">관련 블로그 포스트 보기</span>
+            </button>
+          }
         </div>
         }
       </div>
