@@ -124,6 +124,7 @@ export class ProjectFormModalComponent implements OnInit {
       workPeriod: [''],
       scopeAndContribution: [''],
       retrospective: [''],
+      retrospective_link: [''],
       serviceTags: [[], [Validators.required, Validators.minLength(1)]],
       platformImages: this.fb.group({
         pc: [''],
@@ -153,6 +154,7 @@ export class ProjectFormModalComponent implements OnInit {
       workPeriod: project.workPeriod || '',
       scopeAndContribution: project.scopeAndContribution || '',
       retrospective: project.retrospective || '',
+      retrospective_link: project.retrospective_link || '',
       serviceTags: project.serviceTags || [],
       platformImages: project.platformImages || { pc: '', tablet: '', mobile: '' },
       sortOrder: (project as any).sortOrder || 0,

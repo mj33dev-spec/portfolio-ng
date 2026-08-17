@@ -38,6 +38,7 @@ export interface Project {
   color?: string;
   scopeAndContribution?: string;
   retrospective?: string;
+  retrospective_link?: string;
   developmentEnvironment?: string[];
   developmentLanguage?: string[];
   platformImages: {
