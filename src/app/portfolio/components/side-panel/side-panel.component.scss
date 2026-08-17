@@ -18,31 +18,44 @@
 
   .panel-container {
     width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     height: 100%;
 
     .panel-header {
-      padding: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 0;
       flex-shrink: 0;
-      height: 64px;
-      box-sizing: content-box !important;
+      height: 112px;
+      box-sizing: border-box !important;
       transition: all 0.2s ease;
       border-bottom: 1px solid #374151;
 
       @media (max-width: 1023px) {
-        padding: 20px 24px;
-        height: 56px;
+        height: 96px;
       }
 
       @media (max-width: 767px) {
-        padding: 16px 20px;
-        height: 48px;
+        height: 80px;
+      }
+
+      .header-content {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        box-sizing: border-box;
+
+        @media (max-width: 1023px) {
+          padding: 20px 24px;
+        }
+
+        @media (max-width: 767px) {
+          padding: 16px 20px;
+        }
       }
 
       .back-btn {
@@ -109,6 +122,9 @@
       overscroll-behavior: none; // Prevent scroll chaining to parent window
 
       .panel-content {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
         padding-bottom: 32px;
         min-height: 100%;
         box-sizing: border-box;

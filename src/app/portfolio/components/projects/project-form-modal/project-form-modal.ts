@@ -50,6 +50,11 @@ export class ProjectFormModalComponent implements OnInit {
   }
 
   addPlatform(platform?: ProjectPlatform) {
+    const linkGroups = (platform?.links || []).map(link => this.fb.group({
+      label: [link.label || '', Validators.required],
+      url: [link.url || '', Validators.required]
+    }));
+
     const pGroup = this.fb.group({
       id: [platform?.id || null],
       type: [platform?.type || 'Web', Validators.required],
@@ -63,6 +68,7 @@ export class ProjectFormModalComponent implements OnInit {
         tablet: [platform?.platform_images?.tablet || ''],
         mobile: [platform?.platform_images?.mobile || '']
       }),
+      links: this.fb.array(linkGroups),
       sort_order: [platform?.sort_order || 0]
     });
     this.platforms.push(pGroup);
@@ -72,6 +78,23 @@ export class ProjectFormModalComponent implements OnInit {
   removePlatform(index: number) {
     this.platforms.removeAt(index);
     this.expandedPlatforms.splice(index, 1);
+  }
+
+  getPlatformLinks(platformIndex: number): FormArray {
+    return this.platforms.at(platformIndex).get('links') as FormArray;
+  }
+
+  addPlatformLink(platformIndex: number) {
+    const links = this.getPlatformLinks(platformIndex);
+    links.push(this.fb.group({
+      label: ['', Validators.required],
+      url: ['', Validators.required]
+    }));
+  }
+
+  removePlatformLink(platformIndex: number, linkIndex: number) {
+    const links = this.getPlatformLinks(platformIndex);
+    links.removeAt(linkIndex);
   }
 
   // --- Accordion ---
@@ -131,13 +154,6 @@ export class ProjectFormModalComponent implements OnInit {
         tablet: [''],
         mobile: ['']
       }),
-      links: this.fb.group({
-        ios: [''],
-        android: [''],
-        landing: [''],
-        web: [''],
-        admin: ['']
-      }),
       sortOrder: [0],
       is_visible: [true],
       platforms: this.fb.array([])
@@ -161,15 +177,6 @@ export class ProjectFormModalComponent implements OnInit {
       is_visible: project.is_visible ?? true
     });
 
-    if (project.links) {
-      project.links.forEach(link => {
-        const control = this.projectForm.get(`links.${link.type}`);
-        if (control) {
-          control.setValue(link.url);
-        }
-      });
-    }
-
     if (project.platforms && project.platforms.length > 0) {
       project.platforms.forEach(p => this.addPlatform(p));
       this.expandedPlatforms = project.platforms.map(() => true);
@@ -184,16 +191,6 @@ export class ProjectFormModalComponent implements OnInit {
 
     this.isSaving = true;
     const projectData = { ...this.projectForm.value };
-    
-    const rawLinks = projectData.links || {};
-    const linksArray = [];
-    if (rawLinks.ios) linksArray.push({ type: 'ios', label: 'iOS 앱', url: rawLinks.ios });
-    if (rawLinks.android) linksArray.push({ type: 'android', label: 'Android 앱', url: rawLinks.android });
-    if (rawLinks.landing) linksArray.push({ type: 'landing', label: '랜딩페이지', url: rawLinks.landing });
-    if (rawLinks.web) linksArray.push({ type: 'web', label: '메인 웹사이트', url: rawLinks.web });
-    if (rawLinks.admin) linksArray.push({ type: 'admin', label: '관리자페이지', url: rawLinks.admin });
-    
-    projectData.links = linksArray;
 
     try {
       if (this.project()) {

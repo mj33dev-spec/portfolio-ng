@@ -129,34 +129,7 @@
         <textarea formControlName="scopeAndContribution" placeholder="프로젝트의 주요 업무를 작성해주세요."></textarea>
       </div>
 
-      <!-- Links -->
-      <div class="full-width links-section form-fieldset">
-        <div class="fieldset-header">
-          <h3>관련 링크 (첨부하지 않을 항목은 비워두세요)</h3>
-        </div>
-        <div formGroupName="links" class="links-container">
-          <div class="link-row">
-            <span class="link-label">iOS 앱</span>
-            <input type="text" formControlName="ios" placeholder="URL" />
-          </div>
-          <div class="link-row">
-            <span class="link-label">Android 앱</span>
-            <input type="text" formControlName="android" placeholder="URL" />
-          </div>
-          <div class="link-row">
-            <span class="link-label">랜딩페이지</span>
-            <input type="text" formControlName="landing" placeholder="URL" />
-          </div>
-          <div class="link-row">
-            <span class="link-label">메인 웹사이트</span>
-            <input type="text" formControlName="web" placeholder="URL" />
-          </div>
-          <div class="link-row">
-            <span class="link-label">관리자페이지</span>
-            <input type="text" formControlName="admin" placeholder="URL" />
-          </div>
-        </div>
-      </div>
+
 
       <div class="full-width retrospective form-group">
         <h3>프로젝트 회고</h3>
@@ -202,9 +175,9 @@
             </div>
 
             <ng-container *ngIf="expandedPlatforms[i]">
+            <div class="platform-content-row">
             <!-- Platform Images -->
             <div class="project-image-container form-group" formGroupName="platform_images">
-              <h3 class="section-title">기기 스크린샷</h3>
               <div class="image-upload-wrapper has-image interactive-thumbnail">
                 <div class="thumbnail-preview-layout">
                   <!-- Mobile Slot -->
@@ -328,11 +301,27 @@
               </div>
               
               <!-- Sort Order -->
-              <div class="detail-item form-group">
+              <!-- <div class="detail-item form-group">
                 <h3>정렬 순서</h3>
                 <input type="number" formControlName="sort_order" placeholder="0" />
+              </div> -->
+
+              <!-- Platform Links -->
+              <div class="platform-links-edit form-group">
+                <h3>첨부 링크</h3>
+                @if (getPlatformLinks(i).length > 0) {
+                <div formArrayName="links" class="platform-links-container">
+                  <div *ngFor="let linkCtrl of getPlatformLinks(i).controls; let j = index" [formGroupName]="j" class="platform-link-row">
+                    <input type="text" formControlName="label" placeholder="링크 이름 (예: 안드로이드)" class="link-label-input" />
+                    <input type="text" formControlName="url" placeholder="링크 URL" class="link-url-input" />
+                    <button type="button" class="btn-remove-link" (click)="removePlatformLink(i, j)">삭제</button>
+                  </div>
+                </div>
+              }
+                <button type="button" class="btn-add-link" (click)="addPlatformLink(i)">+ 링크 추가</button>
               </div>
 
+            </div>
             </div>
 
             <div class="platform-footer">

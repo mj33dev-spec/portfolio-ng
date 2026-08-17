@@ -19,6 +19,7 @@ export interface ProjectPlatform {
     mobile: string;
   };
   sort_order: number;
+  links?: { label: string; url: string; }[];
   created_at?: string;
 }
 

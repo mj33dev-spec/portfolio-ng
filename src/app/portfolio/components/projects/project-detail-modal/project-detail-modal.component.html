@@ -105,19 +105,7 @@
         <p class="content-text">{{ project().url }}</p>
       </div>
 
-      @if (project().links && project().links!.length > 0) {
-      <div class="full-width links-section">
-        <h3>첨부 링크</h3>
-        <div class="links-grid">
-          @for (link of project().links; track $index) {
-          <a [href]="link.url" target="_blank" class="project-link">
-            <span class="link-label">{{ link.label }}</span>
-            <svg class="external-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-          </a>
-          }
-        </div>
-      </div>
-      }
+
 
       @if (project().retrospective || project().retrospective_link) {
       <div class="full-width retrospective">
@@ -154,10 +142,14 @@
             </div>
 
             @if (expandedPlatforms[$index]) {
+            <div class="platform-content-row">
 
             <!-- Platform Images -->
             <div class="project-image-container">
               <div class="image-preview-wrapper has-image">
+                @if (platform.is_visible === false) {
+                  <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="md" class="platform-visibility-badge"></c-badge>
+                }
                 <ng-container *ngIf="platform.platform_images?.pc || platform.platform_images?.tablet || platform.platform_images?.mobile; else fallbackPlatformImage">
                   <div class="thumbnail-preview-layout">
                     <div class="preview-slot preview-mobile" *ngIf="platform.platform_images?.mobile">
@@ -181,18 +173,18 @@
             </div>
 
             <div class="details-grid">
-              <div class="detail-item">
+              <!-- <div class="detail-item">
                 <h3>플랫폼 구분</h3>
                 <div class="tags">
                   <c-badge [label]="platform.type" [customBgColor]="BadgeConfig.get(platform.type).customBgColor" [customColor]="BadgeConfig.get(platform.type).customColor" [iconUrl]="BadgeConfig.get(platform.type).iconUrl" size="md"></c-badge>
                 </div>
-              </div>
-              <div class="detail-item">
+              </div> -->
+              <!-- <div class="detail-item">
                 <h3>상태</h3>
                 <div class="tags">
                   <c-badge [label]="platform.status" [customBgColor]="BadgeConfig.get(platform.status).customBgColor" [customColor]="BadgeConfig.get(platform.status).customColor" size="md"></c-badge>
                 </div>
-              </div>
+              </div> -->
               <div class="detail-item">
                 <h3>담당 파트</h3>
                 <div class="tags">
@@ -217,6 +209,20 @@
                   }
                 </div>
               </div>
+              @if (platform.links && platform.links.length > 0) {
+              <div class="detail-item platform-links">
+                <h3>첨부 링크</h3>
+                <div class="links-list-row">
+                  @for (link of platform.links; track $index) {
+                  <a [href]="link.url" target="_blank" class="project-link">
+                    <span class="link-label">{{ link.label }}</span>
+                    <svg class="external-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                  </a>
+                  }
+                </div>
+              </div>
+              }
+            </div>
             </div>
             }
           </div>

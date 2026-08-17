@@ -10,7 +10,7 @@
 }
 
 .detail-container {
-    padding: 0 24px;
+    padding: 24px 24px 0;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -666,18 +666,151 @@
             }
         }
 
+        .platform-content-row {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding-bottom: 20px;
+
+            @media (min-width: 1024px) {
+                display: grid;
+                grid-template-columns: 1.2fr 1fr;
+                align-items: stretch;
+                gap: 32px;
+                padding: 0 20px 20px;
+
+                .project-image-container {
+                    padding: 0;
+                    margin-bottom: 0;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+
+                    .image-upload-wrapper {
+                        flex: 1;
+                        padding-top: 0;
+                        height: 100%;
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: $portfolio-input-bg;
+                        
+                        .thumbnail-preview-layout {
+                            position: relative;
+                            top: auto;
+                            left: auto;
+                            width: 100%;
+                            height: auto;
+                            max-width: 100%;
+                            max-height: 100%;
+                            aspect-ratio: 16 / 9;
+                            background-color: transparent;
+                        }
+                    }
+                }
+
+                .details-grid {
+                    padding: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+            }
+        }
+
         .project-image-container {
             padding: 0 20px;
         }
 
-        .section-title {
-            margin-bottom: 12px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
         .details-grid {
             padding: 0 20px 20px;
+        }
+
+        .platform-links-edit {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            h3 {
+                margin: 0;
+                font-size: 14px;
+                font-weight: 600;
+                color: $portfolio-text-secondary;
+            }
+
+            .platform-links-container {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .platform-link-row {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+
+                input {
+                    padding: 8px 12px;
+                    border: 1px solid $portfolio-border-dark;
+                    border-radius: 6px;
+                    background-color: $portfolio-input-bg;
+                    color: $portfolio-text-primary;
+                    font-size: 14px;
+                    outline: none;
+                    transition: border-color 0.2s;
+
+                    &:focus {
+                        border-color: $portfolio-border-medium;
+                    }
+                }
+
+                .link-label-input {
+                    width: 120px;
+                    flex-shrink: 0;
+                }
+
+                .link-url-input {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .btn-remove-link {
+                    background: transparent;
+                    border: 1px solid $portfolio-border-dark;
+                    border-radius: 6px;
+                    color: $portfolio-text-danger;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    padding: 8px 12px;
+                    transition: all 0.2s;
+
+                    &:hover {
+                        background-color: rgba(239, 68, 68, 0.1);
+                        border-color: $portfolio-text-danger;
+                    }
+                }
+            }
+
+            .btn-add-link {
+                align-self: flex-start;
+                background-color: transparent;
+                border: 1px dashed $portfolio-border-medium;
+                color: $portfolio-text-light;
+                padding: 6px 16px;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+
+                &:hover {
+                    border-color: $portfolio-text-light;
+                    background-color: rgba(255, 255, 255, 0.05);
+                }
+            }
         }
     }
     
