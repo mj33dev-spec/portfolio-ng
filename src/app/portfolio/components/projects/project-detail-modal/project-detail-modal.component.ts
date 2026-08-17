@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Project } from '../../../project.model';
 import { SidePanelComponent } from '../../side-panel/side-panel.component';
@@ -23,7 +23,18 @@ export class ProjectDetailModalComponent {
   editProject = output<Project>();
   deleteProject = output<Project>();
 
-  expandedPlatforms: Record<number, boolean> = { 0: true };
+  expandedPlatforms: Record<number, boolean> = {};
+
+  constructor() {
+    effect(() => {
+      const p = this.project();
+      if (p && p.platforms) {
+        const expanded: Record<number, boolean> = {};
+        p.platforms.forEach((_, i) => expanded[i] = true);
+        this.expandedPlatforms = expanded;
+      }
+    });
+  }
 
   togglePlatform(index: number) {
     this.expandedPlatforms[index] = !this.expandedPlatforms[index];

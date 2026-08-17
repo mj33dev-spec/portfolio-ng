@@ -10,6 +10,7 @@
 }
 
 .detail-container {
+    padding: 0 24px;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -574,10 +575,15 @@
         }
     }
     
+    .platforms-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
     .platform-block {
         border: 1px solid $portfolio-border-dark; 
         border-radius: 12px;
-        margin-bottom: 40px;
         transition: all 0.2s;
         
         &.dragging {
@@ -586,7 +592,7 @@
         }
 
         .platform-header {
-            padding: 20px;
+            padding: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -607,7 +613,7 @@
             }
 
             .accordion-icon {
-                transition: transform 0.2s;
+                transition: transform 0.3s ease;
                 margin-left: 4px;
             }
 
@@ -620,6 +626,15 @@
             
             .btn-remove {
                 display: none; // remove old if left over
+            }
+
+            &:hover {
+                .accordion-icon {
+                    transform: rotateY(180deg);
+                }
+                .accordion-icon[style*="rotate(180deg)"] {
+                    transform: rotate(180deg) rotateY(180deg) !important;
+                }
             }
         }
 

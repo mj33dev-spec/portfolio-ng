@@ -170,7 +170,7 @@ export class ProjectFormModalComponent implements OnInit {
 
     if (project.platforms && project.platforms.length > 0) {
       project.platforms.forEach(p => this.addPlatform(p));
-      this.expandedPlatforms = project.platforms.map((_, i) => i === 0);
+      this.expandedPlatforms = project.platforms.map(() => true);
     }
   }
 
