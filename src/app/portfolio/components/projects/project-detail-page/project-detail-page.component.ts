@@ -9,14 +9,14 @@ import { AuthService } from '../../../auth.service';
 import { BadgeConfig } from '../../../utils/badge.config';
 
 @Component({
-  selector: 'app-project-detail-modal',
+  selector: 'app-project-detail-page',
   standalone: true,
-  templateUrl: './project-detail-modal.component.html',
-  styleUrls: ['./project-detail-modal.component.scss'],
+  templateUrl: './project-detail-page.component.html',
+  styleUrls: ['./project-detail-page.component.scss'],
   imports: [CommonModule, SidePanelComponent, CBadgeComponent, CategoryBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProjectDetailModalComponent {
+export class ProjectDetailPageComponent {
   authService = inject(AuthService);
   project = input.required<Project>();
   closeModal = output();

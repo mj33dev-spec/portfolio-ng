@@ -1,19 +1,20 @@
 import { Component, OnInit, inject, signal, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BlogService, BlogPost } from '../../blog.service';
-import { AuthService } from '../../auth.service';
-import { CDropdownComponent, CDropdownOption } from '../c-dropdown/c-dropdown.component';
-import { SidePanelComponent } from '../side-panel/side-panel.component';
-import { DAlertService } from '../d-alert/d-alert.service';
+import { BlogService, BlogPost, BlogBlock } from '../../../blog.service';
+import { AuthService } from '../../../auth.service';
+import { CDropdownComponent, CDropdownOption } from '../../c-dropdown/c-dropdown.component';
+import { SidePanelComponent } from '../../side-panel/side-panel.component';
+import { DAlertService } from '../../d-alert/d-alert.service';
 
 @Component({
-  selector: 'app-board-editor',
+  selector: 'app-blog-editor-page',
+  standalone: true,
   imports: [CommonModule, FormsModule, CDropdownComponent, SidePanelComponent],
-  templateUrl: './board-editor.html',
-  styleUrl: './board-editor.scss'
+  templateUrl: './blog-editor-page.component.html',
+  styleUrl: './blog-editor-page.component.scss'
 })
-export class BoardEditorComponent implements OnInit {
+export class BlogEditorPageComponent implements OnInit {
   @Input() postId: string | null = null;
   @Output() closeOverlay = new EventEmitter<void>();
 
@@ -24,7 +25,8 @@ export class BoardEditorComponent implements OnInit {
   isEditMode = signal(false);
 
   title = signal('');
-  content = signal('');
+  blocks = signal<BlogBlock[]>([]);
+  uploadingBlockIndex = signal<number | null>(null);
   color = signal('#facc15'); // default portfolio primary color
   category = signal('');
   imageUrl = signal<string | null>(null);
@@ -32,6 +34,7 @@ export class BoardEditorComponent implements OnInit {
   isUploading = signal(false);
 
   categoryOptions: CDropdownOption[] = [
+    { label: '프로젝트 회고록', value: '프로젝트 회고록', customColor: '#a855f7', customBgColor: 'rgba(168, 85, 247, 0.15)' },
     { label: 'Flutter', value: 'Flutter', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg', customColor: '#38bdf8', customBgColor: 'rgba(56, 189, 248, 0.15)' },
     { label: 'Angular', value: 'Angular', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/angular/angular-original.svg', customColor: '#ef4444', customBgColor: 'rgba(239, 68, 68, 0.15)' },
     { label: 'React', value: 'React', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg', customColor: '#61dafb', customBgColor: 'rgba(97, 218, 251, 0.15)' },
@@ -72,13 +75,108 @@ export class BoardEditorComponent implements OnInit {
       const data = await this.blogService.getPost(this.postId);
       if (data) {
         this.title.set(data.title);
-        this.content.set(data.content);
         this.color.set(data.color);
         this.category.set(data.category || '');
         this.imageUrl.set(data.image_url || null);
         this.tagsInput.set((data.tags || []).join(', '));
+        
+        let parsedBlocks: BlogBlock[] = [];
+        if (typeof data.content === 'string') {
+          try {
+            parsedBlocks = JSON.parse(data.content);
+          } catch (e) {
+            parsedBlocks = [{ id: this.generateId(), type: 'text', value: data.content }];
+          }
+        } else if (Array.isArray(data.content)) {
+          parsedBlocks = data.content;
+        }
+        this.blocks.set(parsedBlocks);
       }
+    } else {
+      this.blocks.set([{ id: this.generateId(), type: 'text', value: '' }]);
     }
+  }
+
+  generateId(): string {
+    return Math.random().toString(36).substring(2, 9);
+  }
+
+  addTextBlock() {
+    this.blocks.update(b => [...b, { id: this.generateId(), type: 'text', value: '' }]);
+  }
+
+  addImageBlock() {
+    this.blocks.update(b => [...b, { id: this.generateId(), type: 'image', value: '' }]);
+  }
+
+  removeBlock(index: number) {
+    this.blocks.update(b => b.filter((_, i) => i !== index));
+  }
+
+  updateBlockValue(index: number, val: string) {
+    this.blocks.update(blocks => {
+      const copy = [...blocks];
+      copy[index] = { ...copy[index], value: val };
+      return copy;
+    });
+  }
+
+  async onBlockFileSelected(event: Event, index: number) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    
+    const file = input.files[0];
+    this.uploadingBlockIndex.set(index);
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+    const filePath = `images/${fileName}`;
+
+    try {
+      const { data, error } = await this.blogService.uploadImage(filePath, file);
+      if (error) {
+        console.error('Upload Error:', error);
+        this.dAlert.error('이미지 업로드에 실패했습니다.');
+      } else {
+        const publicUrl = this.blogService.getImageUrl(filePath);
+        this.updateBlockValue(index, publicUrl);
+      }
+    } catch (error) {
+      console.error(error);
+      this.dAlert.error('이미지 업로드 중 오류가 발생했습니다.');
+    } finally {
+      this.uploadingBlockIndex.set(null);
+      input.value = '';
+    }
+  }
+
+  // --- Drag and Drop Reordering ---
+  draggedBlockIndex: number | null = null;
+
+  onBlockDragStart(index: number) {
+    this.draggedBlockIndex = index;
+  }
+
+  onBlockDragOver(event: DragEvent, index: number) {
+    event.preventDefault();
+  }
+
+  onBlockDrop(event: DragEvent, targetIndex: number) {
+    event.preventDefault();
+    if (this.draggedBlockIndex === null || this.draggedBlockIndex === targetIndex) return;
+
+    this.blocks.update(blocks => {
+      const copy = [...blocks];
+      const dragged = copy[this.draggedBlockIndex!];
+      copy.splice(this.draggedBlockIndex!, 1);
+      copy.splice(targetIndex, 0, dragged);
+      return copy;
+    });
+    this.draggedBlockIndex = null;
+  }
+
+  onBlockDragEnd() {
+    this.draggedBlockIndex = null;
   }
 
   goBack() {
@@ -86,19 +184,28 @@ export class BoardEditorComponent implements OnInit {
   }
 
   async savePost() {
-    if (!this.title() || !this.content() || !this.category()) {
-      this.dAlert.warn('제목, 카테고리, 내용을 모두 입력해주세요.');
+    if (!this.title() || !this.category()) {
+      this.dAlert.warn('제목과 카테고리를 입력해주세요.');
+      return;
+    }
+
+    const blocksVal = this.blocks();
+    if (blocksVal.length === 0) {
+      this.dAlert.warn('최소 하나의 본문 섹션을 추가해주세요.');
       return;
     }
 
     const tagsArray = this.tagsInput().split(',').map(t => t.trim()).filter(t => t.length > 0);
 
+    const firstImageBlock = blocksVal.find(b => b.type === 'image' && b.value);
+    const calculatedThumbnail = firstImageBlock ? firstImageBlock.value : null;
+
     const postData = {
       title: this.title(),
-      content: this.content(),
+      content: blocksVal,
       color: this.color(),
       category: this.category(),
-      image_url: this.imageUrl() || null,
+      image_url: calculatedThumbnail,
       tags: tagsArray
     };
 

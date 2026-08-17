@@ -59,6 +59,7 @@ export class BadgeConfig {
     { type: '개인 프로젝트', color: '#10b981' },
     { type: '개인프로젝트', color: '#10b981' },
     { type: '프리랜서', color: '#f59e0b' },
+    { type: '포트폴리오', color: '#a855f7' },
     
     // Frameworks & Langs
     { type: 'flutter', color: '#38bdf8', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg' },

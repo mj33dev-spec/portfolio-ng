@@ -1,0 +1,55 @@
+@if (post()) {
+<app-side-panel (back)="goBack()">
+  <div header-actions *ngIf="authService.isLoggedIn()" class="header-admin-actions">
+    <button class="btn-text" (click)="editPost()">수정</button>
+    <button class="btn-text-danger" (click)="deletePost()">삭제</button>
+  </div>
+
+  <div class="detail-container">
+    
+    <!-- Image at the top (if post has image_url) -->
+    <div class="project-image-container" *ngIf="post()!.image_url">
+      <div class="image-preview-wrapper has-image">
+        <img [src]="post()!.image_url" [alt]="post()!.title">
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="details-grid">
+      <!-- Header section -->
+      <div class="full-width project-header">
+        <div class="affiliation-status-row">
+          <div class="subtitle">{{ post()!.category }}</div>
+          <div class="badges">
+            <span class="header-date">{{ (post()!.updated_at || post()!.created_at) | date:'yyyy.MM.dd' }}</span>
+          </div>
+        </div>
+        <div class="title-row">
+          <h2>{{ post()!.title }}</h2>
+        </div>
+      </div>
+
+      <!-- Content (Full width) -->
+      <div class="full-width post-content-blocks">
+        @for (block of renderedBlocks(); track block.id) {
+          @if (block.type === 'text') {
+            <div class="post-block text-block markdown-body" [innerHTML]="block.safeHtml"></div>
+          } @else if (block.type === 'image' && block.value) {
+            <div class="post-block image-block">
+              <img [src]="block.value" alt="게시물 이미지">
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Tags (Full width) -->
+      <div class="full-width post-tags" *ngIf="post()!.tags?.length">
+        <c-badge *ngFor="let tag of post()!.tags" [label]="'#' + tag" variant="neutral" size="md"></c-badge>
+      </div>
+
+    </div>
+  </div>
+</app-side-panel>
+} @else if (loading()) {
+  <div class="loading">Loading...</div>
+}

@@ -1,12 +1,13 @@
-import { Component, ChangeDetectionStrategy, signal, computed, HostListener, output, input, inject, effect, untracked } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, HostListener, output, input, inject, effect, untracked, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Project } from '../../project.model';
-import { ProjectDetailModalComponent } from './project-detail-modal/project-detail-modal.component';
+import { ProjectDetailPageComponent } from './project-detail-page/project-detail-page.component';
 import { CBadgeComponent } from '../c-badge/c-badge.component';
 import { ScrollService } from '../../scroll.service';
 import { ProjectService } from '../../project.service';
 import { AuthService } from '../../auth.service';
-import { ProjectFormModalComponent } from './project-form-modal/project-form-modal';
+import { ProjectFormPageComponent } from './project-form-page/project-form-page.component';
 import { DAlertService } from '../d-alert/d-alert.service';
 import { BadgeConfig } from '../../utils/badge.config';
 
@@ -17,13 +18,15 @@ const SCROLL__WHEEL_RANGE: number = 3;
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ProjectDetailModalComponent, CBadgeComponent, ProjectFormModalComponent],
+  imports: [CommonModule, ProjectDetailPageComponent, CBadgeComponent, ProjectFormPageComponent],
 })
-export class ProjectsComponent {
+export class ProjectsComponent implements OnInit {
   authService = inject(AuthService);
   private scrollService = inject(ScrollService);
   private projectService = inject(ProjectService);
   private dAlert = inject(DAlertService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   isPageScrolling = input<boolean>(false);
   private isThrottled = false;
@@ -52,13 +55,46 @@ export class ProjectsComponent {
   projects = signal<Project[]>([]);
   isLoading = signal<boolean>(true);
 
-  ngOnInit() {
-    this.loadProjects();
+  async ngOnInit() {
+    await this.loadProjects();
+
+    this.route.queryParams.subscribe(params => {
+      const projectId = params['projectId'];
+      const projectEdit = params['projectEdit'];
+
+      if (projectEdit) {
+        if (projectEdit === 'new') {
+          this.projectToEdit.set(null);
+        } else {
+          const found = this.projects().find(p => (p as any).id === projectEdit);
+          this.projectToEdit.set(found || null);
+        }
+        this.isFormModalOpen.set(true);
+        this.selectedProject.set(null);
+      } else if (projectId) {
+        const found = this.projects().find(p => (p as any).id === projectId);
+        if (found) {
+          this.selectedProject.set(found);
+          const idx = this.projects().findIndex(p => (p as any).id === projectId);
+          if (idx !== -1) {
+            this.currentProjectIndex.set(idx);
+          }
+        } else {
+          this.selectedProject.set(null);
+        }
+        this.isFormModalOpen.set(false);
+        this.projectToEdit.set(null);
+      } else {
+        this.selectedProject.set(null);
+        this.isFormModalOpen.set(false);
+        this.projectToEdit.set(null);
+      }
+    });
   }
 
-  loadProjects() {
+  loadProjects(): Promise<void> {
     this.isLoading.set(true);
-    this.projectService.fetchProjects().then(data => {
+    return this.projectService.fetchProjects().then(data => {
       const visibleProjects = this.authService.isLoggedIn() 
         ? data 
         : data.filter(p => p.is_visible !== false);
@@ -76,18 +112,15 @@ export class ProjectsComponent {
   projectToEdit = signal<Project | null>(null);
 
   openAddModal() {
-    this.projectToEdit.set(null);
-    this.isFormModalOpen.set(true);
+    this.router.navigate([], { queryParams: { projectEdit: 'new' } });
   }
 
   openEditModal(project: Project) {
-    this.projectToEdit.set(project);
-    this.isFormModalOpen.set(true);
+    this.router.navigate([], { queryParams: { projectEdit: (project as any).id } });
   }
 
   closeFormModal() {
-    this.isFormModalOpen.set(false);
-    this.projectToEdit.set(null);
+    this.router.navigate([], { queryParams: { projectEdit: null } });
   }
 
   onSaveComplete() {
@@ -118,12 +151,12 @@ export class ProjectsComponent {
 
   selectProject(project: Project): void {
     if (this.projects()[this.currentProjectIndex()] === project) {
-      this.selectedProject.set(project);
+      this.router.navigate([], { queryParams: { projectId: (project as any).id } });
     }
   }
 
   closeModal(): void {
-    this.selectedProject.set(null);
+    this.router.navigate([], { queryParams: { projectId: null, projectEdit: null } });
   }
 
   @HostListener('wheel', ['$event'])

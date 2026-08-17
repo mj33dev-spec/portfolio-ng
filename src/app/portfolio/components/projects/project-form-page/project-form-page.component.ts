@@ -9,13 +9,13 @@ import { CDropdownComponent, CDropdownOption } from '../../c-dropdown/c-dropdown
 import { BadgeConfig } from '../../../utils/badge.config';
 
 @Component({
-  selector: 'app-project-form-modal',
+  selector: 'app-project-form-page',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, SidePanelComponent, CDropdownComponent],
-  templateUrl: './project-form-modal.html',
-  styleUrls: ['./project-form-modal.scss']
+  templateUrl: './project-form-page.component.html',
+  styleUrls: ['./project-form-page.component.scss']
 })
-export class ProjectFormModalComponent implements OnInit {
+export class ProjectFormPageComponent implements OnInit {
   project = input<Project | null>(null);
   closeModal = output<void>();
   saveComplete = output<void>();

@@ -105,8 +105,6 @@
         <p class="content-text">{{ project().url }}</p>
       </div>
 
-
-
       @if (project().retrospective || project().retrospective_link) {
       <div class="full-width retrospective">
         <h3>프로젝트 회고</h3>
@@ -173,18 +171,6 @@
             </div>
 
             <div class="details-grid">
-              <!-- <div class="detail-item">
-                <h3>플랫폼 구분</h3>
-                <div class="tags">
-                  <c-badge [label]="platform.type" [customBgColor]="BadgeConfig.get(platform.type).customBgColor" [customColor]="BadgeConfig.get(platform.type).customColor" [iconUrl]="BadgeConfig.get(platform.type).iconUrl" size="md"></c-badge>
-                </div>
-              </div> -->
-              <!-- <div class="detail-item">
-                <h3>상태</h3>
-                <div class="tags">
-                  <c-badge [label]="platform.status" [customBgColor]="BadgeConfig.get(platform.status).customBgColor" [customColor]="BadgeConfig.get(platform.status).customColor" size="md"></c-badge>
-                </div>
-              </div> -->
               <div class="detail-item">
                 <h3>담당 파트</h3>
                 <div class="tags">

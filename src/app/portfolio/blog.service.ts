@@ -2,10 +2,16 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 
+export interface BlogBlock {
+  id: string;
+  type: 'text' | 'image';
+  value: string;
+}
+
 export interface BlogPost {
   id: string; // uuid
   title: string;
-  content: string;
+  content: BlogBlock[];
   color: string;
   category: string;
   image_url: string | null;
@@ -17,7 +23,7 @@ export interface BlogPost {
 
 export interface BlogPostInput {
   title: string;
-  content: string;
+  content: BlogBlock[];
   color: string;
   category: string;
   image_url: string | null;

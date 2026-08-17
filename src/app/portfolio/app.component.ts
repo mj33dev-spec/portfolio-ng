@@ -8,7 +8,7 @@ import { HomeComponent } from './components/home/home.component';
 import { PhilosophyComponent } from './components/philosophy/philosophy.component';
 import { ProjectsComponent } from './components/projects/projects.component';
 import { CareerComponent } from './components/career/career.component';
-import { BoardComponent } from './components/board/board.component';
+import { BlogComponent } from './components/blog/blog.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { DAlertComponent } from './components/d-alert/d-alert.component';
 import { ScrollService } from './scroll.service';
@@ -25,7 +25,7 @@ import { ScrollService } from './scroll.service';
     PhilosophyComponent,
     ProjectsComponent,
     CareerComponent,
-    BoardComponent,
+    BlogComponent,
     ContactComponent,
     DAlertComponent
   ],
@@ -46,7 +46,7 @@ export class AppComponent {
     { id: 'philosophy', name: 'Philosophy' },
     { id: 'projects', name: 'Projects' },
     { id: 'career', name: 'Career' },
-    { id: 'board', name: 'blog' },
+    { id: 'blog', name: 'Blog' },
     { id: 'contact', name: 'Contact' }
   ];
 
@@ -60,7 +60,8 @@ export class AppComponent {
 
         // Handle initial load with URL hash (e.g., localhost:4200/#blog)
         setTimeout(() => {
-          const hash = window.location.hash.replace('#', '');
+          let hash = window.location.hash.replace('#', '');
+          if (hash === 'board') hash = 'blog';
           if (hash) {
             // Find section by id or name
             const targetSection = this.sections.find(s => s.id === hash || s.name === hash);

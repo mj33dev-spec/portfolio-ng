@@ -125,15 +125,15 @@
 </section>
 
 @if (selectedProject(); as project) {
-<app-project-detail-modal 
+<app-project-detail-page 
   [project]="project" 
   (closeModal)="closeModal()"
   (editProject)="openEditModal($event)"
   (deleteProject)="deleteProject($event, undefined)">
-</app-project-detail-modal>
+</app-project-detail-page>
 }
 
 @if (isFormModalOpen()) {
-<app-project-form-modal [project]="projectToEdit()" (closeModal)="closeFormModal()" (saveComplete)="onSaveComplete()">
-</app-project-form-modal>
+<app-project-form-page [project]="projectToEdit()" (closeModal)="closeFormModal()" (saveComplete)="onSaveComplete()">
+</app-project-form-page>
 }

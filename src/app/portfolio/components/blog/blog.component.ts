@@ -1,26 +1,28 @@
 import { Component, ChangeDetectionStrategy, signal, computed, OnInit, inject, effect, untracked } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BlogService, BlogPost } from '../../blog.service';
 import { AuthService } from '../../auth.service';
-import { BoardDetailComponent } from '../board-detail/board-detail';
-import { BoardEditorComponent } from '../board-editor/board-editor';
+import { BlogDetailPageComponent } from './blog-detail-page/blog-detail-page.component';
+import { BlogEditorPageComponent } from './blog-editor-page/blog-editor-page.component';
 import { CategoryBadgeComponent } from '../category-badge/category-badge.component';
 import { ScrollService } from '../../scroll.service';
 
 @Component({
-  selector: 'app-board',
+  selector: 'app-blog',
   standalone: true,
-  templateUrl: './board.component.html',
-  styleUrls: ['./board.component.scss'],
-  imports: [CommonModule, FormsModule, BoardDetailComponent, BoardEditorComponent, CategoryBadgeComponent, DatePipe],
+  templateUrl: './blog.component.html',
+  styleUrls: ['./blog.component.scss'],
+  imports: [CommonModule, FormsModule, BlogDetailPageComponent, BlogEditorPageComponent, CategoryBadgeComponent, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BoardComponent implements OnInit {
+export class BlogComponent implements OnInit {
   private blogService = inject(BlogService);
   private authService = inject(AuthService);
   private scrollService = inject(ScrollService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   isLoggedIn = this.authService.isLoggedIn;
 
@@ -55,6 +57,23 @@ export class BoardComponent implements OnInit {
 
   async ngOnInit() {
     await this.loadPosts();
+
+    // Subscribe to query parameters to manage sliding panel state
+    this.route.queryParams.subscribe(params => {
+      const blogId = params['blogId'];
+      const blogEdit = params['blogEdit'];
+
+      if (blogEdit) {
+        this.selectedPostId.set(blogEdit === 'new' ? null : blogEdit);
+        this.activeView.set('editor');
+      } else if (blogId) {
+        this.selectedPostId.set(blogId);
+        this.activeView.set('detail');
+      } else {
+        this.selectedPostId.set(null);
+        this.activeView.set('list');
+      }
+    });
   }
 
   async loadPosts() {
@@ -63,24 +82,21 @@ export class BoardComponent implements OnInit {
   }
 
   goToPost(id: string) {
-    this.selectedPostId.set(id);
-    this.activeView.set('detail');
+    this.router.navigate([], { queryParams: { blogId: id } });
   }
 
   createNewPost() {
-    this.selectedPostId.set(null);
-    this.activeView.set('editor');
+    this.router.navigate([], { queryParams: { blogEdit: 'new' } });
   }
 
   editPost(id: string) {
-    this.selectedPostId.set(id);
-    this.activeView.set('editor');
+    this.router.navigate([], { queryParams: { blogEdit: id } });
   }
 
   closeOverlay() {
-    this.activeView.set('list');
-    this.selectedPostId.set(null);
-    this.loadPosts();
+    this.router.navigate([], { queryParams: { blogId: null, blogEdit: null } }).then(() => {
+      this.loadPosts();
+    });
   }
   
   goToPage(pageNumber: number): void {
