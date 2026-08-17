@@ -257,3 +257,12 @@ $color-grey: #999;
   //   background-color: rgba(240, 240, 240, 0.1);
   // }
 }
+
+@mixin hover($bgColor: transparent) {
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  &:hover {
+    background-color: $bgColor;
+    opacity: 0.8;
+  }
+}

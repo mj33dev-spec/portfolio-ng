@@ -6,10 +6,10 @@
         <div class="form-group">
           <label>카테고리</label>
           <c-dropdown 
+            width="200px"
             [value]="category() || '카테고리를 선택하세요'" 
             (valueChange)="category.set($event)" 
             [options]="categoryOptions"
-            width="100%"
             variant="outlined">
           </c-dropdown>
         </div>

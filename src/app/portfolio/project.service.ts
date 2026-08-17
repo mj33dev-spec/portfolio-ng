@@ -23,7 +23,7 @@ export class ProjectService {
   async fetchProjects(): Promise<Project[]> {
     const { data, error } = await this.supabase
       .from('projects')
-      .select('*')
+      .select('*, platforms:project_platforms(*)')
       .order('sortOrder', { ascending: true });
 
     if (error) {
@@ -31,7 +31,7 @@ export class ProjectService {
       throw error;
     }
 
-    const projects: Project[] = data || [];
+    const projects: Project[] = (data || []).map(p => this.computeDerivedFields(p));
     this._projects.next(projects);
     return projects;
   }
@@ -40,9 +40,10 @@ export class ProjectService {
    * Add a new project
    */
   async addProject(project: Omit<Project, 'id' | 'created_at'>): Promise<Project> {
+    const { platforms, ...projectData } = project;
     const { data, error } = await this.supabase
       .from('projects')
-      .insert(project)
+      .insert(projectData)
       .select()
       .single();
 
@@ -51,19 +52,33 @@ export class ProjectService {
       throw error;
     }
 
+    let platformsData: any[] = [];
+    if (platforms && platforms.length > 0) {
+      const platformsToInsert = platforms.map(p => ({ ...p, project_id: data.id }));
+      const { data: pData, error: pError } = await this.supabase
+        .from('project_platforms')
+        .insert(platformsToInsert)
+        .select();
+      if (pError) throw pError;
+      platformsData = pData || [];
+    }
+
+    const finalData = this.computeDerivedFields({ ...data, platforms: platformsData }) as Project;
+
     // Update local cache
     const currentProjects = this._projects.getValue();
-    this._projects.next([...currentProjects, data]);
-    return data;
+    this._projects.next([...currentProjects, finalData]);
+    return finalData;
   }
 
   /**
    * Update an existing project
    */
   async updateProject(id: string, updates: Partial<Project>): Promise<Project> {
+    const { platforms, ...projectData } = updates;
     const { data, error } = await this.supabase
       .from('projects')
-      .update(updates)
+      .update(projectData)
       .eq('id', id)
       .select()
       .single();
@@ -73,14 +88,40 @@ export class ProjectService {
       throw error;
     }
 
+    let platformsData: any[] = [];
+    if (platforms) {
+      await this.supabase.from('project_platforms').delete().eq('project_id', id);
+      if (platforms.length > 0) {
+        const platformsToInsert = platforms.map(p => {
+          const { id: _, created_at, project_id, ...rest } = p as any;
+          return { ...rest, project_id: id };
+        });
+        const { data: pData, error: pError } = await this.supabase
+          .from('project_platforms')
+          .insert(platformsToInsert)
+          .select();
+        if (pError) throw pError;
+        platformsData = pData || [];
+      }
+    } else {
+      // Fetch existing if not provided
+      const { data: existingPlatforms } = await this.supabase
+        .from('project_platforms')
+        .select('*')
+        .eq('project_id', id);
+      platformsData = existingPlatforms || [];
+    }
+
+    const finalData = this.computeDerivedFields({ ...data, platforms: platformsData }) as Project;
+
     // Update local cache
     const currentProjects = this._projects.getValue();
     const index = currentProjects.findIndex(p => (p as any).id === id);
     if (index !== -1) {
-      currentProjects[index] = data;
+      currentProjects[index] = finalData;
       this._projects.next([...currentProjects]);
     }
-    return data;
+    return finalData;
   }
 
   /**
@@ -115,5 +156,43 @@ export class ProjectService {
   getImageUrl(path: string) {
     const { data } = this.supabase.storage.from('project-images').getPublicUrl(path);
     return data.publicUrl;
+  }
+
+  /**
+   * Helper to compute derived fields from platforms
+   */
+  private computeDerivedFields(project: any): Project {
+    if (project.platforms && project.platforms.length > 0) {
+      // 1. Compute roleTags
+      const roles = new Set<string>();
+      project.platforms.forEach((p: any) => {
+        if (p.role_tags && Array.isArray(p.role_tags)) {
+          p.role_tags.forEach((r: string) => roles.add(r));
+        }
+      });
+      if (roles.size > 0) {
+        project.roleTags = Array.from(roles);
+      }
+
+
+      // 3. Compute developmentEnvironment and developmentLanguage
+      const envs = new Set<string>();
+      const langs = new Set<string>();
+      project.platforms.forEach((p: any) => {
+        if (p.development_environment && Array.isArray(p.development_environment)) {
+          p.development_environment.forEach((e: string) => envs.add(e));
+        }
+        if (p.development_language && Array.isArray(p.development_language)) {
+          p.development_language.forEach((l: string) => langs.add(l));
+        }
+      });
+      if (envs.size > 0) {
+        project.developmentEnvironment = Array.from(envs);
+      }
+      if (langs.size > 0) {
+        project.developmentLanguage = Array.from(langs);
+      }
+    }
+    return project;
   }
 }

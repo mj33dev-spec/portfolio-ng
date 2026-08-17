@@ -55,15 +55,60 @@ const CATEGORY_MAP: Record<string, CategoryConfig> = {
     customColor: '#4ade80',
     customBgColor: 'rgba(74, 222, 128, 0.15)',
   },
-  'nest.js': {
+  'Nest.js': {
     iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nestjs/nestjs-original.svg',
-    customColor: '#ea2845',
-    customBgColor: 'rgba(234, 40, 69, 0.15)',
+    customColor: '#E0234E',
+    customBgColor: 'rgba(224, 35, 78, 0.15)',
+  },
+  'Next.js': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg',
+    customColor: '#ffffff',
+    customBgColor: 'rgba(107, 114, 128, 0.5)',
+  },
+  'Nuxt.js': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nuxtjs/nuxtjs-original.svg',
+    customColor: '#00C58E',
+    customBgColor: 'rgba(0, 197, 142, 0.15)',
+  },
+  'Spring Boot': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/spring/spring-original.svg',
+    customColor: '#6db33f',
+    customBgColor: 'rgba(109, 179, 63, 0.15)',
+  },
+  'MySQL': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg',
+    customColor: '#4479a1',
+    customBgColor: 'rgba(68, 121, 161, 0.15)',
+  },
+  'MariaDB': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mariadb/mariadb-original.svg',
+    customColor: '#003545',
+    customBgColor: 'rgba(0, 53, 69, 0.15)',
+  },
+  'PostgreSQL': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg',
+    customColor: '#336791',
+    customBgColor: 'rgba(51, 103, 145, 0.15)',
+  },
+  'Firebase': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg',
+    customColor: '#ffca28',
+    customBgColor: 'rgba(255, 202, 40, 0.15)',
   },
   'Dart': {
     iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/dart/dart-original.svg',
     customColor: '#0175C2',
     customBgColor: 'rgba(1, 117, 194, 0.15)',
+  },
+  'SCSS': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sass/sass-original.svg',
+    customColor: '#cc6699',
+    customBgColor: 'rgba(204, 102, 153, 0.15)',
+  },
+  'Java': {
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg',
+    customColor: '#b07219',
+    customBgColor: 'rgba(176, 114, 25, 0.15)',
   },
   'Database': {
     iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/azuresqldatabase/azuresqldatabase-original.svg',
@@ -101,6 +146,8 @@ export class CategoryBadgeComponent {
   private _category = signal<string>('');
 
   config = computed(() => {
-    return CATEGORY_MAP[this._category()] || { variant: 'warning' };
+    const target = this._category().toLowerCase();
+    const key = Object.keys(CATEGORY_MAP).find(k => k.toLowerCase() === target);
+    return key ? CATEGORY_MAP[key] : { variant: 'warning' };
   });
 }

@@ -1,7 +1,7 @@
 import { Component, input, output, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormArray, Validators } from '@angular/forms';
-import { Project, ProjectLink } from '../../../project.model';
+import { Project, ProjectLink, ProjectPlatform } from '../../../project.model';
 import { ProjectService } from '../../../project.service';
 import { SidePanelComponent } from '../../side-panel/side-panel.component';
 import { DAlertService } from '../../d-alert/d-alert.service';
@@ -48,6 +48,7 @@ export class ProjectFormModalComponent implements OnInit {
     { label: 'App', value: 'App', customColor: '#02569B', customBgColor: 'rgba(2, 86, 155, 0.15)' },
     { label: 'Web', value: 'Web', customColor: '#4caf50', customBgColor: 'rgba(76, 175, 80, 0.15)' },
     { label: 'Admin', value: 'Admin', customColor: '#2196f3', customBgColor: 'rgba(33, 150, 243, 0.15)' },
+    { label: 'Landing', value: 'Landing', customColor: '#8b5cf6', customBgColor: 'rgba(139, 92, 246, 0.15)' },
     { label: 'API', value: 'API', customColor: '#6b7280', customBgColor: 'rgba(107, 114, 128, 0.15)' },
     { label: 'Batch', value: 'Batch', customColor: '#6b7280', customBgColor: 'rgba(107, 114, 128, 0.15)' },
     { label: '기타', value: '기타', customColor: '#6b7280', customBgColor: 'rgba(107, 114, 128, 0.15)' }
@@ -57,9 +58,7 @@ export class ProjectFormModalComponent implements OnInit {
     { label: 'Frontend', value: 'Frontend', customColor: '#ff9800', customBgColor: 'rgba(255, 152, 0, 0.15)' },
     { label: 'Publishing', value: 'Publishing', customColor: '#e91e63', customBgColor: 'rgba(233, 30, 99, 0.15)' },
     { label: 'Backend', value: 'Backend', customColor: '#6b7280', customBgColor: 'rgba(107, 114, 128, 0.15)' },
-    { label: 'Design', value: 'Design', customColor: '#14b8a6', customBgColor: 'rgba(20, 184, 166, 0.15)' },
-    { label: 'Planning', value: 'Planning', customColor: '#14b8a6', customBgColor: 'rgba(20, 184, 166, 0.15)' },
-    { label: 'PM', value: 'PM', customColor: '#6b7280', customBgColor: 'rgba(107, 114, 128, 0.15)' }
+    { label: 'Design', value: 'Design', customColor: '#14b8a6', customBgColor: 'rgba(20, 184, 166, 0.15)' }
   ];
 
   envOptions: CDropdownOption[] = [
@@ -67,9 +66,13 @@ export class ProjectFormModalComponent implements OnInit {
     { label: 'Angular', value: 'Angular', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/angular/angular-original.svg', customColor: '#ef4444', customBgColor: 'rgba(239, 68, 68, 0.15)' },
     { label: 'React', value: 'React', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg', customColor: '#61dafb', customBgColor: 'rgba(97, 218, 251, 0.15)' },
     { label: 'Vue', value: 'Vue', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vuejs/vuejs-original.svg', customColor: '#4ade80', customBgColor: 'rgba(74, 222, 128, 0.15)' },
+    { label: 'Next.js', value: 'Next.js', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg', customColor: '#ffffff', customBgColor: 'rgba(107, 114, 128, 0.5)' },
+    { label: 'Nuxt.js', value: 'Nuxt.js', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nuxtjs/nuxtjs-original.svg', customColor: '#00C58E', customBgColor: 'rgba(0, 197, 142, 0.15)' },
+    { label: 'Nest.js', value: 'Nest.js', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nestjs/nestjs-original.svg', customColor: '#E0234E', customBgColor: 'rgba(224, 35, 78, 0.15)' },
     { label: 'node.js', value: 'node.js', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg', customColor: '#4ade80', customBgColor: 'rgba(74, 222, 128, 0.15)' },
     { label: 'Spring Boot', value: 'Spring Boot', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/spring/spring-original.svg', customColor: '#6db33f', customBgColor: 'rgba(109, 179, 63, 0.15)' },
     { label: 'MySQL', value: 'MySQL', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg', customColor: '#4479a1', customBgColor: 'rgba(68, 121, 161, 0.15)' },
+    { label: 'MariaDB', value: 'MariaDB', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mariadb/mariadb-original.svg', customColor: '#003545', customBgColor: 'rgba(0, 53, 69, 0.15)' },
     { label: 'PostgreSQL', value: 'PostgreSQL', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg', customColor: '#336791', customBgColor: 'rgba(51, 103, 145, 0.15)' },
     { label: 'Firebase', value: 'Firebase', image: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg', customColor: '#ffca28', customBgColor: 'rgba(255, 202, 40, 0.15)' },
     { label: '기타', value: '기타', customColor: '#9ca3af', customBgColor: 'rgba(156, 163, 175, 0.15)' }
@@ -95,20 +98,86 @@ export class ProjectFormModalComponent implements OnInit {
     }
   }
 
+  get platforms(): FormArray {
+    return this.projectForm.get('platforms') as FormArray;
+  }
+
+  addPlatform(platform?: ProjectPlatform) {
+    const pGroup = this.fb.group({
+      id: [platform?.id || null],
+      type: [platform?.type || 'Web', Validators.required],
+      status: [platform?.status || '운영중'],
+      is_visible: [platform?.is_visible ?? true],
+      role_tags: [platform?.role_tags || []],
+      development_environment: [platform?.development_environment || []],
+      development_language: [platform?.development_language || []],
+      platform_images: this.fb.group({
+        pc: [platform?.platform_images?.pc || ''],
+        tablet: [platform?.platform_images?.tablet || ''],
+        mobile: [platform?.platform_images?.mobile || '']
+      }),
+      sort_order: [platform?.sort_order || 0]
+    });
+    this.platforms.push(pGroup);
+    this.expandedPlatforms.push(true); // new platform is expanded by default
+  }
+
+  removePlatform(index: number) {
+    this.platforms.removeAt(index);
+    this.expandedPlatforms.splice(index, 1);
+  }
+
+  // --- Accordion ---
+  expandedPlatforms: boolean[] = [];
+
+  togglePlatform(index: number) {
+    this.expandedPlatforms[index] = !this.expandedPlatforms[index];
+  }
+
+  // --- Drag and Drop Reordering ---
+  draggedPlatformIndex: number | null = null;
+
+  onDragStart(index: number) {
+    this.draggedPlatformIndex = index;
+  }
+
+  onDragOver(event: DragEvent, index: number) {
+    event.preventDefault(); // Necessary to allow dropping
+  }
+
+  onDrop(event: DragEvent, targetIndex: number) {
+    event.preventDefault();
+    if (this.draggedPlatformIndex === null || this.draggedPlatformIndex === targetIndex) return;
+
+    const platforms = this.platforms;
+    const currentGroup = platforms.at(this.draggedPlatformIndex);
+    
+    platforms.removeAt(this.draggedPlatformIndex);
+    platforms.insert(targetIndex, currentGroup);
+
+    // Swap expanded state
+    const expanded = this.expandedPlatforms[this.draggedPlatformIndex];
+    this.expandedPlatforms.splice(this.draggedPlatformIndex, 1);
+    this.expandedPlatforms.splice(targetIndex, 0, expanded);
+
+    this.draggedPlatformIndex = null;
+  }
+
+  onDragEnd() {
+    this.draggedPlatformIndex = null;
+  }
+
   initForm() {
     this.projectForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
       status: ['', Validators.required],
       affiliation: ['', Validators.required],
-      workPeriod: ['', Validators.required],
       logo: [''],
-      scopeAndContribution: ['', Validators.required],
-      serviceTags: [[], [Validators.required, Validators.minLength(1)]],
-      roleTags: [[], [Validators.required, Validators.minLength(1)]],
-      developmentEnvironment: [[], [Validators.required, Validators.minLength(1)]],
-      developmentLanguage: [[], [Validators.required, Validators.minLength(1)]],
+      workPeriod: [''],
+      scopeAndContribution: [''],
       retrospective: [''],
+      serviceTags: [[], [Validators.required, Validators.minLength(1)]],
       platformImages: this.fb.group({
         pc: [''],
         tablet: [''],
@@ -121,9 +190,9 @@ export class ProjectFormModalComponent implements OnInit {
         web: [''],
         admin: ['']
       }),
-      color: [''],
       sortOrder: [0],
-      is_visible: [true]
+      is_visible: [true],
+      platforms: this.fb.array([])
     });
   }
 
@@ -133,15 +202,11 @@ export class ProjectFormModalComponent implements OnInit {
       description: project.description || '',
       status: project.status || '',
       affiliation: project.affiliation || '',
-      color: project.color || '#000000',
-      workPeriod: project.workPeriod || '',
       logo: project.logo || '',
+      workPeriod: project.workPeriod || '',
       scopeAndContribution: project.scopeAndContribution || '',
       retrospective: project.retrospective || '',
       serviceTags: project.serviceTags || [],
-      roleTags: project.roleTags || [],
-      developmentEnvironment: project.developmentEnvironment || [],
-      developmentLanguage: project.developmentLanguage || [],
       platformImages: project.platformImages || { pc: '', tablet: '', mobile: '' },
       sortOrder: (project as any).sortOrder || 0,
       is_visible: project.is_visible ?? true
@@ -154,6 +219,11 @@ export class ProjectFormModalComponent implements OnInit {
           control.setValue(link.url);
         }
       });
+    }
+
+    if (project.platforms && project.platforms.length > 0) {
+      project.platforms.forEach(p => this.addPlatform(p));
+      this.expandedPlatforms = project.platforms.map((_, i) => i === 0);
     }
   }
 
@@ -192,6 +262,7 @@ export class ProjectFormModalComponent implements OnInit {
       this.isSaving = false;
     }
   }
+
   async onFileSelected(event: Event, controlPath: string) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -202,13 +273,16 @@ export class ProjectFormModalComponent implements OnInit {
     const fileExt = file.name.split('.').pop();
     const fileName = `${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
     
-    // 컨트롤 이름에 따라 폴더 분리
     let folder = 'others';
     if (controlPath === 'logo') folder = 'logos';
     else if (controlPath === 'imageUrl') folder = 'covers';
-    else if (controlPath.startsWith('platformImages.')) {
-      const platform = controlPath.split('.')[1]; // pc, tablet, mobile
-      folder = `platforms/${platform}`;
+    else if (controlPath.includes('platform_images.')) {
+      const parts = controlPath.split('.');
+      const platformStr = parts[parts.length - 1]; // pc, tablet, mobile
+      folder = `platforms/${platformStr}`;
+    } else if (controlPath.startsWith('platformImages.')) {
+      const platformStr = controlPath.split('.')[1];
+      folder = `platforms/${platformStr}`;
     }
     
     const filePath = `${folder}/${fileName}`;
@@ -256,6 +330,28 @@ export class ProjectFormModalComponent implements OnInit {
 
   removeArrayValue(controlName: string, value: string) {
     const control = this.projectForm.get(controlName);
+    if (!control) return;
+    
+    const currentArray = control.value || [];
+    control.setValue(currentArray.filter((v: string) => v !== value));
+    control.markAsDirty();
+  }
+
+  togglePlatformArrayValue(platformIndex: number, controlName: string, value: string) {
+    const control = this.platforms.at(platformIndex).get(controlName);
+    if (!control) return;
+    
+    const currentArray = control.value || [];
+    if (currentArray.includes(value)) {
+      control.setValue(currentArray.filter((v: string) => v !== value));
+    } else {
+      control.setValue([...currentArray, value]);
+    }
+    control.markAsDirty();
+  }
+
+  removePlatformArrayValue(platformIndex: number, controlName: string, value: string) {
+    const control = this.platforms.at(platformIndex).get(controlName);
     if (!control) return;
     
     const currentArray = control.value || [];

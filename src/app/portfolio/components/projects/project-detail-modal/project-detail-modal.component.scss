@@ -1,6 +1,4 @@
-:host {
-    display: block;
-}
+@use '../../../../styles/variable' as *;
 
 .detail-container {
     padding: 0;
@@ -41,7 +39,8 @@
 
 .project-image-container {
     width: 100%;
-    margin-bottom: 64px;
+    margin-bottom: 24px;
+    // margin-bottom: 64px;
     
     .image-preview-wrapper {
         position: relative;
@@ -86,6 +85,7 @@
                 position: relative;
                 background-color: transparent;
                 flex-shrink: 0;
+                transition: all 0.3s ease;
 
                 .device-frame {
                     position: absolute;
@@ -104,6 +104,7 @@
                 }
             }
 
+            // Default (3 items)
             .preview-mobile { 
                 width: 16.8%;
                 height: 55%; 
@@ -144,11 +145,98 @@
                     border-radius: 4px;
                 }
             }
+
+            // --- Dynamic Layouts based on presence ---
+
+            // Original Aspect Ratios to maintain:
+            // Mobile: 16.8% x 55%
+            // Tablet: 29.2% x 70%
+            // PC: 56.8% x 85%
+
+            // 1) Mobile ONLY
+            &:has(.preview-mobile):not(:has(.preview-pc)):not(:has(.preview-tablet)) {
+                .preview-mobile {
+                    margin: 0;
+                    width: 24.4%; // 16.8 * (80/55)
+                    height: 80%;
+                    z-index: 1;
+                }
+            }
+
+            // 2) Mobile + Tablet ONLY
+            &:has(.preview-mobile):has(.preview-tablet):not(:has(.preview-pc)) {
+                .preview-mobile {
+                    margin: 0;
+                    margin-right: -8%;
+                    width: 22.9%; // 16.8 * (75/55)
+                    height: 75%;
+                    z-index: 2;
+                }
+                .preview-tablet {
+                    margin: 0;
+                    width: 35.4%; // 29.2 * (85/70)
+                    height: 85%;
+                    z-index: 1;
+                }
+            }
+
+            // 3) PC + Tablet ONLY
+            &:has(.preview-pc):has(.preview-tablet):not(:has(.preview-mobile)) {
+                .preview-pc {
+                    margin: 0;
+                    width: 56.8%;
+                    height: 85%;
+                    z-index: 2;
+                }
+                .preview-tablet {
+                    margin: 0;
+                    margin-left: -10%;
+                    width: 31.3%; // 29.2 * (75/70)
+                    height: 75%;
+                    z-index: 1;
+                }
+            }
+
+            // 4) PC ONLY
+            &:has(.preview-pc):not(:has(.preview-mobile)):not(:has(.preview-tablet)) {
+                .preview-pc {
+                    margin: 0;
+                    width: 60.1%; // 56.8 * (90/85)
+                    height: 90%;
+                }
+            }
+
+            // 5) Tablet ONLY
+            &:has(.preview-tablet):not(:has(.preview-mobile)):not(:has(.preview-pc)) {
+                .preview-tablet {
+                    margin: 0;
+                    width: 35.4%; // 29.2 * (85/70)
+                    height: 85%;
+                }
+            }
+
+            // 6) PC + Mobile ONLY
+            &:has(.preview-pc):has(.preview-mobile):not(:has(.preview-tablet)) {
+                .preview-pc {
+                    margin: 0;
+                    width: 56.8%;
+                    height: 85%;
+                    z-index: 1;
+                }
+                .preview-mobile {
+                    margin: 0;
+                    margin-right: -10%;
+                    width: 19.8%; // 16.8 * (65/55)
+                    height: 65%;
+                    z-index: 2;
+                }
+            }
         }
     }
 }
 
 .details-grid {
+    padding: 0 20px 20px;
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px 32px;
@@ -314,6 +402,10 @@
 }
 
 .retrospective {
+    margin-top: 32px; 
+    padding-top: 24px; 
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+
     h3 {
         font-size: 14px;
         font-weight: 700;
@@ -329,6 +421,69 @@
         color: #e2e8f0;
         line-height: 1.625;
         margin: 0;
-        white-space: pre-line;
+        white-space: pre-wrap;
+    }
+}
+
+.platforms-section {
+    margin-top: 32px; 
+    padding-top: 24px; 
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+
+    > h3 {
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+
+    .platforms-list {
+        display: flex; 
+        flex-direction: column; 
+        gap: 40px; 
+        margin-top: 20px;
+    }
+
+    .platform-detail-block {
+        border: 1px solid #374151; // gray-700
+        border-radius: 12px;
+    }
+
+    .platform-header {
+        padding: 20px;
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        border-radius: 12px;
+        @include hover;
+
+        .header-title {
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+
+            .platform-type {
+                font-size: 18px; 
+                font-weight: 700; 
+                color: #facc15; 
+                margin: 0;
+            }
+
+            .accordion-icon {
+                transition: transform 0.2s; 
+                margin-left: 4px;
+            }
+        }
+
+        .badges {
+            display: flex; 
+            gap: 8px;
+        }
+    }
+
+    .project-image-container {
+        padding: 0 20px;
     }
 }

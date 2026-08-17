@@ -22,6 +22,12 @@ export class ProjectDetailModalComponent {
   editProject = output<Project>();
   deleteProject = output<Project>();
 
+  expandedPlatforms: Record<number, boolean> = { 0: true };
+
+  togglePlatform(index: number) {
+    this.expandedPlatforms[index] = !this.expandedPlatforms[index];
+  }
+
   getTagColor(tag: string): string {
     const lowerTag = tag.toLowerCase();
     if (lowerTag.includes('app')) {

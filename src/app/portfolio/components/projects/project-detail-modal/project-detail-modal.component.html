@@ -86,10 +86,9 @@
           }
         </div>
       </div>
-
       <div class="detail-item">
         <h3>주요 업무</h3>
-        <p class="content-text">{{ project().scopeAndContribution }}</p>
+        <p class="content-text" style="white-space: pre-wrap;">{{ project().scopeAndContribution }}</p>
       </div>
 
       <div class="detail-item">
@@ -120,10 +119,94 @@
       </div>
       }
 
+      @if (project().retrospective) {
       <div class="full-width retrospective">
         <h3>프로젝트 회고</h3>
         <p>{{ project().retrospective }}</p>
       </div>
+      }
+
+      <!-- Platforms Section -->
+      @if (project().platforms && project().platforms!.length > 0) {
+      <div class="full-width platforms-section">
+        <h3>플랫폼 서비스</h3>
+        
+        <div class="platforms-list">
+          @for (platform of project().platforms; track $index) {
+          <div class="platform-detail-block">
+            <div class="platform-header" (click)="togglePlatform($index)">
+              <div class="header-title">
+                <h4 class="platform-type">{{ platform.type }}</h4>
+                <svg class="accordion-icon" [style.transform]="expandedPlatforms[$index] ? 'rotate(180deg)' : 'rotate(0deg)'" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+              <div class="badges">
+                @if (platform.is_visible === false) {
+                  <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="md"></c-badge>
+                }
+                <span class="status-badge" [ngClass]="getStatusClass(platform.status || '운영중')">{{ platform.status || '운영중' }}</span>
+              </div>
+            </div>
+
+            @if (expandedPlatforms[$index]) {
+
+            <!-- Platform Images -->
+            <div class="project-image-container">
+              <div class="image-preview-wrapper has-image">
+                <ng-container *ngIf="platform.platform_images?.pc || platform.platform_images?.tablet || platform.platform_images?.mobile; else fallbackPlatformImage">
+                  <div class="thumbnail-preview-layout">
+                    <div class="preview-slot preview-mobile" *ngIf="platform.platform_images?.mobile">
+                      <img class="device-frame" src="assets/portfolio/device-mobile.png" alt="Mobile Frame">
+                      <img class="user-screen" [src]="platform.platform_images!.mobile" alt="Mobile Image">
+                    </div>
+                    <div class="preview-slot preview-pc" *ngIf="platform.platform_images?.pc">
+                      <img class="device-frame" src="assets/portfolio/device-pc.png" alt="PC Frame">
+                      <img class="user-screen" [src]="platform.platform_images!.pc" alt="PC Image">
+                    </div>
+                    <div class="preview-slot preview-tablet" *ngIf="platform.platform_images?.tablet">
+                      <img class="device-frame" src="assets/portfolio/device-tablet.png" alt="Tablet Frame">
+                      <img class="user-screen" [src]="platform.platform_images!.tablet" alt="Tablet Image">
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #fallbackPlatformImage>
+                  <div class="empty-thumbnail">등록된 디바이스 이미지가 없습니다.</div>
+                </ng-template>
+              </div>
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-item">
+                <h3>담당 파트</h3>
+                <div class="tags">
+                  @for (tag of platform.role_tags; track $index) {
+                  <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="md"></c-badge>
+                  }
+                </div>
+              </div>
+              <div class="detail-item">
+                <h3>작업 환경</h3>
+                <div class="tags">
+                  @for (env of platform.development_environment; track $index) {
+                  <c-category-badge [category]="env" size="md"></c-category-badge>
+                  }
+                </div>
+              </div>
+              <div class="detail-item">
+                <h3>개발 언어</h3>
+                <div class="tags">
+                  @for (lang of platform.development_language; track $index) {
+                  <c-category-badge [category]="lang" size="md"></c-category-badge>
+                  }
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      }
+
     </div>
   </div>
 </app-side-panel>

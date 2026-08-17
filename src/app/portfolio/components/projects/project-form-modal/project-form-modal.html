@@ -16,7 +16,7 @@
             <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.mobile')?.value" (click)="removeImage('platformImages.mobile', $event)"></button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.mobile']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.mobile')" [disabled]="isUploading()['platformImages.mobile']">
-              <span *ngIf="!isUploading()['platformImages.mobile']" style="text-align: center;">+<br>375 x 667(px)</span>
+              <span *ngIf="!isUploading()['platformImages.mobile']" class="text-center">+<br>375 x 667(px)</span>
               <span *ngIf="isUploading()['platformImages.mobile']">...</span>
             </label>
             <input type="hidden" formControlName="mobile">
@@ -32,7 +32,7 @@
             <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.pc')?.value" (click)="removeImage('platformImages.pc', $event)"></button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.pc']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.pc')" [disabled]="isUploading()['platformImages.pc']">
-              <span *ngIf="!isUploading()['platformImages.pc']" style="text-align: center;">+<br>1440 x 895(px)</span>
+              <span *ngIf="!isUploading()['platformImages.pc']" class="text-center">+<br>1440 x 895(px)</span>
               <span *ngIf="isUploading()['platformImages.pc']">...</span>
             </label>
             <input type="hidden" formControlName="pc">
@@ -48,7 +48,7 @@
             <button type="button" class="delete-img-btn" *ngIf="projectForm.get('platformImages.tablet')?.value" (click)="removeImage('platformImages.tablet', $event)"></button>
             <label class="slot-upload-overlay" [class.uploading]="isUploading()['platformImages.tablet']">
               <input type="file" accept="image/*" (change)="onFileSelected($event, 'platformImages.tablet')" [disabled]="isUploading()['platformImages.tablet']">
-              <span *ngIf="!isUploading()['platformImages.tablet']" style="text-align: center;">+<br>584 x 895(px)</span>
+              <span *ngIf="!isUploading()['platformImages.tablet']" class="text-center">+<br>584 x 895(px)</span>
               <span *ngIf="isUploading()['platformImages.tablet']">...</span>
             </label>
             <input type="hidden" formControlName="tablet">
@@ -120,66 +120,14 @@
       </div>
 
       <div class="detail-item form-group">
-        <h3>담당 파트 <span class="required-asterisk">*</span></h3>
-        <c-dropdown 
-          width="100%"
-          variant="multi"
-          [options]="roleOptions" 
-          [selectedValues]="projectForm.get('roleTags')?.value || []"
-          (optionClick)="toggleArrayValue('roleTags', $event.value)"
-          (removeValue)="removeArrayValue('roleTags', $event)">
-        </c-dropdown>
-      </div>
-
-
-
-      <div class="detail-item form-group">
-        <h3>개발 기간 <span class="required-asterisk">*</span></h3>
+        <h3>작업 기간</h3>
         <input type="text" formControlName="workPeriod" placeholder="YYYY.MM ~ YYYY.MM" />
       </div>
 
-      <div class="detail-item form-group">
-        <h3>작업 환경 <span class="required-asterisk">*</span></h3>
-        <c-dropdown 
-          width="100%"
-          variant="multi"
-          [options]="envOptions" 
-          [selectedValues]="projectForm.get('developmentEnvironment')?.value || []"
-          (optionClick)="toggleArrayValue('developmentEnvironment', $event.value)"
-          (removeValue)="removeArrayValue('developmentEnvironment', $event)">
-        </c-dropdown>
+      <div class="detail-item form-group full-width">
+        <h3>주요 업무</h3>
+        <textarea formControlName="scopeAndContribution" placeholder="프로젝트의 주요 업무를 작성해주세요."></textarea>
       </div>
-
-      <div class="detail-item form-group">
-        <h3>주요 업무<span class="required-asterisk">*</span></h3>
-        <textarea formControlName="scopeAndContribution" placeholder="주요 업무를 작성해주세요."></textarea>
-      </div>
-
-      <div class="detail-item form-group">
-        <h3>개발 언어 <span class="required-asterisk">*</span></h3>
-        <c-dropdown 
-          width="100%"
-          variant="multi"
-          [options]="langOptions" 
-          [selectedValues]="projectForm.get('developmentLanguage')?.value || []"
-          (optionClick)="toggleArrayValue('developmentLanguage', $event.value)"
-          (removeValue)="removeArrayValue('developmentLanguage', $event)">
-        </c-dropdown>
-      </div>
-      
-      <div class="detail-item form-group">
-        <h3>정렬 순서 (높을수록 상단)</h3>
-        <input type="number" formControlName="sortOrder" placeholder="0" />
-      </div>
-
-      <div class="detail-item form-group">
-        <h3>포트폴리오 카드 색상 (Hex)</h3>
-        <input type="text" formControlName="color" placeholder="#000000" />
-      </div>
-
-
-
-
 
       <!-- Links -->
       <div class="full-width links-section form-fieldset">
@@ -214,6 +162,180 @@
         <h3>프로젝트 회고</h3>
         <textarea formControlName="retrospective" rows="4" placeholder="프로젝트를 진행하며 느낀 점이나 회고를 적어주세요."></textarea>
       </div>
+
+
+      <div class="detail-item form-group">
+        <h3>정렬 순서 (높을수록 상단)</h3>
+        <input type="number" formControlName="sortOrder" placeholder="0" />
+      </div>
+
+      <!-- PLATFORM SERVICES SECTION -->
+      <section class="full-width platforms-section">
+        <div class="section-divider">
+          <span>플랫폼 서비스 관리</span>
+          <hr/>
+        </div>
+        
+        <div formArrayName="platforms">
+          <div *ngFor="let pCtrl of platforms.controls; let i = index" [formGroupName]="i" 
+               class="platform-block"
+               draggable="true"
+               (dragstart)="onDragStart(i)"
+               (dragover)="onDragOver($event, i)"
+               (drop)="onDrop($event, i)"
+               (dragend)="onDragEnd()"
+               [class.dragging]="draggedPlatformIndex === i"
+               [style.opacity]="draggedPlatformIndex === i ? '0.5' : '1'">
+            <div class="platform-header" (click)="togglePlatform(i)">
+              <div class="header-title-group">
+                <span class="drag-handle" title="드래그하여 순서 변경" (click)="$event.stopPropagation()" draggable="true" (dragstart)="onDragStart(i)">☰</span>
+                <h4>{{ pCtrl.get('type')?.value === '타입 선택 *' || !pCtrl.get('type')?.value ? ('새 플랫폼') : pCtrl.get('type')?.value }}</h4>
+                <svg class="accordion-icon" [style.transform]="expandedPlatforms[i] ? 'rotate(180deg)' : 'rotate(0deg)'" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+              <button type="button" class="btn-remove" (click)="removePlatform(i); $event.stopPropagation()">삭제</button>
+            </div>
+
+            <ng-container *ngIf="expandedPlatforms[i]">
+            <!-- Platform Images -->
+            <div class="project-image-container form-group" formGroupName="platform_images">
+              <h3 class="section-title">기기 스크린샷</h3>
+              <div class="image-upload-wrapper has-image interactive-thumbnail">
+                <div class="thumbnail-preview-layout">
+                  <!-- Mobile Slot -->
+                  <div class="preview-slot preview-mobile" [class.has-img]="pCtrl.get('platform_images.mobile')?.value">
+                    <img class="device-frame" src="assets/portfolio/device-mobile.png" alt="Mobile Frame">
+                    <img class="user-screen" *ngIf="pCtrl.get('platform_images.mobile')?.value" [src]="pCtrl.get('platform_images.mobile')?.value" alt="Mobile Image">
+                    <div class="slot-placeholder" *ngIf="!pCtrl.get('platform_images.mobile')?.value">
+                      <span>Mobile</span>
+                    </div>
+                    <button type="button" class="delete-img-btn" *ngIf="pCtrl.get('platform_images.mobile')?.value" (click)="removeImage('platforms.' + i + '.platform_images.mobile', $event)"></button>
+                    <label class="slot-upload-overlay" [class.uploading]="isUploading()['platforms.' + i + '.platform_images.mobile']">
+                      <input type="file" accept="image/*" (change)="onFileSelected($event, 'platforms.' + i + '.platform_images.mobile')" [disabled]="isUploading()['platforms.' + i + '.platform_images.mobile']">
+                      <span *ngIf="!isUploading()['platforms.' + i + '.platform_images.mobile']" class="text-center">+</span>
+                      <span *ngIf="isUploading()['platforms.' + i + '.platform_images.mobile']">...</span>
+                    </label>
+                    <input type="hidden" formControlName="mobile">
+                  </div>
+                  
+                  <!-- PC Slot -->
+                  <div class="preview-slot preview-pc" [class.has-img]="pCtrl.get('platform_images.pc')?.value">
+                    <img class="device-frame" src="assets/portfolio/device-pc.png" alt="PC Frame">
+                    <img class="user-screen" *ngIf="pCtrl.get('platform_images.pc')?.value" [src]="pCtrl.get('platform_images.pc')?.value" alt="PC Image">
+                    <div class="slot-placeholder" *ngIf="!pCtrl.get('platform_images.pc')?.value">
+                      <span>PC</span>
+                    </div>
+                    <button type="button" class="delete-img-btn" *ngIf="pCtrl.get('platform_images.pc')?.value" (click)="removeImage('platforms.' + i + '.platform_images.pc', $event)"></button>
+                    <label class="slot-upload-overlay" [class.uploading]="isUploading()['platforms.' + i + '.platform_images.pc']">
+                      <input type="file" accept="image/*" (change)="onFileSelected($event, 'platforms.' + i + '.platform_images.pc')" [disabled]="isUploading()['platforms.' + i + '.platform_images.pc']">
+                      <span *ngIf="!isUploading()['platforms.' + i + '.platform_images.pc']" class="text-center">+</span>
+                      <span *ngIf="isUploading()['platforms.' + i + '.platform_images.pc']">...</span>
+                    </label>
+                    <input type="hidden" formControlName="pc">
+                  </div>
+
+                  <!-- Tablet Slot -->
+                  <div class="preview-slot preview-tablet" [class.has-img]="pCtrl.get('platform_images.tablet')?.value">
+                    <img class="device-frame" src="assets/portfolio/device-tablet.png" alt="Tablet Frame">
+                    <img class="user-screen" *ngIf="pCtrl.get('platform_images.tablet')?.value" [src]="pCtrl.get('platform_images.tablet')?.value" alt="Tablet Image">
+                    <div class="slot-placeholder" *ngIf="!pCtrl.get('platform_images.tablet')?.value">
+                      <span>Tablet</span>
+                    </div>
+                    <button type="button" class="delete-img-btn" *ngIf="pCtrl.get('platform_images.tablet')?.value" (click)="removeImage('platforms.' + i + '.platform_images.tablet', $event)"></button>
+                    <label class="slot-upload-overlay" [class.uploading]="isUploading()['platforms.' + i + '.platform_images.tablet']">
+                      <input type="file" accept="image/*" (change)="onFileSelected($event, 'platforms.' + i + '.platform_images.tablet')" [disabled]="isUploading()['platforms.' + i + '.platform_images.tablet']">
+                      <span *ngIf="!isUploading()['platforms.' + i + '.platform_images.tablet']" class="text-center">+</span>
+                      <span *ngIf="isUploading()['platforms.' + i + '.platform_images.tablet']">...</span>
+                    </label>
+                    <input type="hidden" formControlName="tablet">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="details-grid">
+              <!-- Platform Type & Status -->
+              <div class="full-width project-header form-group">
+                <div class="affiliation-status-row">
+                  <c-dropdown 
+                    width="150px"
+                    [options]="serviceOptions" 
+                    [value]="pCtrl.get('type')?.value || '타입 선택 *'"
+                    (valueChange)="pCtrl.get('type')?.setValue($event)">
+                  </c-dropdown>
+                  
+                  <div class="right">
+                    <c-dropdown 
+                      width="150px"
+                      [options]="statusOptions" 
+                      [value]="pCtrl.get('status')?.value || '상태 선택 *'"
+                      (valueChange)="pCtrl.get('status')?.setValue($event)">
+                    </c-dropdown>
+                    
+                    <c-dropdown 
+                      width="100px"
+                      [options]="visibilityOptions" 
+                      [value]="pCtrl.get('is_visible')?.value"
+                      (valueChange)="pCtrl.get('is_visible')?.setValue($event)"
+                      align="right">
+                    </c-dropdown>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Roles -->
+              <div class="detail-item form-group">
+                <h3>담당 파트</h3>
+                <c-dropdown 
+                  width="100%"
+                  variant="multi"
+                  [options]="roleOptions" 
+                  [selectedValues]="pCtrl.get('role_tags')?.value || []"
+                  (optionClick)="togglePlatformArrayValue(i, 'role_tags', $event.value)"
+                  (removeValue)="removePlatformArrayValue(i, 'role_tags', $event)">
+                </c-dropdown>
+              </div>
+
+              <!-- Env -->
+              <div class="detail-item form-group">
+                <h3>작업 환경</h3>
+                <c-dropdown 
+                  width="100%"
+                  variant="multi"
+                  [options]="envOptions" 
+                  [selectedValues]="pCtrl.get('development_environment')?.value || []"
+                  (optionClick)="togglePlatformArrayValue(i, 'development_environment', $event.value)"
+                  (removeValue)="removePlatformArrayValue(i, 'development_environment', $event)">
+                </c-dropdown>
+              </div>
+
+              <!-- Lang -->
+              <div class="detail-item form-group">
+                <h3>개발 언어</h3>
+                <c-dropdown 
+                  width="100%"
+                  variant="multi"
+                  [options]="langOptions" 
+                  [selectedValues]="pCtrl.get('development_language')?.value || []"
+                  (optionClick)="togglePlatformArrayValue(i, 'development_language', $event.value)"
+                  (removeValue)="removePlatformArrayValue(i, 'development_language', $event)">
+                </c-dropdown>
+              </div>
+              
+              <!-- Sort Order -->
+              <div class="detail-item form-group">
+                <h3>정렬 순서</h3>
+                <input type="number" formControlName="sort_order" placeholder="0" />
+              </div>
+
+            </div>
+            </ng-container>
+          </div>
+        </div>
+        
+        <div class="add-platform-wrapper">
+          <button type="button" class="btn-add-platform" (click)="addPlatform()">+ 플랫폼 서비스 추가</button>
+        </div>
+      </section>
       
     </div>
 
