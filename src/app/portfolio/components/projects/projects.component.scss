@@ -1,3 +1,5 @@
+@use '../../../styles/portfolio-variable' as *;
+
 :host {
     display: block;
     position: relative;
@@ -28,16 +30,16 @@
     align-items: center;
     justify-content: center;
     padding: 64px 0;
-    color: #9ca3af; // gray-400
+    color: $portfolio-text-muted;
     font-size: 16px;
     gap: 16px;
 
     .spinner {
         width: 32px;
         height: 32px;
-        border: 3px solid rgba(255, 255, 255, 0.1);
+        border: 3px solid $portfolio-border-light-alpha;
         border-radius: 50%;
-        border-top-color: #6366f1; // indigo-500
+        border-top-color: $portfolio-spinner-color;
         animation: spin 1s ease-in-out infinite;
     }
 
@@ -65,6 +67,9 @@
     opacity: 0;
     pointer-events: none;
     z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &.active {
         opacity: 1;
@@ -74,9 +79,9 @@
 
     .card-content {
         padding: 24px;
-        width: 100%; height: 100%;
+        width: 100%; height: auto;
         display: flex; flex-direction: column; gap: 32px;
-        align-items: center; justify-content: center;
+        align-items: stretch; justify-content: center;
         border-radius: 16px;
 
         @media (min-width: 768px) {
@@ -86,17 +91,30 @@
 
     .image-wrapper {
         width: 100%;
-        height: 256px;
+        min-height: 200px;
+        max-height: 256px;
+        height: auto;
+        aspect-ratio: 16 / 9;
         position: relative;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        background-color: $portfolio-bg-overlay;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: $portfolio-shadow-faint;
 
         @media (min-width: 768px) {
             width: 50%;
-            height: 100%;
+            height: auto;
+            max-height: none;
+            aspect-ratio: unset;
+
+            .thumbnail-preview-layout {
+                max-width: 100%;
+            }
         }
 
         > img {
@@ -107,20 +125,37 @@
             /* rounded-xl */
         }
 
+        .absolute-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .fallback-preview-layout {
+            position: relative;
+            width: 100%;
+            height: 100%;
+
+            .fallback-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 12px;
+            }
+        }
+
         .thumbnail-preview-layout {
             position: relative;
             padding: 0;
             width: 100%;
             height: auto;
-            max-height: 100%;
-            max-width: 100%;
+            max-width: 455px; // 256px * 16/9 = 455.11px. Limits height to 256px while preserving 16:9
             aspect-ratio: 16 / 9;
             margin: 0 auto;
             border-radius: 12px;
-            background-color: rgba(209, 213, 219, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
             display: flex;
             justify-content: center;
             align-items: flex-end;
@@ -203,7 +238,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #6b7280;
+            color: $portfolio-text-secondary;
             font-size: 14px;
         }
     }
@@ -247,7 +282,7 @@
         .logo-title-group {
             display: flex;
             flex-direction: row;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             width: 100%;
         }
@@ -269,12 +304,12 @@
 
         .project-logo {
             object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid $portfolio-border-light-alpha;
         }
 
         .project-logo-fallback {
-            background-color: #374151; // gray-700
-            border: 1px solid #4b5563; // gray-600
+            background-color: $portfolio-bg-darker;
+            border: 1px solid $portfolio-border-darker;
             padding: 8px;
             object-fit: contain;
         }
@@ -282,7 +317,7 @@
         .subtitle {
             font-size: 18px;
             font-weight: 600;
-            color: #9ca3af; /* gray-400 */
+            color: $portfolio-text-muted;
             margin: 0;
         }
 
@@ -298,49 +333,47 @@
         }
 
         p {
-            color: #d1d5db;
+            color: $portfolio-text-light;
             margin: 0;
         }
 
-        .tag-group {
+        .tags-container {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            align-items: center;
+            gap: 12px;
+            width: 100%;
 
-            @media (min-width: 768px) {
+            .tag-group {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
                 align-items: flex-start;
             }
-        }
 
-        .tags {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-
-            @media (min-width: 768px) {
+            .tags {
+                display: flex;
+                gap: 8px;
                 justify-content: flex-start;
+
+                .tag {
+                    background-color: $portfolio-bg-darker;
+                    color: $portfolio-text-accent;
+                    font-size: 14px;
+                    /* text-sm */
+                    font-weight: 600;
+                    padding: 4px 16px;
+                    border-radius: 9999px;
+                    /* rounded-full */
+                }
             }
 
-            .tag {
-                background-color: #374151;
-                /* bg-gray-700 */
-                color: #facc15;
-                /* text-yellow-400 */
-                font-size: 14px;
-                /* text-sm */
+            .tag-label {
+                font-size: 13px;
+                color: $portfolio-text-light;
                 font-weight: 600;
-                padding: 4px 16px;
-                border-radius: 9999px;
-                /* rounded-full */
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
             }
-        }
-
-        .tag-label {
-            font-size: 13px;
-            color: #9ca3af;
-            font-weight: 600;
-            margin-bottom: 2px;
         }
 
         .view-detail-btn {
@@ -357,7 +390,7 @@
 
             button {
                 padding: 10px 16px;
-                &:first-child { flex: 5; border-color: #fff; color: #fff; }
+                &:first-child { flex: 5; border-color: white; color: #fff; }
                 &:last-child { flex: 1; }
             }
         }
@@ -377,20 +410,20 @@
         width: 12px; height: 12px;
         min-height: auto;
         border-radius: 4px;
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: $portfolio-border-light;
         border: none;
         cursor: pointer;
         padding: 0;
         transition: background-color 0.4s ease, transform 0.2s ease;
 
         &:hover {
-            background-color: rgba(255, 255, 255, 0.5);
+            background-color: $portfolio-bg-light-50;
             transform: scaleY(1.2);
         }
 
         &.active {
-            background-color: #facc15;
-            box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+            background-color: $portfolio-text-accent;
+            box-shadow: $portfolio-accent-shadow;
         }
         
         &.current {
@@ -416,7 +449,7 @@
         justify-content: center;
         font-size: 14px;
         font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: $portfolio-shadow-dark;
     }
 
     @media (max-width: 767px) {

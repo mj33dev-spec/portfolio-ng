@@ -1,4 +1,5 @@
 @use '../../../../styles/variable' as *;
+@use '../../../../styles/portfolio-variable' as *;
 @use '../../../../styles/buttons' as *;
 
 
@@ -36,7 +37,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #27272a;
+            background-color: $portfolio-input-bg;
             
             display: flex;
             justify-content: center;
@@ -71,7 +72,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: rgba(255, 255, 255, 0.3);
+                    color: $portfolio-border-medium;
                     font-size: 1.5rem;
                     font-weight: bold;
                     pointer-events: none;
@@ -106,7 +107,7 @@
                 .slot-upload-overlay {
                     position: absolute;
                     z-index: 4;
-                    background-color: rgba(0, 0, 0, 0.6);
+                    background-color: $portfolio-overlay-dark;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -179,7 +180,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #6b7280;
+            color: $portfolio-text-secondary;
             font-size: 14px;
             pointer-events: none;
         }
@@ -222,7 +223,7 @@
         @include form-input-theme();
         font-size: 15px;
         font-weight: 600;
-        color: #9ca3af;
+        color: $portfolio-text-muted;
     }
 
     .title-row {
@@ -236,8 +237,8 @@
             height: 64px;
             border-radius: 12px;
             overflow: hidden;
-            background-color: #27272a;
-            border: 1px solid #3f3f46;
+            background-color: $portfolio-input-bg;
+            border: 1px solid $portfolio-input-border;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -257,7 +258,7 @@
             .logo-upload-btn {
                 position: absolute;
                 inset: 0;
-                background-color: rgba(0, 0, 0, 0.5);
+                background-color: $portfolio-overlay-medium;
                 color: white;
                 display: flex;
                 align-items: center;
@@ -283,7 +284,7 @@
                 display: flex; align-items: center; justify-content: center;
                 width: 20px; height: 20px; min-height: unset;
                 border-radius: 6px;
-                background-color: rgba(0, 0, 0, 0.6);
+                background-color: $portfolio-overlay-dark;
                 z-index: 10;
                 cursor: pointer;
                 border: none;
@@ -324,7 +325,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #6b7280;
+        color: $portfolio-text-secondary;
         margin-bottom: 8px;
     }
 
@@ -334,7 +335,7 @@
 }
 
 .required-asterisk {
-    color: #ef4444; /* text-red-500 */
+    color: $portfolio-text-danger; /* text-red-500 */
     margin-left: 2px;
 }
 
@@ -346,7 +347,7 @@
     label {
         font-size: 14px;
         font-weight: 500;
-        color: #d1d5db;
+        color: $portfolio-text-light;
     }
 }
 
@@ -376,7 +377,7 @@
         align-items: center;
         justify-content: center;
         padding: 0 16px;
-        background-color: #3f3f46;
+        background-color: $portfolio-input-border;
         color: #fff;
         border-radius: 8px;
         cursor: pointer;
@@ -384,10 +385,10 @@
         font-weight: 500;
         white-space: nowrap;
         transition: background-color 0.2s;
-        border: 1px solid #3f3f46;
+        border: 1px solid $portfolio-input-border;
 
         &:hover {
-            background-color: #52525b;
+            background-color: $portfolio-input-hover;
         }
 
         input[type="file"] {
@@ -412,7 +413,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #6b7280;
+        color: $portfolio-text-secondary;
         margin-bottom: 16px;
     }
 }
@@ -445,10 +446,10 @@
         display: flex;
         align-items: center;
         padding: 0 16px;
-        background-color: #27272a;
-        border: 1px solid #3f3f46;
+        background-color: $portfolio-input-bg;
+        border: 1px solid $portfolio-input-border;
         border-radius: 8px;
-        color: #d1d5db;
+        color: $portfolio-text-light;
         font-size: 14px;
         font-weight: 500;
     }
@@ -466,7 +467,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: #6b7280;
+        color: $portfolio-text-secondary;
         margin-bottom: 8px;
     }
     
@@ -495,11 +496,11 @@
 }
 
 .btn-primary {
-    background-color: #facc15;
-    color: #18181b;
+    background-color: $portfolio-text-accent;
+    color: $portfolio-text-dark;
 
     &:hover:not(:disabled) {
-        background-color: #eab308;
+        background-color: $portfolio-accent-hover;
     }
 }
 
@@ -510,25 +511,25 @@
     font-size: 14px;
     cursor: not-allowed;
     border: none;
-    background-color: #3f3f46;
-    color: #a1a1aa;
+    background-color: $portfolio-input-border;
+    color: $portfolio-text-placeholder;
 }
 
 .btn-secondary {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: $portfolio-btn-ghost-bg;
     color: white;
 
     &:hover:not(:disabled) {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: $portfolio-btn-ghost-hover;
     }
 }
 
 .btn-danger {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background-color: $portfolio-btn-danger-bg;
+    color: $portfolio-text-danger;
 
     &:hover:not(:disabled) {
-        background-color: rgba(239, 68, 68, 0.2);
+        background-color: $portfolio-btn-danger-hover;
     }
 }
 
@@ -559,36 +560,35 @@
         span {
             font-size: 16px;
             font-weight: 700;
-            color: #d1d5db;
+            color: $portfolio-text-light;
             white-space: nowrap;
         }
         
         hr {
             flex: 1;
             border: none;
-            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+            border-top: $portfolio-border-dashed;
         }
     }
     
     .platform-block {
-        background-color: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid $portfolio-border-dark; 
         border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 24px;
+        margin-bottom: 40px;
         transition: all 0.2s;
         
         &.dragging {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-            border-color: rgba(250, 204, 21, 0.5);
+            box-shadow: 0 10px 15px -3px $portfolio-overlay-medium;
+            border-color: $portfolio-drag-border;
         }
 
         .platform-header {
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            cursor: pointer;
+            border-radius: 12px;
+            @include hover;
             
             .header-title-group {
                 display: flex;
@@ -598,45 +598,64 @@
 
             .drag-handle {
                 cursor: grab;
-                color: #9ca3af;
+                color: $portfolio-text-muted;
                 font-size: 18px;
                 margin-right: 4px;
             }
 
             .accordion-icon {
                 transition: transform 0.2s;
+                margin-left: 4px;
             }
 
             h4 {
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: 700;
-                color: #facc15;
+                color: $portfolio-text-accent;
                 margin: 0;
             }
             
             .btn-remove {
-                background: none;
-                border: none;
-                color: #ef4444;
-                font-size: 14px;
+                display: none; // remove old if left over
+            }
+        }
+
+        .platform-footer {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid $portfolio-border-dark;
+            
+            .btn-remove-platform {
+                background: transparent;
+                border: 1px solid $portfolio-border-medium;
+                border-radius: 6px;
+                color: $portfolio-text-danger;
+                font-size: 13px;
                 font-weight: 600;
                 cursor: pointer;
-                padding: 4px 8px;
+                padding: 6px 12px;
+                transition: all 0.2s;
                 
                 &:hover {
-                    text-decoration: underline;
+                    background-color: rgba(239, 68, 68, 0.1);
+                    border-color: $portfolio-text-danger;
                 }
             }
         }
 
         .project-image-container {
-            margin-top: 20px;
+            padding: 0 20px;
         }
 
         .section-title {
             margin-bottom: 12px;
             font-size: 14px;
             font-weight: 600;
+        }
+
+        .details-grid {
+            padding: 0 20px 20px;
         }
     }
     
@@ -648,8 +667,8 @@
         
         .btn-add-platform {
             background-color: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-            color: #d1d5db;
+            border: 1px dashed $portfolio-border-medium;
+            color: $portfolio-text-light;
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 14px;
@@ -659,9 +678,9 @@
             width: 100%;
             
             &:hover {
-                border-color: #facc15;
-                color: #facc15;
-                background-color: rgba(250, 204, 21, 0.05);
+                border-color: $portfolio-text-accent;
+                color: $portfolio-text-accent;
+                background-color: $portfolio-drag-bg;
             }
         }
     }
@@ -673,7 +692,7 @@
     gap: 12px;
     margin-top: 32px;
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: $portfolio-border-solid;
     width: 100%;
     > button {
         flex: 1; max-width: 120px

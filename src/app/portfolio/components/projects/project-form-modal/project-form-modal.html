@@ -189,10 +189,13 @@
             <div class="platform-header" (click)="togglePlatform(i)">
               <div class="header-title-group">
                 <span class="drag-handle" title="드래그하여 순서 변경" (click)="$event.stopPropagation()" draggable="true" (dragstart)="onDragStart(i)">☰</span>
-                <h4>{{ pCtrl.get('type')?.value === '타입 선택 *' || !pCtrl.get('type')?.value ? ('새 플랫폼') : pCtrl.get('type')?.value }}</h4>
-                <svg class="accordion-icon" [style.transform]="expandedPlatforms[i] ? 'rotate(180deg)' : 'rotate(0deg)'" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                <h4 class="platform-type" [style.color]="BadgeConfig.get(pCtrl.get('type')?.value || '').customColor">
+                  {{ pCtrl.get('type')?.value === '타입 선택 *' || !pCtrl.get('type')?.value ? ('새 플랫폼') : pCtrl.get('type')?.value }}
+                </h4>
               </div>
-              <button type="button" class="btn-remove" (click)="removePlatform(i); $event.stopPropagation()">삭제</button>
+              <div class="header-right">
+                <svg class="accordion-icon" [style.transform]="expandedPlatforms[i] ? 'rotate(180deg)' : 'rotate(0deg)'" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
             </div>
 
             <ng-container *ngIf="expandedPlatforms[i]">
@@ -327,6 +330,10 @@
                 <input type="number" formControlName="sort_order" placeholder="0" />
               </div>
 
+            </div>
+
+            <div class="platform-footer">
+              <button type="button" class="btn-remove-platform" (click)="removePlatform(i)">- 플랫폼 삭제</button>
             </div>
             </ng-container>
           </div>

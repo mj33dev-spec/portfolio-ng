@@ -1,0 +1,59 @@
+// 포트폴리오 전용 변수 (Colors, etc.)
+
+// Text Colors
+$portfolio-text-primary: #e2e8f0;
+$portfolio-text-secondary: #6b7280;
+$portfolio-text-muted: #9ca3af;
+$portfolio-text-danger: #ef4444;
+$portfolio-text-accent: #facc15;
+$portfolio-text-light: #d1d5db;
+$portfolio-text-dark: #18181b;
+$portfolio-text-placeholder: #a1a1aa;
+
+// Status Colors
+$portfolio-status-active: #10b981;
+$portfolio-status-active-bg: rgba(16, 185, 129, 0.1);
+$portfolio-status-inactive: #ef4444;
+$portfolio-status-inactive-bg: rgba(239, 68, 68, 0.1);
+$portfolio-status-pending: #f59e0b;
+$portfolio-status-pending-bg: rgba(245, 158, 11, 0.1);
+
+// Border Colors
+$portfolio-border-light: rgba(255, 255, 255, 0.2);
+$portfolio-border-light-alpha: rgba(255, 255, 255, 0.1);
+$portfolio-border-medium: rgba(255, 255, 255, 0.3);
+$portfolio-border-faint: rgba(255, 255, 255, 0.05);
+$portfolio-border-dashed: 1px dashed $portfolio-border-light;
+$portfolio-border-solid: 1px solid rgba(255, 255, 255, 0.1);
+$portfolio-border-dark: #374151;
+$portfolio-border-darker: #4b5563;
+
+// Input Colors
+$portfolio-input-bg: #27272a;
+$portfolio-input-border: #3f3f46;
+$portfolio-input-hover: #52525b;
+
+// Background Colors
+$portfolio-bg-dark: #1f2937;
+$portfolio-bg-darker: #374151;
+$portfolio-bg-overlay: rgba(209, 213, 219, 0.1);
+$portfolio-bg-hover: rgba(255, 255, 255, 0.02);
+$portfolio-bg-light-50: rgba(255, 255, 255, 0.5);
+$portfolio-overlay-dark: rgba(0, 0, 0, 0.6);
+$portfolio-overlay-medium: rgba(0, 0, 0, 0.5);
+
+// Accent Actions
+$portfolio-accent-hover: #eab308;
+$portfolio-btn-ghost-bg: rgba(255, 255, 255, 0.1);
+$portfolio-btn-ghost-hover: rgba(255, 255, 255, 0.15);
+$portfolio-btn-danger-bg: rgba(239, 68, 68, 0.1);
+$portfolio-btn-danger-hover: rgba(239, 68, 68, 0.2);
+$portfolio-spinner-color: #6366f1;
+
+// Shadows & Dragging
+$portfolio-shadow-faint: inset 0 0 20px rgba(255, 255, 255, 0.05);
+$portfolio-shadow-dragging: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+$portfolio-shadow-dark: 0 4px 12px rgba(0, 0, 0, 0.3);
+$portfolio-accent-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+$portfolio-drag-border: rgba(250, 204, 21, 0.5);
+$portfolio-drag-bg: rgba(250, 204, 21, 0.05);

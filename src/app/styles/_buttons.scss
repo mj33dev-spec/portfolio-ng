@@ -28,13 +28,13 @@
 }
 
 /* 버튼 효과 */
-@mixin hover($color) {
-  transition: opacity 0.2s ease-in-out;
-  &:hover {
-    background-color: $color;
-    opacity: 0.82;
-  }
-}
+// @mixin hover($color) {
+//   transition: opacity 0.2s ease-in-out;
+//   &:hover {
+//     background-color: $color;
+//     opacity: 0.82;
+//   }
+// }
 
 /** ## 버튼 테마 적용 
  * @param $type : 버튼 타입

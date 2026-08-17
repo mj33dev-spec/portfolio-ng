@@ -11,72 +11,80 @@
   height: 100%;
   background-color: #000;
   color: white;
-  padding: 32px 24px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   border-radius: inherit;
-}
 
-.panel-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-  flex-shrink: 0;
-
-  .back-btn {
+  .panel-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    color: #cbd5e1;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 8px 0;
-    transition: color 0.2s;
-    min-width: 80px;
+    flex-direction: column;
+    height: 100%;
 
-    &:hover {
-      color: white;
+    .panel-header {
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      height: 64px;
+      box-sizing: content-box !important;
+
+      .back-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: none;
+        border: none;
+        color: #cbd5e1;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 8px 0;
+        transition: color 0.2s, left 0.2s;
+        min-width: 80px;
+        position: relative;
+        left: 0;
+
+        &:hover {
+          color: white;
+        }
+
+        @media (max-width: 1023px) {
+          // left: 48px;
+          left: 72px;
+        }
+      }
+
+      .panel-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+        text-align: center;
+        flex: 1;
+        min-width: 0;
+        word-break: keep-all;
+      }
+
+      .panel-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 80px;
+        justify-content: flex-end;
+      }
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      box-sizing: border-box;
+      overscroll-behavior: none; // Prevent scroll chaining to parent window
+      // padding-right: 12px; // 스크롤막대에 의해 요소가 짤리는 현상 방지
     }
   }
-
-  .panel-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: white;
-    margin: 0;
-    text-align: center;
-    flex: 1;
-    min-width: 0;
-    word-break: keep-all;
-  }
-
-  .panel-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 80px;
-    justify-content: flex-end;
-  }
-}
-
-.panel-body {
-  flex: 1;
-  overflow-y: auto;
-  box-sizing: border-box;
-  overscroll-behavior: none; // Prevent scroll chaining to parent window
-  padding-right: 12px; // 스크롤막대에 의해 요소가 짤리는 현상 방지
 }

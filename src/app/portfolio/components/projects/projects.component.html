@@ -15,40 +15,50 @@
     <div class="project-card" [class.active]="currentProjectIndex() === i">
       <div class="card-content">
         <div class="image-wrapper" [class.has-platform-images]="project.platformImages.pc || project.platformImages.tablet || project.platformImages.mobile">
-          <ng-container *ngIf="project.platformImages.pc || project.platformImages.tablet || project.platformImages.mobile; else fallbackImage">
+          @if (project.platformImages.pc || project.platformImages.tablet || project.platformImages.mobile) {
             <div class="thumbnail-preview-layout">
-              <div class="preview-slot preview-mobile" *ngIf="project.platformImages.mobile">
-                <img class="device-frame" src="assets/portfolio/device-mobile.png" alt="Mobile Frame">
-                <img class="user-screen" [src]="project.platformImages!.mobile" alt="Mobile Image">
-              </div>
-              <div class="preview-slot preview-pc" *ngIf="project.platformImages.pc">
-                <img class="device-frame" src="assets/portfolio/device-pc.png" alt="PC Frame">
-                <img class="user-screen" [src]="project.platformImages!.pc" alt="PC Image">
-              </div>
-              <div class="preview-slot preview-tablet" *ngIf="project.platformImages.tablet">
-                <img class="device-frame" src="assets/portfolio/device-tablet.png" alt="Tablet Frame">
-                <img class="user-screen" [src]="project.platformImages!.tablet" alt="Tablet Image">
-              </div>
+              @if (project.platformImages.mobile) {
+                <div class="preview-slot preview-mobile">
+                  <img class="device-frame" src="assets/portfolio/device-mobile.png" alt="Mobile Frame">
+                  <img class="user-screen" [src]="project.platformImages!.mobile" alt="Mobile Image">
+                </div>
+              }
+              @if (project.platformImages.pc) {
+                <div class="preview-slot preview-pc">
+                  <img class="device-frame" src="assets/portfolio/device-pc.png" alt="PC Frame">
+                  <img class="user-screen" [src]="project.platformImages!.pc" alt="PC Image">
+                </div>
+              }
+              @if (project.platformImages.tablet) {
+                <div class="preview-slot preview-tablet">
+                  <img class="device-frame" src="assets/portfolio/device-tablet.png" alt="Tablet Frame">
+                  <img class="user-screen" [src]="project.platformImages!.tablet" alt="Tablet Image">
+                </div>
+              }
             </div>
-          </ng-container>
-          <ng-template #fallbackImage>
-            <img *ngIf="project.imageUrl" [src]="project.imageUrl" alt="{{ project.title }}">
-            <div *ngIf="!project.imageUrl" class="empty-thumbnail">이미지 없음</div>
-          </ng-template>
+          } @else {
+            <div class="fallback-preview-layout">
+              @if (project.imageUrl) {
+                <img [src]="project.imageUrl" alt="{{ project.title }}" class="fallback-img">
+              } @else {
+                <div class="empty-thumbnail">이미지 없음</div>
+              }
+            </div>
+          }
+
+          @if (project.affiliation !== '앨리스래빗' || project.is_visible === false) {
+            <div class="badge-wrapper absolute-badge">
+              @if (project.affiliation !== '앨리스래빗') {
+                <c-badge [label]="project.affiliation" [customBgColor]="BadgeConfig.get(project.affiliation).customBgColor" [customColor]="BadgeConfig.get(project.affiliation).customColor" [iconUrl]="BadgeConfig.get(project.affiliation).iconUrl" size="sm"></c-badge>
+              }
+              @if (project.is_visible === false) {
+                <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="sm"></c-badge>
+              }
+            </div>
+          }
         </div>
         <div class="info-wrapper">
           <div class="header-group">
-            @if (project.affiliation !== '앨리스래빗' || project.is_visible === false) {
-              <div class="badge-wrapper" style="justify-content: flex-start; gap: 8px;">
-                @if (project.affiliation !== '앨리스래빗') {
-                  <c-badge [label]="project.affiliation" [customBgColor]="getTagBgColor(project.affiliation)" [customColor]="getTagColor(project.affiliation)" [iconUrl]="getTagIcon(project.affiliation)" size="sm"></c-badge>
-                }
-                @if (project.is_visible === false) {
-                  <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="sm"></c-badge>
-                }
-              </div>
-            }
-            
             <div class="logo-title-group">
               @if (project.logo) {
                 <img [src]="project.logo" alt="{{ project.title }} 로고" class="project-logo">
@@ -62,12 +72,12 @@
               </div>
             </div>
           </div>
-          <div class="tags-container" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="tags-container">
             <div class="tag-group">
               <div class="tag-label">서비스</div>
               <div class="tags">
                 @for (tag of project.serviceTags; track tag) {
-                <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="sm"></c-badge>
+                <c-badge [label]="tag" [customBgColor]="BadgeConfig.get(tag).customBgColor" [customColor]="BadgeConfig.get(tag).customColor" [iconUrl]="BadgeConfig.get(tag).iconUrl" size="sm"></c-badge>
                 }
               </div>
             </div>
@@ -75,7 +85,7 @@
               <div class="tag-label">담당 파트</div>
               <div class="tags">
                 @for (tag of project.roleTags; track tag) {
-                <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="sm"></c-badge>
+                <c-badge [label]="tag" [customBgColor]="BadgeConfig.get(tag).customBgColor" [customColor]="BadgeConfig.get(tag).customColor" [iconUrl]="BadgeConfig.get(tag).iconUrl" size="sm"></c-badge>
                 }
               </div>
             </div>

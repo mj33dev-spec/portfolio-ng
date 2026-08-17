@@ -34,17 +34,17 @@
     <div class="details-grid">
       <div class="full-width project-header">
         <div class="affiliation-status-row">
+          <div class="subtitle">{{ project().title }}</div>
           <div class="badges">
             @if (project().affiliation !== '앨리스래빗') {
-              <c-badge [label]="project().affiliation" [customBgColor]="getTagBgColor(project().affiliation)" [customColor]="getTagColor(project().affiliation)" [iconUrl]="getTagIcon(project().affiliation)" size="md"></c-badge>
+              <c-badge [label]="project().affiliation" [customBgColor]="BadgeConfig.get(project().affiliation).customBgColor" [customColor]="BadgeConfig.get(project().affiliation).customColor" [iconUrl]="BadgeConfig.get(project().affiliation).iconUrl" size="md"></c-badge>
             }
             @if (project().is_visible === false) {
               <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="md"></c-badge>
             }
-            <span class="status-badge" [ngClass]="getStatusClass(project().status)">{{ project().status }}</span>
+            <span class="status-badge" [ngClass]="BadgeConfig.getStatusClass(project().status)">{{ project().status }}</span>
           </div>
         </div>
-        <div class="subtitle">{{ project().title }}</div>
         <div class="title-row">
           @if (project().logo) {
             <img [src]="project().logo" alt="{{ project().title }} 로고" class="logo">
@@ -59,7 +59,7 @@
         <h3>서비스</h3>
         <div class="tags">
           @for (tag of project().serviceTags; track $index) {
-          <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="md"></c-badge>
+          <c-badge [label]="tag" [customBgColor]="BadgeConfig.get(tag).customBgColor" [customColor]="BadgeConfig.get(tag).customColor" [iconUrl]="BadgeConfig.get(tag).iconUrl" size="md"></c-badge>
           }
         </div>
       </div>
@@ -68,7 +68,7 @@
         <h3>담당 파트</h3>
         <div class="tags">
           @for (tag of project().roleTags; track $index) {
-          <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="md"></c-badge>
+          <c-badge [label]="tag" [customBgColor]="BadgeConfig.get(tag).customBgColor" [customColor]="BadgeConfig.get(tag).customColor" [iconUrl]="BadgeConfig.get(tag).iconUrl" size="md"></c-badge>
           }
         </div>
       </div>
@@ -136,14 +136,10 @@
           <div class="platform-detail-block">
             <div class="platform-header" (click)="togglePlatform($index)">
               <div class="header-title">
-                <h4 class="platform-type">{{ platform.type }}</h4>
-                <svg class="accordion-icon" [style.transform]="expandedPlatforms[$index] ? 'rotate(180deg)' : 'rotate(0deg)'" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                <h4 class="platform-type" [style.color]="BadgeConfig.get(platform.type).customColor">{{ platform.type }}</h4>
               </div>
-              <div class="badges">
-                @if (platform.is_visible === false) {
-                  <c-badge label="비노출" customBgColor="rgba(239, 68, 68, 0.15)" customColor="#ef4444" size="md"></c-badge>
-                }
-                <span class="status-badge" [ngClass]="getStatusClass(platform.status || '운영중')">{{ platform.status || '운영중' }}</span>
+              <div class="header-right">
+                <svg class="accordion-icon" [class.expanded]="expandedPlatforms[$index]" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </div>
 
@@ -176,10 +172,22 @@
 
             <div class="details-grid">
               <div class="detail-item">
+                <h3>플랫폼 구분</h3>
+                <div class="tags">
+                  <c-badge [label]="platform.type" [customBgColor]="BadgeConfig.get(platform.type).customBgColor" [customColor]="BadgeConfig.get(platform.type).customColor" [iconUrl]="BadgeConfig.get(platform.type).iconUrl" size="md"></c-badge>
+                </div>
+              </div>
+              <div class="detail-item">
+                <h3>상태</h3>
+                <div class="tags">
+                  <c-badge [label]="platform.status" [customBgColor]="BadgeConfig.get(platform.status).customBgColor" [customColor]="BadgeConfig.get(platform.status).customColor" size="md"></c-badge>
+                </div>
+              </div>
+              <div class="detail-item">
                 <h3>담당 파트</h3>
                 <div class="tags">
                   @for (tag of platform.role_tags; track $index) {
-                  <c-badge [label]="tag" [customBgColor]="getTagBgColor(tag)" [customColor]="getTagColor(tag)" [iconUrl]="getTagIcon(tag)" size="md"></c-badge>
+                  <c-badge [label]="tag" [customBgColor]="BadgeConfig.get(tag).customBgColor" [customColor]="BadgeConfig.get(tag).customColor" [iconUrl]="BadgeConfig.get(tag).iconUrl" size="md"></c-badge>
                   }
                 </div>
               </div>
