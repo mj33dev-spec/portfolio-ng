@@ -179,7 +179,8 @@
                 .user-screen {
                     position: absolute;
                     z-index: 1;
-                    object-fit: unset;
+                    object-fit: cover;
+                    object-position: top;
                 }
             }
 
@@ -204,10 +205,10 @@
 
                 .user-screen {
                     top: 6%;
-                    // left: 4%;
-                    // width: 92%;
-                    left: 3%;
-                    width: 94%;
+                    left: 4%;
+                    width: 92%;
+                    // left: 3%;
+                    // width: 94%;
                     height: 62%;
                 }
             }
