@@ -45,6 +45,7 @@ export class BlogService {
       .from('blogs')
       .select('*')
       .eq('is_deleted', false)
+      .order('updated_at', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false });
       
     if (error) {
