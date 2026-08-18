@@ -84,7 +84,12 @@ export class BadgeConfig {
     { type: 'scss', color: '#cc6699', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sass/sass-original.svg' },
     { type: 'java', color: '#b07219', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg' },
     { type: 'python', color: '#3776ab', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
-    { type: 'c#', color: '#178600', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg' }
+    { type: 'c#', color: '#178600', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg' },
+    
+    // Blog Categories
+    { type: '뉴스', color: '#3b82f6' },
+    { type: '프로젝트 회고록', color: '#a855f7' },
+    { type: 'database', color: '#9ca3af', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/azuresqldatabase/azuresqldatabase-original.svg' }
   ];
 
   static get(badge: string): BadgeStyle {
@@ -193,6 +198,15 @@ export class BadgeConfig {
     BadgeConfig.createOption('Java'),
     BadgeConfig.createOption('Python'),
     BadgeConfig.createOption('C#'),
+    BadgeConfig.createOption('기타')
+  ];
+
+  static readonly BLOG_CATEGORY_OPTIONS: CDropdownOption[] = [
+    BadgeConfig.createOption('프로젝트 회고록'),
+    BadgeConfig.createOption('뉴스'),
+    ...BadgeConfig.ENV_OPTIONS.filter(o => o.label !== '기타'),
+    ...BadgeConfig.LANG_OPTIONS.filter(o => o.label !== '기타'),
+    BadgeConfig.createOption('Database'),
     BadgeConfig.createOption('기타')
   ];
 }
