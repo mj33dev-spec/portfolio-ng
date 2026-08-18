@@ -8,14 +8,14 @@ import { BlogDetailPageComponent } from './blog-detail-page/blog-detail-page.com
 import { BlogEditorPageComponent } from './blog-editor-page/blog-editor-page.component';
 import { CategoryBadgeComponent } from '../category-badge/category-badge.component';
 import { ScrollService } from '../../scroll.service';
-import { CDropdownComponent, CDropdownOption } from '../c-dropdown/c-dropdown.component';
+import { CDropdownOption } from '../c-dropdown/c-dropdown.component';
 
 @Component({
   selector: 'app-blog',
   standalone: true,
   templateUrl: './blog.component.html',
   styleUrls: ['./blog.component.scss'],
-  imports: [CommonModule, FormsModule, BlogDetailPageComponent, BlogEditorPageComponent, CategoryBadgeComponent, DatePipe, CDropdownComponent],
+  imports: [CommonModule, FormsModule, BlogDetailPageComponent, BlogEditorPageComponent, CategoryBadgeComponent, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogComponent implements OnInit {
@@ -33,7 +33,7 @@ export class BlogComponent implements OnInit {
   // 페이지당 항목 수 드롭다운
   itemsPerPage = signal(10);
   perPageOptions: CDropdownOption[] = [
-    { label: '5개씩 보기',  value: 5  },
+    { label: '5개씩 보기', value: 5 },
     { label: '10개씩 보기', value: 10 },
     { label: '20개씩 보기', value: 20 },
   ];
@@ -58,7 +58,7 @@ export class BlogComponent implements OnInit {
       });
     });
   }
-  
+
   activeView = signal<'list' | 'detail' | 'editor'>('list');
   selectedPostId = signal<string | null>(null);
 
@@ -66,7 +66,7 @@ export class BlogComponent implements OnInit {
   currentPage = signal(1);
 
   totalPages = computed(() => Math.ceil(this.posts().length / this.itemsPerPage()));
-  
+
   paginatedPosts = computed(() => {
     const start = (this.currentPage() - 1) * this.itemsPerPage();
     const end = start + this.itemsPerPage();
@@ -118,7 +118,7 @@ export class BlogComponent implements OnInit {
       this.loadPosts();
     });
   }
-  
+
   goToPage(pageNumber: number): void {
     if (pageNumber >= 1 && pageNumber <= this.totalPages()) {
       this.currentPage.set(pageNumber);
